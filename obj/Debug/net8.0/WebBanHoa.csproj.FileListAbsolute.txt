@@ -458,3 +458,4 @@ C:\Users\Hong-Lam\OneDrive\Máy tính\Hutech\HK2N3\THLTW\WebBanHoa\WebBanHoa\obj
 C:\Users\Hong-Lam\OneDrive\Máy tính\Hutech\HK2N3\THLTW\WebBanHoa\WebBanHoa\obj\Debug\net8.0\WebBanHoa.pdb
 C:\Users\Hong-Lam\OneDrive\Máy tính\Hutech\HK2N3\THLTW\WebBanHoa\WebBanHoa\obj\Debug\net8.0\WebBanHoa.genruntimeconfig.cache
 C:\Users\Hong-Lam\OneDrive\Máy tính\Hutech\HK2N3\THLTW\WebBanHoa\WebBanHoa\obj\Debug\net8.0\ref\WebBanHoa.dll
+C:\Users\Hong-Lam\OneDrive\Máy tính\Hutech\HK2N3\THLTW\WebBanHoa\WebBanHoa\obj\Debug\net8.0\WebBanHoa.sourcelink.json

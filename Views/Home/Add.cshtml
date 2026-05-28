@@ -1,0 +1,61 @@
+﻿@model WebBanHoa.Models.Product
+
+@{
+    ViewData["Title"] = "Thêm sản phẩm hoa mới";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+    <h2 class="text-primary fw-bold mb-4">Thêm Bó Hoa Mới</h2>
+
+    <form asp-action="Add" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Tên Sản Phẩm</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Price" class="form-label">Giá bán hiện tại (đ)</label>
+                <input asp-for="Price" type="number" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="OldPrice" class="form-label">Giá cũ / Giá gốc (đ)</label>
+                <input asp-for="OldPrice" type="number" class="form-control" placeholder="Để trống nếu không giảm giá" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="CategoryId" class="form-label">Danh Mục Hoa</label>
+            <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select"></select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Ingredients" class="form-label">Thành phần hoa chính</label>
+            <input asp-for="Ingredients" class="form-control" placeholder="Ví dụ: Hồng Pastel, Tulip trắng, Nơ lụa..." />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Mô tả chi tiết sản phẩm</label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold text-success">Chọn Ảnh Đại Diện Chính (Hỗ trợ file hoa1.jpg,...)</label>
+            <input type="file" name="imageUrl" class="form-control" accept="image/*" />
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label text-muted">Chọn Các Ảnh Phụ (Album Thumbnails)</label>
+            <input type="file" name="imageUrls" class="form-control" accept="image/*" multiple />
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary px-4">Đăng Sản Phẩm</button>
+            <a asp-action="Index" class="btn btn-light border">Hủy bỏ</a>
+        </div>
+    </form>
+</div>

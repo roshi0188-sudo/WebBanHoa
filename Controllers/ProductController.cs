@@ -20,13 +20,15 @@ namespace WebBanHoa.Controllers
             _categoryRepository = categoryRepository;
         }
 
-        // Trang danh sách (Trang chủ shop hoa)
+        // Trang danh sách (Trang chủ shop hoa
+
+        // Mở tệp Controllers/ProductController.cs ra xem đoạn này:
         public IActionResult Index()
         {
-            var products = _productRepository.GetAll();
+            // Lấy toàn bộ sản phẩm hoa từ kho dữ liệu trả thẳng về View
+            var products = _productRepository.GetAll(); // hoặc GetAllProducts() tuỳ bạn đặt tên
             return View(products);
         }
-
         // Xem chi tiết bó hoa
         public IActionResult Display(int id)
         {

@@ -1,0 +1,85 @@
+﻿@model IEnumerable<WebBanHoa.Models.Product>
+
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold" style="font-family: 'Playfair Display', serif; color: #1f1a1e;">Danh mục sản phẩm</h2>
+            <p class="text-muted" style="font-family: 'Montserrat', sans-serif;">Chọn hoa để quản lý hoặc chỉnh sửa</p>
+        </div>
+        <a asp-action="Add" class="btn rounded-pill px-4 py-2 shadow-sm"
+           style="background: linear-gradient(135deg, #0058be 0%, #fd56a7 100%); color: white; transition: 0.4s;">
+            <i class="bi bi-plus-lg me-1"></i> Thêm hoa mới
+        </a>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 col-lg-3">
+                <div class="card h-100 border-0 rounded-4 shadow-sm overflow-hidden product-card"
+                     style="transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);">
+
+                    <div class="position-relative overflow-hidden" style="aspect-ratio: 4/5;">
+                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/banner.jpg" : item.ImageUrl)"
+                             class="w-100 h-100 object-fit-cover"
+                             style="transition: transform 0.7s ease; display: block;">
+
+                        <div class="action-overlay position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center opacity-0"
+                             style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); transition: opacity 0.4s ease;">
+                            <div class="d-grid gap-2 w-75">
+                                <a asp-controller="Home" asp-action="Display" asp-route-id="@item.Id"
+                                   class="btn btn-outline-dark rounded-pill">Xem chi tiết</a>
+
+                                <a asp-controller="Product" asp-action="Update" asp-route-id="@item.Id"
+                                   class="btn btn-outline-primary rounded-pill">Chỉnh sửa</a>
+
+                                <a asp-controller="Product" asp-action="Delete" asp-route-id="@item.Id"
+                                   class="btn btn-outline-danger rounded-pill">Xóa hoa</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-3">
+                        <h6 class="fw-bold mb-1" style="font-family: 'Montserrat', sans-serif;">@item.Name</h6>
+                        <p class="text-primary fw-bold small">@item.Price.ToString("N0")đ</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    /* Hiệu ứng hover cho Card */
+    .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+    }
+
+        .product-card:hover img {
+            transform: scale(1.08);
+        }
+
+    /* Kích hoạt overlay khi click (dùng class active) */
+    .product-card.active .action-overlay {
+        opacity: 1 !important;
+    }
+</style>
+
+<script>
+    // Click vào card để hiện menu
+    document.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('click', function () {
+            // Xóa active các card khác (để chỉ 1 menu hiện tại)
+            document.querySelectorAll('.product-card').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Click ra ngoài để ẩn (tùy chọn)
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.product-card')) {
+            document.querySelectorAll('.product-card').forEach(c => c.classList.remove('active'));
+        }
+    });
+</script>

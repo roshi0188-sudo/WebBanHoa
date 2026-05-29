@@ -1,0 +1,43 @@
+﻿@model WebBanHoa.Models.Category
+
+@{
+    ViewData["Title"] = "Xác nhận gỡ bỏ danh mục";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="bg-danger text-white p-4 d-flex align-items-center gap-3">
+                    <i class="bi bi-exclamation-triangle-fill fs-2"></i>
+                    <div>
+                        <h4 class="fw-bold m-0">Xác Nhận Xóa?</h4>
+                        <p class="small m-0 text-white-50 mt-0.5">Hành động này không thể hoàn tác phục hồi</p>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 bg-white">
+                    <div class="alert alert-warning border-0 rounded-3 p-3 mb-4 small text-dark">
+                        <i class="bi bi-info-circle-fill me-1 text-warning"></i> Bạn đang yêu cầu gỡ bỏ danh mục hoa dưới đây khỏi cơ sở dữ liệu hiển thị của shop:
+                    </div>
+
+                    <div class="text-center bg-light rounded-4 py-4 px-3 mb-4 border">
+                        <span class="text-muted small d-block text-uppercase fw-semibold mb-1">Mã danh mục #@Model.Id</span>
+                        <h3 class="fw-bold text-danger m-0">@Model.Name</h3>
+                    </div>
+
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="d-flex gap-3 pt-2 border-top">
+                            <a asp-action="Index" class="btn btn-light border rounded-pill w-100 py-2.5 fw-semibold text-secondary"> Hủy, không xóa </a>
+                            <button type="submit" class="btn btn-danger rounded-pill w-100 py-2.5 fw-semibold shadow-sm"> Đồng ý xóa </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

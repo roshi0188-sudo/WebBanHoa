@@ -1,0 +1,79 @@
+﻿@model WebBanHoa.Models.Product
+
+@{
+    ViewData["Title"] = "Cập nhật thông tin hoa";
+}
+
+<div class="container mt-5 mb-5" style="max-width: 650px;">
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+        <h3 class="fw-bold mb-4" style="font-family: 'Playfair Display', serif; color: #1f1a1e;">
+            <i class="bi bi-pencil-square me-2"></i>Chỉnh sửa bó hoa
+        </h3>
+
+        @* Bổ sung asp-controller nếu cần thiết *@
+        <form asp-action="Update" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            @* CÁC TRƯỜNG HIDDEN QUAN TRỌNG: Đảm bảo khi nhấn Lưu, các dữ liệu này không bị mất *@
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ImageUrl" />
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label fw-bold small text-uppercase text-muted">Tên bó hoa</label>
+                <input asp-for="Name" class="form-control rounded-pill border-light" />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Price" class="form-label fw-bold small text-uppercase text-muted">Giá bán (đ)</label>
+                    <input asp-for="Price" type="number" class="form-control rounded-pill border-light" />
+                    <span asp-validation-for="Price" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="CategoryId" class="form-label fw-bold small text-uppercase text-muted">Danh mục</label>
+                    <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select rounded-pill border-light"></select>
+                </div>
+            </div>
+
+            @* THÊM MÔ TẢ: Vì model của bạn có Description *@
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label fw-bold small text-uppercase text-muted">Mô tả bó hoa</label>
+                <textarea asp-for="Description" class="form-control rounded-4 border-light" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold small text-uppercase text-muted">Ảnh đại diện hiện tại</label>
+                <div class="d-flex align-items-center gap-3 p-2 bg-light rounded-4 border">
+                    <img src="@Model.ImageUrl" class="rounded-3" style="width: 70px; height: 70px; object-fit: cover;" />
+                    <div class="flex-grow-1">
+                        <p class="mb-1 small text-muted">Chọn ảnh mới để thay thế:</p>
+                        @* Tên name="newImageUrl" phải khớp chính xác với Controller *@
+                        <input type="file" name="newImageUrl" class="form-control form-control-sm rounded-pill" accept="image/*" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn text-white rounded-pill py-2 shadow-sm" style="background: linear-gradient(135deg, #0058be 0%, #fd56a7 100%);">
+                    Lưu cập nhật
+                </button>
+                <a asp-action="Index" class="btn btn-light rounded-pill text-muted">Quay lại danh sách</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-select {
+        background-color: #fff7fa !important;
+        border: 1px solid #c2c6d6 !important;
+        padding: 0.6rem 1.2rem;
+    }
+
+        .form-control:focus {
+            border-color: #fd56a7 !important;
+            box-shadow: 0 0 0 0.25rem rgba(253, 86, 167, 0.15) !important;
+        }
+</style>

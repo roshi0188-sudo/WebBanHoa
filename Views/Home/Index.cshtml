@@ -1,0 +1,169 @@
+﻿@model IEnumerable<WebBanHoa.Models.Product>
+
+@{
+    ViewData["Title"] = "Trang chủ - Floral LAM";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+
+<div class="position-relative overflow-hidden hero-section mb-5 d-flex align-items-center rounded-5 shadow-sm" style="background-color: #fff7fa; min-height: 600px;">
+    <div class="absolute-inset-0 z-0" id="petals-container"></div>
+
+    <div class="container position-relative z-10 py-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 text-start" data-aos="fade-up">
+                <span class="text-uppercase fw-bold text-secondary tracking-widest d-block mb-3" style="font-family: 'Montserrat', sans-serif; color: #b4136d !important; font-size: 13px; letter-spacing: 0.15em;">
+                    Nghệ Thuật Hoa Tươi Đương Đại
+                </span>
+                <h1 class="display-3 fw-bold text-dark mb-4" style="font-family: 'Playfair Display', serif; color: #0058be !important; letter-spacing: -0.01em;">
+                    Floral <span class="gradient-text">LAM</span>
+                </h1>
+                <p class="lead text-secondary mb-5" style="font-family: 'Montserrat', sans-serif; letter-spacing: 0.03em; line-height: 1.8; color: #424754 !important; font-size: 17px;">
+                    Trao hoa, trao yêu thương. Khám phá những tác phẩm hoa tươi được thiết kế độc đáo, giúp bạn gửi gắm trọn vẹn những thông điệp ý nghĩa nhất đến người thân yêu.
+                </p>
+                <div class="d-flex gap-3 align-items-center">
+                    <a href="#bo-suu-tap" class="btn gradient-button text-white rounded-pill px-4 py-3 fw-bold text-uppercase small-tracking shadow-sm">
+                        Khám Phá Ngay
+                    </a>
+                    <a href="#" class="btn btn-link text-decoration-none fw-bold text-uppercase small-tracking" style="color: #0058be; font-size: 13px;">
+                        Liên Hệ Đặt Lịch
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="position-relative hero-img-wrapper rounded-5 overflow-hidden border border-4 border-white shadow-lg mx-auto" style="max-width: 520px; height: 520px;">
+                    <img alt="Floral LAM Artistry Layout" class="w-100 h-100 object-fit-cover" src="~/images/anh.jpg" />
+                    <div class="position-absolute inset-0 bg-gradient-to-t-soft"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container px-4" id="bo-suu-tap">
+    <div class="text-start mb-5 pt-4">
+        <h2 class="fw-bold text-dark mb-2" style="font-family: 'Playfair Display', serif; font-size: 42px; color: #1f1a1e; letter-spacing: -0.01em;">
+            Bộ Sưu Tập Hoa Tươi
+        </h2>
+        <p class="text-muted text-uppercase tracking-wide" style="font-family: 'Montserrat', sans-serif; font-size: 13px; color: #727785 !important; letter-spacing: 0.08em;">
+            Khám phá những mẫu hoa nghệ thuật mới nhất được thiết kế bởi Floral LAM
+        </p>
+    </div>
+
+    <div class="row g-4 justify-content-start mb-5">
+        @foreach (var item in Model)
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card border-0 premium-card rounded-5 overflow-hidden shadow-sm bg-white h-100 d-flex flex-column group">
+                    <div class="overflow-hidden position-relative" style="height: 420px; background-color: #f6ebf1;">
+                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/default_flower.jpg" : item.ImageUrl)"
+                             class="w-100 h-100 object-fit-cover transition-transform-700"
+                             alt="@item.Name" />
+                    </div>
+
+                    <div class="card-body p-4 d-flex flex-column justify-content-between bg-white text-center">
+                        <div>
+                            <h4 class="fw-bold text-truncate mb-2" style="font-family: 'Playfair Display', serif; color: #1f1a1e; font-size: 22px;">
+                                @item.Name
+                            </h4>
+                            <p class="text-muted small text-truncate-2 mb-3 px-2" style="font-family: 'Montserrat', sans-serif; color: #424754 !important; min-height: 40px; line-height: 1.5;">
+                                @item.Description
+                            </p>
+                        </div>
+                        <div class="pt-2">
+                            <span class="fw-bold d-block mb-3" style="font-family: 'Montserrat', sans-serif; color: #b4136d; font-size: 20px;">
+                                @string.Format("{0:N0}đ", item.Price)
+                            </span>
+                            <a asp-controller="Home" asp-action="Display" asp-route-id="@item.Id" class="btn btn-outline-premium rounded-pill w-100 py-2 fw-semibold text-uppercase transition-all">
+                                Chi tiết
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="p-3 border border-2 border-dashed rounded-4 d-flex align-items-center justify-content-between bg-light">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-tag-fill fs-3 text-primary me-3"></i>
+                        <div>
+                            <h6 class="fw-bold mb-0">GIẢM 20% ĐƠN ĐẦU TIÊN</h6>
+                            <small class="text-muted">Mã: <strong>LAM2026</strong></small>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-dark btn-sm rounded-pill px-3">Sao chép</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-4 text-center my-5 pt-4 pb-5">
+        <div class="col-md-4">
+            <div class="p-4 bg-white border border-light-subtle shadow-sm rounded-4 h-100 text-start d-flex align-items-center gap-3">
+                <div class="rounded-circle p-3 fs-4 d-inline-flex text-white flex-shrink-0" style="background-color: #0058be; width: 52px; height: 52px; align-items: center; justify-content: center;">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1" style="color: #0058be; font-family: 'Montserrat', sans-serif;">Giao Hỏa Tốc Hàng Giờ</h6>
+                    <p class="text-muted small mb-0" style="font-size: 13px;">Đảm bảo hoa luôn trong trạng thái hoàn hảo nhất.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 bg-white border border-light-subtle shadow-sm rounded-4 h-100 text-start d-flex align-items-center gap-3">
+                <div class="rounded-circle p-3 fs-4 d-inline-flex text-white flex-shrink-0" style="background-color: #0058be; width: 52px; height: 52px; align-items: center; justify-content: center;">
+                    <i class="bi bi-camera"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1" style="color: #0058be; font-family: 'Montserrat', sans-serif;">Gửi Ảnh Thực Tế</h6>
+                    <p class="text-muted small mb-0" style="font-size: 13px;">Chụp và gửi ảnh thành phẩm trước khi giao hàng.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 bg-white border border-light-subtle shadow-sm rounded-4 h-100 text-start d-flex align-items-center gap-3">
+                <div class="rounded-circle p-3 fs-4 d-inline-flex text-white flex-shrink-0" style="background-color: #0058be; width: 52px; height: 52px; align-items: center; justify-content: center;">
+                    <i class="bi bi-patch-check"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1" style="color: #0058be; font-family: 'Montserrat', sans-serif;">Bảo Hành Độ Tươi</h6>
+                    <p class="text-muted small mb-0" style="font-size: 13px;">Hoa được tuyển chọn kỹ lưỡng, tươi lâu tối đa.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const petalColors = ['#fdf2f8', '#ffb0cd', '#ffffff'];
+        const container = document.getElementById('petals-container');
+        if (!container) return;
+
+        for (let i = 0; i < 12; i++) {
+            const petal = document.createElement('div');
+            petal.className = 'floating-petal';
+
+            const size = Math.random() * 15 + 10;
+            const left = Math.random() * 100;
+            const top = Math.random() * 40;
+            const delay = Math.random() * 6;
+            const duration = Math.random() * 10 + 12;
+
+            petal.style.width = `${size}px`;
+            petal.style.height = `${size * 0.75}px`;
+            petal.style.left = `${left}%`;
+            petal.style.top = `${top}%`;
+            petal.style.backgroundColor = petalColors[Math.floor(Math.random() * petalColors.length)];
+            petal.style.borderRadius = '50% 0% 50% 50%';
+            petal.style.animationDelay = `${delay}s`;
+            petal.style.animationDuration = `${duration}s`;
+
+            container.appendChild(petal);
+        }
+    });
+</script>

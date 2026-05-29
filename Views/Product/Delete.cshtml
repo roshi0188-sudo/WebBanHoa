@@ -1,0 +1,41 @@
+﻿@model WebBanHoa.Models.Product
+
+@{
+    ViewData["Title"] = "Xác nhận xóa sản phẩm";
+}
+
+<div class="container mt-5" style="max-width: 600px;">
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="bg-danger text-white px-4 py-3 d-flex align-items-center gap-2">
+            <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+            <h5 class="m-0 fw-bold">Xác nhận xóa sản phẩm vĩnh viễn?</h5>
+        </div>
+
+        <div class="card-body p-4">
+            <p class="text-muted">Bạn có chắc chắn muốn gỡ bỏ hoàn toàn bó hoa này khỏi hệ thống cửa hàng **Floral LAM** không? Hành động này không thể hoàn tác.</p>
+
+            <div class="d-flex gap-3 bg-light p-3 rounded-3 mb-4 border align-items-center">
+                <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/default_flower.jpg" : Model.ImageUrl)"
+                     class="rounded border bg-white" style="width: 90px; height: 90px; object-fit: cover;" alt="@Model.Name" />
+                <div>
+                    <h5 class="fw-bold text-dark mb-1">@Model.Name</h5>
+                    <div class="text-danger fw-bold mb-1">@string.Format("{0:N0}đ", Model.Price)</div>
+                    <small class="text-muted d-block">Danh mục: @Model.Category?.Name</small>
+                </div>
+            </div>
+
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a asp-action="Index" class="btn btn-light border rounded-pill px-4">
+                        <i class="bi bi-x-circle"></i> Quay lại / Hủy
+                    </a>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-trash3-fill"></i> Thực hiện xóa
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

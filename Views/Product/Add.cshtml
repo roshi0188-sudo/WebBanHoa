@@ -1,0 +1,91 @@
+﻿@model WebBanHoa.Models.Product
+
+@{
+    ViewData["Title"] = "Thêm sản phẩm mới";
+}
+
+<div class="container mt-5" style="max-width: 600px;">
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+        <h3 class="fw-bold mb-4" style="font-family: 'Playfair Display', serif; color: #1f1a1e;">Thêm bó hoa mới</h3>
+
+        <form asp-action="Add" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label fw-bold small text-uppercase">Tên sản phẩm</label>
+                <input asp-for="Name" class="form-control rounded-pill border-light" placeholder="Nhập tên..." />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Price" class="form-label fw-bold small text-uppercase">Giá bán (đ)</label>
+                    <input asp-for="Price" type="number" class="form-control rounded-pill border-light" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="CategoryId" class="form-label fw-bold small text-uppercase">Danh mục</label>
+                    <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select rounded-pill border-light">
+                        <option value="">-- Chọn danh mục --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label fw-bold small text-uppercase">Mô tả chi tiết</label>
+                <textarea asp-for="Description" class="form-control rounded-4 border-light" rows="3"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold small text-uppercase">Ảnh đại diện</label>
+                <input type="file" name="imageUrl" class="form-control rounded-pill" required />
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn text-white rounded-pill py-2" style="background: linear-gradient(135deg, #0058be 0%, #fd56a7 100%);">Đăng sản phẩm</button>
+                <a asp-action="Index" class="btn btn-light rounded-pill">Hủy bỏ</a>
+            </div>
+        </form>
+    </div>
+    <style>
+        /* Tổng thể nền form */
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #f0e5eb; /* Dùng màu surface-container-high */
+        }
+
+        /* Định dạng các ô nhập liệu */
+        .form-control, .form-select {
+            background-color: #fff7fa !important; /* Màu surface-bright */
+            border: 1px solid #c2c6d6 !important; /* Màu outline-variant */
+            padding: 0.75rem 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+            /* Hiệu ứng khi focus vào ô nhập liệu (Glow hồng) */
+            .form-control:focus, .form-select:focus {
+                border-color: #fd56a7 !important; /* Màu secondary-container */
+                box-shadow: 0 0 0 0.25rem rgba(253, 86, 167, 0.15) !important;
+                outline: none;
+            }
+
+        /* Nút bấm */
+        .btn-light {
+            background-color: #f6ebf1;
+            color: #727785;
+        }
+
+            .btn-light:hover {
+                background-color: #e2d7dd;
+            }
+
+        /* Tiêu đề */
+        h3 {
+            color: #1f1a1e !important; /* Màu on-surface */
+        }
+
+        /* Label */
+        label {
+            color: #727785 !important; /* Màu outline */
+        }
+    </style>
+</div>

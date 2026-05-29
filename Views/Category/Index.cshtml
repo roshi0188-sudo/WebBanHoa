@@ -1,0 +1,77 @@
+﻿@model IEnumerable<WebBanHoa.Models.Category>
+
+@{
+    ViewData["Title"] = "Quản lý danh mục hoa";
+}
+
+<div class="container mt-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-5 border-bottom pb-3">
+        <div>
+            <h2 class="text-dark fw-bold m-0">
+                <i class="bi bi-tags text-primary me-2"></i>Quản Lý Danh Mục
+            </h2>
+            <p class="text-muted small m-0 mt-1">Quản lý các nhóm phân loại hoa hiển thị trên trang chủ cửa hàng</p>
+        </div>
+        <a asp-action="Add" class="btn btn-success rounded-pill px-4 py-2 shadow-sm fw-semibold d-inline-flex align-items-center gap-2">
+            <i class="bi bi-plus-circle-fill"></i> Thêm danh mục mới
+        </a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var cat in Model)
+        {
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm rounded-4 position-relative overflow-hidden bg-white custom-card-hash">
+
+                    <div class="position-absolute top-0 end-0 bg-light px-3 py-1 rounded-bl-4 text-secondary small fw-bold border-start border-bottom text-muted">
+                        #@cat.Id
+                    </div>
+
+                    <div class="card-body p-4 d-flex flex-column justify-content-between" style="min-height: 160px;">
+                        <div class="pe-5 mb-3">
+                            <span class="text-muted d-block small text-uppercase fw-semibold tracking-wider mb-1">Phân loại hoa</span>
+                            <h5 class="card-title fw-bold text-dark m-0">@cat.Name</h5>
+                        </div>
+
+                        <div class="d-flex gap-2 border-top pt-3 bg-transparent">
+                            <a asp-action="Update" asp-route-id="@cat.Id" class="btn btn-sm btn-outline-secondary w-100 rounded-pill py-2 fw-semibold d-inline-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-pencil"></i> Chỉnh sửa
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@cat.Id" class="btn btn-sm btn-outline-danger w-100 rounded-pill py-2 fw-semibold d-inline-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-trash3"></i> Xoá
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 border rounded-4 bg-light mt-4">
+            <i class="bi bi-folder text-muted fs-1 d-block mb-2"></i>
+            <p class="text-muted m-0">Hệ thống chưa có danh mục hoa nào. Hãy bấm nút thêm mới ở trên!</p>
+        </div>
+    }
+</div>
+
+<style>
+    .rounded-bl-4 {
+        border-bottom-left-radius: 1rem !important;
+    }
+
+    .custom-card-hash {
+        transition: all 0.25s ease-in-out;
+        border: 1px solid #FFB6C1 !important;
+        background-color: #FFE4E8 !important;
+    }
+
+    .custom-card-hash:hover {
+        transform: translateY(-5px);
+        border-color: #FF69B4 !important;
+        background-color: #FFD1DC !important;
+        box-shadow: 0 .5rem 1.5rem rgba(255, 105, 180, 0.2) !important;
+    }
+</style>

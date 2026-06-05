@@ -12,7 +12,7 @@ using WebBanHoa.Models;
 namespace WebBanHoa.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260604185248_ThemDL")]
+    [Migration("20260605061453_ThemDL")]
     partial class ThemDL
     {
         /// <inheritdoc />

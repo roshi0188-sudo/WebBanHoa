@@ -12,7 +12,7 @@ using WebBanHoa.Models;
 namespace WebBanHoa.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260604185224_KhoiTao")]
+    [Migration("20260605061420_KhoiTao")]
     partial class KhoiTao
     {
         /// <inheritdoc />

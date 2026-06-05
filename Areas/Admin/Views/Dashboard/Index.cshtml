@@ -1,20 +1,195 @@
-﻿@{
-    ViewData["Title"] = "Dashboard - Floral LAM";
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Tổng quan Dashboard";
+
+    var totalRevenue = ViewBag.TotalRevenue ?? "0";
+    var pendingOrders = ViewBag.PendingOrders ?? 0;
+    var totalProducts = ViewBag.TotalProducts ?? 0;
+    var totalUsers = ViewBag.TotalUsers ?? 0;
 }
-<div class="container-fluid mt-4">
+
+<style>
+    /* Card tổng quan phong cách Premium */
+    .stat-card {
+        background: white;
+        border-radius: 24px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(131, 76, 88, 0.02);
+        padding: 28px;
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(131, 76, 88, 0.06);
+        }
+
+    /* Vòng tròn chứa icon mềm mại phía sau */
+    .stat-icon-box {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover .stat-icon-box {
+        transform: scale(1.05);
+    }
+
+    /* Định dạng màu sắc các phân khu thống kê */
+    .bg-luxury-pastel {
+        background-color: #FFF5F7;
+        color: #834c58;
+    }
+
+    .bg-blue-pastel {
+        background-color: #EBF8FF;
+        color: #2B6CB0;
+    }
+
+    .bg-green-pastel {
+        background-color: #E6FFFA;
+        color: #319795;
+    }
+
+    .bg-purple-pastel {
+        background-color: #FAF5FF;
+        color: #6B46C1;
+    }
+
+    .welcome-card {
+        background: linear-gradient(145deg, #FFFFFF 0%, #FAF8FA 100%);
+        border-radius: 24px;
+        border: 1px solid #F3EAEF;
+        padding: 35px;
+        box-shadow: 0 10px 30px rgba(131, 76, 88, 0.01);
+    }
+
+    .btn-action-luxury {
+        background-color: #FFF5F7;
+        color: #834c58;
+        border: 1px solid #DE8F9F;
+        border-radius: 20px;
+        padding: 10px 24px;
+        font-weight: 600;
+        transition: all 0.25s ease;
+    }
+
+        .btn-action-luxury:hover {
+            background-color: #834c58;
+            color: white;
+            border-color: #834c58;
+            transform: translateY(-1px);
+        }
+</style>
+
+<div class="container-fluid mt-2">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark m-0" style="font-family: 'Plus Jakarta Sans', sans-serif;">Dashboard</h2>
-        <span class="badge bg-danger p-2 fs-6" style="border-radius: 10px;"><i class="bi bi-shield-lock-fill"></i> Quyền: Administrator</span>
+        <div>
+            <h3 class="fw-bold m-0" style="color: #2D3748; font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.5px;">Tổng Quan Vận Hành</h3>
+            <small class="text-muted">Báo cáo số liệu và hoạt động kinh doanh trực tuyến của cửa hàng hoa</small>
+        </div>
+        <span class="badge p-2.5 fs-7 d-flex align-items-center gap-2" style="border-radius: 12px; background-color: #FFF5F7; color: #834c58; border: 1px solid #F3EAEF;">
+            <i class="bi bi-shield-lock-fill fs-6"></i> Quyền: Administrator
+        </span>
     </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card stat-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-uppercase tracking-wider text-muted fw-bold d-block mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Doanh thu thực tế</span>
+                        <h3 class="fw-extrabold m-0 text-dark" style="font-family: 'Plus Jakarta Sans', sans-serif;">@totalRevenue đ</h3>
+                    </div>
+                    <div class="stat-icon-box bg-luxury-pastel">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                </div>
+                <div class="mt-3 text-muted small">
+                    <span class="text-success fw-bold"><i class="bi bi-graph-up-arrow"></i> Hệ thống tự động</span> cập nhật theo đơn hàng hoàn thành
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card stat-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-uppercase tracking-wider text-muted fw-bold d-block mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Đơn chưa duyệt</span>
+                        <h3 class="fw-extrabold m-0 text-dark" style="font-family: 'Plus Jakarta Sans', sans-serif;">@pendingOrders đơn</h3>
+                    </div>
+                    <div class="stat-icon-box bg-blue-pastel">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                </div>
+                <div class="mt-3 text-muted small">
+                    Cần Admin check duyệt hỏa tốc
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card stat-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-uppercase tracking-wider text-muted fw-bold d-block mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Mẫu thiết kế hoa</span>
+                        <h3 class="fw-extrabold m-0 text-dark" style="font-family: 'Plus Jakarta Sans', sans-serif;">@totalProducts mẫu</h3>
+                    </div>
+                    <div class="stat-icon-box bg-green-pastel">
+                        <i class="bi bi-flower1"></i>
+                    </div>
+                </div>
+                <div class="mt-3 text-muted small">
+                    Có sẵn trên bộ sưu tập website
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card stat-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-uppercase tracking-wider text-muted fw-bold d-block mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Khách hàng đăng ký</span>
+                        <h3 class="fw-extrabold m-0 text-dark" style="font-family: 'Plus Jakarta Sans', sans-serif;">@totalUsers user</h3>
+                    </div>
+                    <div class="stat-icon-box bg-purple-pastel">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                </div>
+                <div class="mt-3 text-muted small">
+                    Thành viên hệ thống Floral LAM
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-12">
-            <div class="card shadow-sm border-0 p-4 bg-white" style="border-radius: 24px;">
-                <h5 class="fw-bold text-secondary mb-3"><i class="bi bi-gear-fill" style="color: #A34863;"></i> Hệ thống vận hành ổn định</h5>
-                <p class="text-muted small">Chào mừng bạn quản trị viên đã quay trở lại. Hệ thống bán hoa tươi Floral LAM đang vận hành trơn tru.</p>
-                <div class="mt-4">
-                    <a asp-area="Admin" asp-controller="OrderManager" asp-action="Index" class="btn px-4 py-2 fw-semibold shadow-sm" style="border: 1px solid #DE8F9F; color: #A34863; background-color: #FFF0F5; border-radius: 20px;">
-                        <i class="bi bi-receipt me-2"></i> Xem Toàn Bộ Đơn Hàng
-                    </a>
+            <div class="card welcome-card">
+                <div class="d-flex align-items-start gap-3">
+                    <span class="fs-2">✨</span>
+                    <div class="w-100">
+                        <h5 class="fw-bold mb-2" style="color: #2D3748; font-family: 'Plus Jakarta Sans', sans-serif;">Hệ thống vận hành ổn định</h5>
+                        <p class="text-muted small m-0 lh-relaxed" style="max-width: 700px;">
+                            Chào mừng bạn quản trị viên đã quay trở lại.
+                        </p>
+                        <div class="mt-4 flex gap-2">
+                            <a asp-area="Admin" asp-controller="OrderManager" asp-action="Index" class="btn btn-action-luxury shadow-sm text-decoration-none small">
+                                <i class="bi bi-receipt me-2"></i> Xử lý duyệt đơn khách
+                            </a>
+                            <a asp-area="Admin" asp-controller="ProductManager" asp-action="Index" class="btn btn-light rounded-pill px-4 py-2 text-secondary small text-decoration-none border ms-2 fw-medium">
+                                <i class="bi bi-box-seam me-1"></i> Xem kho
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

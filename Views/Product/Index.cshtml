@@ -1,74 +1,222 @@
 ﻿@model IEnumerable<WebBanHoa.Models.Product>
 
+@{
+    ViewData["Title"] = "Sản Phẩm - Floral LAM";
+    var categories = ViewBag.Categories as List<WebBanHoa.Models.Category>;
+    var currentCategory = ViewBag.CurrentCategory as int?;
+    var currentSearch = ViewBag.CurrentSearch as string;
+}
+
+<style>
+    /* Thanh danh mục phong cách Pill Tags tinh tế */
+    .category-pill {
+        display: inline-block;
+        padding: 8px 22px;
+        border-radius: 20px;
+        background-color: #FFFFFF;
+        border: 1px solid #F3EAEF;
+        color: #718096;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+
+        .category-pill:hover {
+            background-color: #FFF5F7;
+            color: #834c58;
+            border-color: #DE8F9F;
+        }
+
+        .category-pill.active {
+            background-color: #834c58;
+            color: #FFFFFF;
+            border-color: #834c58;
+            box-shadow: 0 4px 12px rgba(131, 76, 88, 0.15);
+        }
+
+    /* Thanh tìm kiếm phong cách Luxury */
+    .search-input-luxury {
+        background-color: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 30px;
+        padding: 12px 24px;
+        padding-left: 45px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+    }
+
+        .search-input-luxury:focus {
+            border-color: #DE8F9F;
+            box-shadow: 0 0 0 4px rgba(131, 76, 88, 0.05);
+            outline: none;
+        }
+
+    /* 🌸 ĐỒNG BỘ HIỆU ỨNG HOVER CARD HOA CAO CẤP */
+    .product-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        cursor: pointer;
+    }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(131, 76, 88, 0.08) !important;
+        }
+
+        .product-card img {
+            transition: transform 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
+            display: block;
+        }
+
+        .product-card:hover img {
+            transform: scale(1.06);
+        }
+
+    /* Nút xem chi tiết thiết kế bo tròn mảnh dẻ quý phái */
+    .btn-view-detail {
+        border: 1px solid #DE8F9F;
+        color: #834c58;
+        background-color: #FFF5F7;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 25px;
+        padding: 8px 20px;
+        transition: all 0.25s ease;
+    }
+
+        .btn-view-detail:hover {
+            background-color: #834c58;
+            color: #FFFFFF;
+            border-color: #834c58;
+        }
+</style>
+
 <div class="container mt-5 mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold" style="font-family: 'Playfair Display', serif; color: #1f1a1e;">Danh mục sản phẩm</h2>
+            <h2 class="fw-bold" style="font-family: 'Playfair Display', serif; color: #1f1a1e; letter-spacing: -0.5px;">Bộ Sưu Tập Hoa Tươi</h2>
+            <p class="text-muted small m-0">Khám phá các mẫu bó hoa thiết kế thủ công tinh tế theo từng chủ đề mùa</p>
         </div>
     </div>
 
+    <div class="card border-0 shadow-sm p-4 mb-5 rounded-4 bg-white">
+        <form asp-controller="Product" asp-action="Index" method="get" id="filterForm">
+
+            <div class="row justify-content-center mb-4">
+                <div class="col-md-8 position-relative">
+                    <i class="bi bi-search position-absolute text-muted" style="left: 25px; top: 50%; transform: translateY(-50%); font-size: 16px;"></i>
+                    <input type="text" name="searchString" value="@currentSearch" class="form-control search-input-luxury w-100" placeholder="Tìm kiếm bó hoa nghệ thuật, hoa hồng, hoa cưới..." />
+
+                    <input type="hidden" name="categoryId" value="@currentCategory" />
+                </div>
+                <div class="col-md-2 mt-2 mt-md-0">
+                    <button type="submit" class="btn text-white w-100 rounded-pill py-2.5 fw-bold shadow-sm" style="background-color: #834c58; border: none; font-size: 14px;">
+                        Tìm kiếm
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <p class="small text-uppercase fw-bold text-secondary mb-2 tracking-wider" style="font-size: 11px; letter-spacing: 0.5px;">Phân loại theo chủ đề hoa</p>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+
+                    <a href="@Url.Action("Index", "Product", new { searchString = currentSearch })" class="category-pill @(currentCategory == null ? "active" : "")">
+                        🌸 Tất cả hoa
+                    </a>
+
+                    @if (categories != null)
+                    {
+                        foreach (var cat in categories)
+                        {
+                            <a href="@Url.Action("Index", "Product", new { categoryId = cat.Id, searchString = currentSearch })" class="category-pill @(currentCategory == cat.Id ? "active" : "")">
+                                @cat.Name
+                            </a>
+                        }
+                    }
+                </div>
+            </div>
+
+        </form>
+    </div>
+
     <div class="row g-4">
-        @foreach (var item in Model)
+        @if (Model != null && Model.Any())
         {
-            <div class="col-md-4 col-lg-3">
-                <div class="card h-100 border-0 rounded-4 shadow-sm overflow-hidden product-card"
-                     style="transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);">
+            foreach (var item in Model)
+            {
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm product-card p-3">
 
-                    <div class="position-relative overflow-hidden" style="aspect-ratio: 4/5;">
-                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/banner.jpg" : item.ImageUrl)"
-                             class="w-100 h-100 object-fit-cover"
-                             style="transition: transform 0.7s ease; display: block;">
+                        <div class="position-relative overflow-hidden rounded-3" style="aspect-ratio: 4/5;">
+                            <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/banner.jpg" : item.ImageUrl)"
+                                 class="w-100 h-100 object-fit-cover"
+                                 alt="@item.Name">
 
-                        <div class="action-overlay position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center opacity-0"
-                             style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); transition: opacity 0.4s ease;">
-                            <div class="d-grid gap-2 w-75">
-                                <a asp-controller="Home" asp-action="Display" asp-route-id="@item.Id"
-                                   class="btn btn-outline-dark rounded-pill">Xem chi tiết</a>
+                            <div class="action-overlay position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center opacity-0"
+                                 style="background: rgba(255, 255, 255, 0.82); backdrop-filter: blur(4px); transition: opacity 0.35s ease;">
+                                <div class="d-grid gap-2 w-75">
+                                    <a asp-controller="Product" asp-action="Display" asp-route-id="@item.Id"
+                                       class="btn btn-outline-dark rounded-pill fw-semibold" style="font-size: 13px;">
+                                        Xem chi tiết
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="card-body p-3">
-                        <h6 class="fw-bold mb-1" style="font-family: 'Montserrat', sans-serif;">@item.Name</h6>
-                        <p class="text-primary fw-bold small">@item.Price.ToString("N0")đ</p>
+                        <div class="card-body px-1 pt-3 pb-0 text-center">
+                            <span class="badge bg-light text-muted mb-2 px-2.5 py-1 rounded-pill" style="font-size: 11px; font-weight: 500;">
+                                @(item.Category?.Name ?? "Hoa Nghệ Thuật")
+                            </span>
+                            <h6 class="fw-bold text-dark text-truncate mb-1" style="font-family: 'Plus Jakarta Sans', sans-serif;">@item.Name</h6>
+                            <p class="fw-bold small mb-3" style="color: #834c58; font-size: 15px;">@item.Price.ToString("#,##0") đ</p>
+
+                            
+                        </div>
+
                     </div>
                 </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <span class="fs-1">🍃</span>
+                <h5 class="fw-bold text-muted mt-3">Không tìm thấy mẫu hoa phù hợp</h5>
+                <p class="text-muted small">Vui lòng thử lại bằng từ khóa khác hoặc bấm nút "Tất cả hoa" để làm mới bộ lọc.</p>
+                <a href="/" class="btn btn-sm text-white rounded-pill px-4 mt-2 fw-semibold shadow-sm" style="background-color: #834c58; border: none;">Xóa bộ lọc</a>
             </div>
         }
     </div>
 </div>
 
-<style>
-    /* Hiệu ứng hover cho Card */
-    .product-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
-    }
-
-        .product-card:hover img {
-            transform: scale(1.08);
-        }
-
-    /* Kích hoạt overlay khi click (dùng class active) */
-    .product-card.active .action-overlay {
-        opacity: 1 !important;
-    }
-</style>
-
 <script>
-    // Click vào card để hiện menu
+    // Kích hoạt hiển thị lớp phủ tương tác thông minh (Hỗ trợ tốt cho cả thiết bị cảm ứng điện thoại)
     document.querySelectorAll('.product-card').forEach(card => {
-        card.addEventListener('click', function () {
-            // Xóa active các card khác (để chỉ 1 menu hiện tại)
+        card.addEventListener('click', function (e) {
+            // Nếu bấm trúng trực tiếp vào nút điều hướng hoặc thẻ chữ thì bỏ qua hiệu ứng mở overlay ngầm
+            if (e.target.closest('a') || e.target.closest('button')) return;
+
+            // Tắt trạng thái active của toàn bộ các thỏi hoa khác
             document.querySelectorAll('.product-card').forEach(c => c.classList.remove('active'));
             this.classList.add('active');
         });
     });
 
-    // Click ra ngoài để ẩn (tùy chọn)
+    // Bấm ra vùng trống bên ngoài card hoa để thu gọn menu tương tác
     document.addEventListener('click', function (e) {
         if (!e.target.closest('.product-card')) {
             document.querySelectorAll('.product-card').forEach(c => c.classList.remove('active'));
         }
     });
 </script>
+
+<style>
+    /* CSS kích hoạt mở bộ điều hướng overlay ngầm qua JavaScript */
+    .product-card.active .action-overlay,
+    .product-card:hover .action-overlay {
+        opacity: 1 !important;
+    }
+</style>

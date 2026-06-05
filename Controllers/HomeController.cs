@@ -7,18 +7,14 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace WebBanHoa.Controllers
 {
-    // ?? ?Ã S?A: B? thu?c tính [Authorize] ? c?p Controller ?? khách hàng vãng lai t? do xem trang ch?
     public class HomeController : Controller
     {
         private readonly IProductRepository _productRepository;
-
-        // Tiêm IProductRepository vào thông qua Constructor ?? qu?n lý d? li?u t?p trung
         public HomeController(IProductRepository productRepository)
         {
             _productRepository = productRepository;
         }
 
-        // TRANG CH? HI?N TH? DANH SÁCH HOA (Ai c?ng vào ???c)
         public async Task<IActionResult> Index()
         {
             var products = await _productRepository.GetAllAsync();

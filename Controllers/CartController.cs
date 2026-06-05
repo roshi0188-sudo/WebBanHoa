@@ -39,18 +39,15 @@ namespace WebBanHoa.Controllers
             HttpContext.Session.SetString(CART_SESSION_KEY, JsonSerializer.Serialize(cart));
         }
 
-        // ====================================================================
-        // 1. TRANG HIỂN THỊ GIỎ HÀNG (Ai cũng xem được giỏ hàng của mình)
-        // ====================================================================
+        //  TRANG HIỂN THỊ GIỎ HÀNG  
         public IActionResult Index()
         {
             var cart = GetCartItems();
             return View(cart);
         }
 
-        // ====================================================================
-        // 2. HÀNH ĐỘNG: THÊM HOA VÀO GIỎ HÀNG (Ép đăng nhập mới cho Thêm)
-        // ====================================================================
+        // THÊM HOA VÀO GIỎ HÀNG 
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> AddToCart(int productId, int quantity = 1)
@@ -78,20 +75,14 @@ namespace WebBanHoa.Controllers
             }
 
             SaveCartItems(cart);
-
-            // 🟢 SỬA TẠI ĐÂY: Nếu là cuộc gọi AJAX ngầm, chỉ trả về trạng thái OK (200) chứ không Redirect đi đâu cả!
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
                 return Ok();
             }
-
-            // Luồng cũ (nếu có) phòng hờ
             return RedirectToAction("Index");
         }
 
-        // ====================================================================
-        // 3. HÀNH ĐỘNG: XÓA HOA KHỎI GIỎ (Chỉ người dùng đã đăng nhập mới thao tác)
-        // ====================================================================
+        //XÓA HOA KHỎI GIỎ 
         [Authorize]
         public IActionResult RemoveFromCart(int productId)
         {
@@ -105,16 +96,13 @@ namespace WebBanHoa.Controllers
             return RedirectToAction("Index");
         }
 
-        // ====================================================================
-        // 4. TRANG ĐIỀN THÔNG TIN ĐẶT HOA (GET)
-        // ====================================================================
+        // TRANG ĐIỀN THÔNG TIN ĐẶT HOA 
         [Authorize]
         public async Task<IActionResult> Checkout(string selectedProducts)
         {
             var cart = GetCartItems();
             if (cart.Count == 0) return RedirectToAction("Index");
 
-            // 🟢 CHỐT CHẶN: Nếu có danh sách sản phẩm được chọn từ giỏ hàng, thực hiện lọc
             if (!string.IsNullOrEmpty(selectedProducts))
             {
                 var selectedIds = selectedProducts.Split(',').Select(int.Parse).ToList();
@@ -127,19 +115,15 @@ namespace WebBanHoa.Controllers
 
             var order = new Order
             {
-                // 🟢 CHỈ TÍNH TIỀN của những sản phẩm được chọn
                 TotalAmount = cart.Sum(x => x.TotalPrice),
                 PhoneNumber = currentUser?.PhoneNumber ?? "",
                 ShippingAddress = currentUser?.Address ?? ""
             };
 
-            // Truyền danh sách đã lọc ra ngoài giao diện
             ViewBag.CartItems = cart;
             return View(order);
         }
-        // ====================================================================
-        // 5. LƯU ĐƠN HÀNG VÀO DATABASE (POST) - ĐÃ CHUẨN HÓA AN TOÀN
-        // ====================================================================
+        // 5. LƯU ĐƠN HÀNG VÀO DATABASE
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -154,8 +138,6 @@ namespace WebBanHoa.Controllers
                 cart = cart.Where(x => selectedIds.Contains(x.ProductId)).ToList();
             }
 
-            // 2. 🌟 CHỐT CHẶN BẮT BUỘC: Loại bỏ kiểm tra tự động các trường dữ liệu hệ thống ngầm
-            // Nếu thiếu các dòng này, ModelState sẽ LUÔN LUÔN bị False và chặn đứng không cho chuyển trang thành công
             ModelState.Remove("selectedProducts");
             ModelState.Remove("UserId");
             ModelState.Remove("User");
@@ -179,7 +161,7 @@ namespace WebBanHoa.Controllers
                 {
                     UserId = _userManager.GetUserId(User),
                     OrderDate = DateTime.Now,
-                    TotalAmount = cart.Sum(x => x.TotalPrice), // Tính tiền chính xác của các bó hoa được chọn
+                    TotalAmount = cart.Sum(x => x.TotalPrice), 
                     OrderStatus = "Chờ xử lý",
                     ShippingAddress = model.ShippingAddress,
                     PhoneNumber = model.PhoneNumber,
@@ -212,11 +194,9 @@ namespace WebBanHoa.Controllers
                     HttpContext.Session.Remove("BoutiqueCart");
                 }
 
-                // 🌟 LỆNH CHUYỂN TRANG THÀNH CÔNG DỨT ĐIỂM:
                 return RedirectToAction("OrderSuccess", new { id = order.Id });
             }
 
-            // 4. Nếu dính lỗi nhập liệu (Trống số điện thoại/địa chỉ), nạp lại đúng giá trị để giữ nguyên giao diện chuẩn
             model.TotalAmount = cart.Sum(x => x.TotalPrice); // Giữ nguyên tổng tiền cũ không cho sập về 0đ
             ViewBag.CartItems = cart; // Giữ nguyên danh sách hoa đã chọn mua
 
@@ -230,15 +210,14 @@ namespace WebBanHoa.Controllers
             return View();
         }
 
-        // 7. TRANG LỊCH SỬ ĐƠN HÀNG CỦA KHÁCH HÀNG (Đã đăng nhập)
-        // ====================================================================
+        // 7. TRANG LỊCH SỬ ĐƠN HÀNG CỦA KHÁCH HÀNG
         [Authorize]
         public async Task<IActionResult> OrderHistory()
         {
-            // Lấy ID của người dùng hiện tại đang đăng nhập
+            
             var userId = _userManager.GetUserId(User);
 
-            // Tìm trong CSDL các đơn hàng thuộc về User này, nạp kèm theo chi tiết đơn hàng và thông tin hoa
+           
             var orders = await _context.Orders
                 .Include(o => o.OrderDetails)
                     .ThenInclude(d => d.Product)

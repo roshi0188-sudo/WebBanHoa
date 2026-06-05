@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using WebBanHoa.Models;
 using WebBanHoa.Models.ViewModels;
 
-namespace WebBanHoa.Controllers // 🔴 ĐÃ SỬA: Đưa về Namespace gốc ngoài trang chủ
+namespace WebBanHoa.Controllers 
 {
-    [AllowAnonymous] // Cho phép tất cả mọi người (chưa đăng nhập) đều vào được trang này
+    [AllowAnonymous] 
     public class AccountController : Controller
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -20,75 +20,131 @@ namespace WebBanHoa.Controllers // 🔴 ĐÃ SỬA: Đưa về Namespace gốc n
             _userManager = userManager;
         }
 
-        // ==========================================
-        // KHU VỰC: ĐĂNG NHẬP (LOGIN)
-        // ==========================================
+        // Profile 
+        public async Task<IActionResult> Profile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
 
+            return View(user); 
+        }
+
+        //Chỉnh sửa profile
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(string fullName, string phoneNumber, string address, IFormFile avatarFile)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            // Kiểm tra dữ liệu 
+            if (string.IsNullOrEmpty(fullName))
+            {
+                TempData["DangerMessage"] = "Họ và tên không được để trống.";
+                return RedirectToAction("Profile");
+            }
+
+            if (avatarFile != null && avatarFile.Length > 0)
+            {
+                var permittedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var extension = Path.GetExtension(avatarFile.FileName).ToLowerInvariant();
+
+                if (!permittedExtensions.Contains(extension))
+                {
+                    TempData["DangerMessage"] = "Định dạng ảnh không hợp lệ (Chỉ chấp nhận .jpg, .jpeg, .png, .gif).";
+                    return RedirectToAction("Profile");
+                }
+
+                // Tạo tên file độc nhất tránh trùng lặp
+                var fileName = $"{user.Id}_avatar{extension}";
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "avatars");
+
+                // Tạo thư mục nếu chưa tồn tại trong project
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+                var filePath = Path.Combine(path, fileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await avatarFile.CopyToAsync(stream);
+                }
+
+                // Lưu đường dẫn ảnh mới vào thuộc tính của User
+                user.Avatar = $"/images/avatars/{fileName}";
+            }
+
+            // Gán các giá trị mới thay đổi vào đối tượng người dùng
+            user.FullName = fullName;
+            user.PhoneNumber = phoneNumber;
+            user.Address = address;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Cập nhật hồ sơ tài khoản thành công!";
+            }
+            else
+            {
+                TempData["DangerMessage"] = "Có lỗi xảy ra trong quá trình cập nhật, vui lòng thử lại.";
+            }
+
+            return RedirectToAction("Profile");
+        }
+        // Đăng nhập
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
-            // Tránh lỗi nạp trang vòng lặp, nếu returnUrl trống thì mặc định về trang chủ ngoài
             var model = new LoginViewModel { ReturnUrl = returnUrl ?? Url.Content("~/") };
-
-            // 🔴 ĐÃ SỬA: Gọi View ngắn gọn để MVC tự tìm đến Views/Account/Login.cshtml màu hồng của bạn
             return View(model);
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null) // 🛠️ BỔ SUNG: Tham số returnUrl để hứng dữ liệu từ Form gửi lên
+        public async Task<IActionResult> Login(string email, string password, bool rememberMe, string returnUrl = null)
         {
-            // Đồng bộ lại giá trị: nếu tham số hàm trống thì lấy từ trong Model, nếu vẫn trống thì mặc định về trang chủ "/"
-            returnUrl ??= model.ReturnUrl ?? Url.Content("~/");
+            ViewData["ReturnUrl"] = returnUrl;
 
-            if (ModelState.IsValid)
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                var result = await _signInManager.PasswordSignInAsync(
-                    model.Email,
-                    model.Password,
-                    model.RememberMe,
-                    lockoutOnFailure: false
-                );
+                ModelState.AddModelError("", "Tài khoản và mật khẩu không được để trống.");
+                return View();
+            }
+
+            // Tìm kiếm thực thể người dùng dựa trên Email đăng nhập
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+                var result = await _signInManager.PasswordSignInAsync(user.UserName, password, rememberMe, lockoutOnFailure: true);
 
                 if (result.Succeeded)
                 {
-                    var user = await _userManager.FindByEmailAsync(model.Email);
+                    TempData["SuccessMessage"] = $"Chào mừng {user.FullName ?? user.UserName} đã quay trở lại! ";
 
-                    if (user != null)
+                    // Điều hướng người dùng về trang đích trước đó hoặc trang chủ
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     {
-                        // 🔴 LUỒNG 1: Nếu là Admin, ưu tiên đá thẳng vào khu vực quản trị Area Admin
-                        if (await _userManager.IsInRoleAsync(user, "Admin"))
-                        {
-                            return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
-                        }
+                        return Redirect(returnUrl);
                     }
-
-                    // 🟢 LUỒNG 2: Nếu có returnUrl hợp lệ và không phải trang kẹt, điều hướng về trang đó
-                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) && returnUrl != "/" && returnUrl != "/Account/Login")
-                    {
-                        return LocalRedirect(returnUrl);
-                    }
-
-                    // 🔵 LUỒNG 3 (BẾN ĐỖ AN TOÀN): Khi mới chạy lên bấm Login luôn (returnUrl trống hoặc là "/"), đưa về trang chủ
-                    return RedirectToAction("Index", "Home", new { area = "" });
+                    return RedirectToAction("Index", "Home");
                 }
 
-                ModelState.AddModelError(string.Empty, "Tài khoản hoặc mật khẩu không chính xác.");
+                if (result.IsLockedOut)
+                {
+                    ModelState.AddModelError("", "Tài khoản tạm thời bị khóa do nhập sai nhiều lần.");
+                    return View();
+                }
             }
 
-            // Đảm bảo giữ lại giá trị đường dẫn cũ để form không bị mất dữ liệu khi load lại trang báo lỗi
-            model.ReturnUrl = returnUrl;
-            return View(model);
+            ModelState.AddModelError("", "Thông tin tài khoản hoặc mật khẩu không chính xác.");
+            return View();
         }
 
-        // ==========================================
-        // KHU VỰC: ĐĂNG KÝ (REGISTER)
-        // ==========================================
+        // Đăng ký
 
         [HttpGet]
         public IActionResult Register()
         {
-            // 🔴 ĐÃ SỬA: Tự động tìm đến Views/Account/Register.cshtml ngoài gốc
             return View();
         }
 
@@ -123,9 +179,7 @@ namespace WebBanHoa.Controllers // 🔴 ĐÃ SỬA: Đưa về Namespace gốc n
             return View(model);
         }
 
-        // ==========================================
-        // KHU VỰC: ĐĂNG XUẤT (LOGOUT)
-        // ==========================================
+        // Đăng xuất
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -133,6 +187,164 @@ namespace WebBanHoa.Controllers // 🔴 ĐÃ SỬA: Đưa về Namespace gốc n
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        [AllowAnonymous] 
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+        //Quên mật khẩu
+        // 1. Giao diện nhập Email (GET)
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        // 2. Tiếp nhận Email và tạo mã Token (POST)
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                ModelState.AddModelError("", "Vui lòng nhập địa chỉ Email.");
+                return View();
+            }
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                // Để bảo mật thông tin, thông báo chung tránh bị dò quét tài khoản
+                ModelState.AddModelError("", "Email không tồn tại trên hệ thống.");
+                return View();
+            }
+
+            // Tạo mã Token bảo mật độc nhất để đặt lại mật khẩu
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            // Tạo đường dẫn kèm Token bảo mật
+            var callbackUrl = Url.Action("ResetPassword", "Account",
+                new { userId = user.Id, token = token }, protocol: HttpContext.Request.Scheme);
+
+            // HỖ TRỢ DEMO: Gửi link ra TempData để hiển thị thẳng lên giao diện thông báo thành công
+            TempData["ResetPasswordLink"] = callbackUrl;
+            TempData["UserEmail"] = email;
+
+            return RedirectToAction("ForgotPasswordConfirmation");
+        }
+
+        // 3. Trang thông báo tạo Link thành công (GET)
+        [AllowAnonymous]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+
+        // 4. Giao diện đặt lại mật khẩu mới (GET)
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string userId, string token)
+        {
+            if (userId == null || token == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Truyền dữ liệu ngầm sang View qua thuộc tính ẩn
+            ViewBag.UserId = userId;
+            ViewBag.Token = token;
+            return View();
+        }
+
+        // 5. Xử lý lưu mật khẩu mới vào Database (POST)
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(string userId, string token, string newPassword, string confirmPassword)
+        {
+            if (string.IsNullOrEmpty(newPassword) || newPassword.Length < 6)
+            {
+                TempData["DangerMessage"] = "Mật khẩu mới phải có độ dài từ 6 ký tự trở lên.";
+                ViewBag.UserId = userId; ViewBag.Token = token;
+                return View();
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                TempData["DangerMessage"] = "Mật khẩu xác nhận không trùng khớp.";
+                ViewBag.UserId = userId; ViewBag.Token = token;
+                return View();
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound();
+
+            // Thực hiện reset mật khẩu thông qua bộ quản lý Identity mã hóa
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Thay đổi mật khẩu thành công! Vui lòng đăng nhập lại. 🌸";
+                return RedirectToAction("Login");
+            }
+
+            // Nếu Token hết hạn hoặc không hợp lệ
+            TempData["DangerMessage"] = "Mã xác thực đã hết hạn hoặc không hợp lệ. Vui lòng yêu cầu lại.";
+            return RedirectToAction("ForgotPassword");
+        }
+
+        //Thay đổi mật khẩu
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string confirmPassword)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            // Rà soát kiểm tra dữ liệu nhập thủ công
+            if (string.IsNullOrEmpty(currentPassword) || string.IsNullOrEmpty(newPassword))
+            {
+                TempData["DangerMessage"] = "Vui lòng điền đầy đủ các trường mật khẩu.";
+                return RedirectToAction("Profile");
+            }
+
+            if (newPassword.Length < 6)
+            {
+                TempData["DangerMessage"] = "Mật khẩu mới phải có độ dài từ 6 ký tự trở lên.";
+                return RedirectToAction("Profile");
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                TempData["DangerMessage"] = "Mật khẩu xác nhận mới không trùng khớp.";
+                return RedirectToAction("Profile");
+            }
+
+            // Thực hiện đổi mật khẩu thông qua UserManager (Tự băm và mã hóa bảo mật)
+            var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Thay đổi mật khẩu tài khoản thành công!";
+            }
+            else
+            {
+                // Trích xuất lỗi thực tế từ hệ thống (ví dụ: Sai mật khẩu cũ)
+                var error = result.Errors.FirstOrDefault();
+                if (error != null && error.Code == "PasswordMismatch")
+                {
+                    TempData["DangerMessage"] = "Mật khẩu hiện tại không chính xác.";
+                }
+                else
+                {
+                    TempData["DangerMessage"] = "Đổi mật khẩu thất bại. Vui lòng kiểm tra lại ràng buộc.";
+                }
+            }
+
+            return RedirectToAction("Profile");
         }
     }
 }

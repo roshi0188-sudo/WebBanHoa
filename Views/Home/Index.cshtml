@@ -2,6 +2,9 @@
 
 @{
     ViewData["Title"] = "Trang chủ - Floral LAM";
+    var categories = ViewBag.Categories as List<WebBanHoa.Models.Category>;
+    var currentCategory = ViewBag.CurrentCategory as int?;
+    var currentSearch = ViewBag.CurrentSearch as string;
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -69,15 +72,6 @@
                                class="btn btn-outline-premium rounded-pill w-50 py-2 fw-semibold text-uppercase transition-all small" style="font-size: 11px;">
                                 Chi tiết
                             </a>
-
-                            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="w-50">
-                                <input type="hidden" name="productId" value="@item.Id" />
-                                <input type="hidden" name="quantity" value="1" />
-                                <button type="button" class="btn text-white rounded-pill w-100 py-2 fw-semibold text-uppercase transition-all small"
-                                        style="background: linear-gradient(135deg, #DE8F9F, #A34863); border: none; font-size: 11px;">
-                                    <i class="bi bi-cart-plus me-1"></i> Thêm vào giỏ
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </div>

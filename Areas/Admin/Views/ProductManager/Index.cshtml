@@ -134,21 +134,7 @@
 <div class="admin-header d-flex justify-content-between align-items-center mb-4">
     <div>
         <h3 class="fw-bold m-0" style="color: #1f1a1e;">Quản Lý Sản Phẩm</h3>
-        <small class="text-muted">Xem, chỉnh sửa và quản lý danh sách sản phẩm hoa toàn hệ thống</small>
-    </div>
-    <div class="d-flex align-items-center gap-3">
-        <div class="search-box d-flex align-items-center gap-2 bg-white border px-3 py-1" style="border-radius: 20px;">
-            <i class="bi bi-search text-muted"></i>
-            <input type="text" class="border-0" style="outline:none; font-size: 14px;" placeholder="Tìm kiếm kho hoa...">
-        </div>
-        <i class="bi bi-gear fs-5 text-muted"></i>
-        <div class="d-flex align-items-center gap-2 ms-2">
-            <div class="text-end">
-                <p class="m-0 small fw-bold">Quản trị viên</p>
-                <small class="text-muted" style="font-size: 11px;">Điều hành cửa hàng</small>
-            </div>
-            <img src="/images/avatar-admin.png" class="rounded-circle" style="width: 36px; height: 36px; object-fit: cover;" onerror="this.src='https://placehold.co/36'">
-        </div>
+        <small class="text-muted">Quản lý danh sách sản phẩm hoa</small>
     </div>
 </div>
 
@@ -161,36 +147,6 @@
                 <small class="text-success fw-bold"><i class="bi bi-arrow-up-short"></i> Hệ thống sẵn sàng</small>
             </div>
             <div class="stat-icon"><i class="bi bi-journal-check"></i></div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card d-flex align-items-center justify-content-between">
-            <div>
-                <small class="text-uppercase text-muted fw-bold" style="font-size: 11px;">Hết hàng / Sắp hết</small>
-                <h3 class="fw-bold my-1">@((Model != null) ? Model.Count(x => x.Id % 5 == 0 || x.Id % 3 == 0) : 0)</h3>
-                <small class="text-warning fw-bold"><i class="bi bi-exclamation-circle"></i> Cần lưu ý</small>
-            </div>
-            <div class="stat-icon"><i class="bi bi-grid-3x3-gap"></i></div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card d-flex align-items-center justify-content-between">
-            <div>
-                <small class="text-uppercase text-muted fw-bold" style="font-size: 11px;">Tổng đơn hàng</small>
-                <h3 class="fw-bold my-1">856</h3>
-                <small class="text-muted">Đơn trong tháng</small>
-            </div>
-            <div class="stat-icon"><i class="bi bi-bag-heart"></i></div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card d-flex align-items-center justify-content-between">
-            <div>
-                <small class="text-uppercase text-muted fw-bold" style="font-size: 11px;">Doanh thu tháng</small>
-                <h3 class="fw-bold my-1">42,500k</h3>
-                <small class="text-success fw-bold"><i class="bi bi-arrow-up-short"></i> +8% Tăng trưởng</small>
-            </div>
-            <div class="stat-icon"><i class="bi bi-currency-dollar"></i></div>
         </div>
     </div>
 </div>
@@ -212,8 +168,6 @@
         {
             string statusClass = "badge-in-stock";
             string statusText = "Còn hàng";
-            if (item.Id % 3 == 0) { statusClass = "badge-out-stock"; statusText = "Hết hàng"; }
-            else if (item.Id % 5 == 0) { statusClass = "badge-low-stock"; statusText = "Sắp hết hàng"; }
 
             <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="card h-100 border-0 shadow-sm overflow-hidden product-card">

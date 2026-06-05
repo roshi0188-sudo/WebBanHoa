@@ -1,7 +1,7 @@
 ﻿@model WebBanHoa.Models.Product
 
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml"; // 🟢 Kế thừa bộ khung Layout của Khách hàng
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Kế thừa bộ khung Layout của Khách hàng
     ViewData["Title"] = Model.Name + " - Chi tiết hoa tươi";
 }
 
@@ -11,7 +11,7 @@
         background: white;
         border-radius: 24px;
         border: none;
-        box-shadow: 0 10px 30px rgba(163, 72, 99, 0.03);
+        box-shadow: 0 10px 30px rgba(131, 76, 88, 0.03);
         padding: 45px;
     }
 
@@ -20,7 +20,7 @@
         border-radius: 20px;
         overflow: hidden;
         aspect-ratio: 4/5;
-        box-shadow: 0 12px 32px rgba(163, 72, 99, 0.06);
+        box-shadow: 0 12px 32px rgba(131, 76, 88, 0.06);
         background-color: #F8F9FA;
         transition: transform 0.4s ease;
     }
@@ -36,17 +36,17 @@
         transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
 
-    .sub-image-item:hover, .sub-image-item.active {
-        border-color: #DE8F9F;
-        transform: scale(1.05);
-        box-shadow: 0 4px 10px rgba(222, 143, 159, 0.2);
-    }
+        .sub-image-item:hover, .sub-image-item.active {
+            border-color: #DE8F9F;
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(222, 143, 159, 0.2);
+        }
 
     /* Định dạng giá tiền Premium */
     .product-price-luxury {
         font-size: 32px;
         font-weight: 700;
-        color: #A34863;
+        color: #834c58;
         font-family: 'Plus Jakarta Sans', sans-serif;
         letter-spacing: -0.5px;
     }
@@ -62,9 +62,20 @@
         gap: 6px;
     }
 
-    .badge-in-stock { background-color: #E6FFFA; color: #319795; }
-    .badge-low-stock { background-color: #FEFCBF; color: #B7791F; }
-    .badge-out-stock { background-color: #FED7D7; color: #E53E3E; }
+    .badge-in-stock {
+        background-color: #E6FFFA;
+        color: #319795;
+    }
+
+    .badge-low-stock {
+        background-color: #FEFCBF;
+        color: #B7791F;
+    }
+
+    .badge-out-stock {
+        background-color: #FED7D7;
+        color: #E53E3E;
+    }
 
     /* Bộ tăng giảm số lượng Boutique */
     .quantity-input-group {
@@ -87,10 +98,10 @@
         transition: 0.2s;
     }
 
-    .btn-quantity-step:hover {
-        background-color: #DE8F9F;
-        color: white;
-    }
+        .btn-quantity-step:hover {
+            background-color: #DE8F9F;
+            color: white;
+        }
 
     /* Khối thông tin dịch vụ Premium của Floral LAM */
     .boutique-care-box {
@@ -103,7 +114,7 @@
     /* Thiết kế các nút mua hàng độc quyền */
     .btn-cart-luxury {
         background: white;
-        color: #A34863;
+        color: #834c58;
         border: 2px solid #DE8F9F;
         border-radius: 24px;
         padding: 14px 32px;
@@ -111,44 +122,44 @@
         transition: 0.3s;
     }
 
-    .btn-cart-luxury:hover {
-        background-color: #FFF5F7;
-        transform: translateY(-1px);
-    }
+        .btn-cart-luxury:hover {
+            background-color: #FFF5F7;
+            transform: translateY(-1px);
+        }
 
     .btn-buy-now-luxury {
-        background: linear-gradient(135deg, #DE8F9F, #A34863);
+        background: linear-gradient(135deg, #DE8F9F, #834c58);
         color: white;
         border: none;
         border-radius: 24px;
         padding: 14px 32px;
         font-weight: 600;
         transition: 0.3s;
-        box-shadow: 0 4px 14px rgba(163, 72, 99, 0.15);
+        box-shadow: 0 4px 14px rgba(131, 76, 88, 0.15);
     }
 
-    .btn-buy-now-luxury:hover {
-        opacity: 0.95;
-        transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(163, 72, 99, 0.25);
-    }
+        .btn-buy-now-luxury:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(131, 76, 88, 0.25);
+        }
 
     .back-link-top {
         color: #718096;
-        font-weight: 500;
+        font-weight: 600;
         font-size: 14px;
         transition: all 0.3s ease;
     }
 
-    .back-link-top:hover {
-        color: #A34863 !important;
-        transform: translateX(-4px);
-    }
+        .back-link-top:hover {
+            color: #834c58 !important;
+            transform: translateX(-4px);
+        }
 </style>
 
 <div class="container mb-4 mt-3">
     <div class="d-flex align-items-center gap-3">
-        <a asp-area="" asp-controller="Home" asp-action="Index" class="back-link-top text-decoration-none d-inline-flex align-items-center gap-2">
+        <a asp-area="" asp-controller="Product" asp-action="Index" class="back-link-top text-decoration-none d-inline-flex align-items-center gap-2">
             <i class="bi bi-chevron-left"></i> Quay lại trang chủ bộ sưu tập
         </a>
     </div>
@@ -159,7 +170,6 @@
         <div class="details-card">
             <div class="row g-5">
 
-                <!-- KHU VỰC ALBUM ẢNH HOA -->
                 <div class="col-md-5">
                     <div class="main-image-wrapper mb-3">
                         <img id="mainProductImage" src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/banner.jpg" : Model.ImageUrl)"
@@ -180,9 +190,7 @@
                     }
                 </div>
 
-                <!-- KHU VỰC THÔNG TIN VÀ FORM ĐẶT HÀNG -->
                 <div class="col-md-7 d-flex flex-column justify-content-between">
-                    <!-- Khởi tạo form gửi dữ liệu lên CartController -->
                     <form asp-controller="Cart" asp-action="AddToCart" method="post" id="orderForm">
                         <input type="hidden" name="productId" value="@Model.Id" />
 
@@ -212,7 +220,6 @@
 
                             <hr class="text-muted opacity-25 my-4">
 
-                            <!-- BỘ CHỌN SỐ LƯỢNG BOUTIQUE -->
                             <div class="d-flex align-items-center gap-4 mb-4">
                                 <span class="fw-bold text-secondary text-uppercase" style="font-size: 12px; letter-spacing: 0.5px;">Số lượng đơn:</span>
                                 <div class="input-group quantity-input-group align-items-center justify-content-between">
@@ -229,11 +236,10 @@
                                 </p>
                             </div>
 
-                            <!-- CAM KẾT ĐẶC QUYỀN KHÁCH HÀNG -->
                             <div class="boutique-care-box d-flex align-items-start gap-3 mt-4">
                                 <span class="fs-4">✨</span>
                                 <div>
-                                    <h6 class="fw-bold m-0" style="color: #A34863; font-size: 13px;">Đặc quyền dịch vụ tại Floral LAM</h6>
+                                    <h6 class="fw-bold m-0" style="color: #834c58; font-size: 13px;">Đặc quyền dịch vụ tại Floral LAM</h6>
                                     <p class="text-muted m-0 mt-1" style="font-size: 12px; line-height: 1.5;">
                                         Giao hoa hỏa tốc nội thành trong 60-90 phút. Cam kết chụp hình thành phẩm gửi quý khách duyệt trước khi vận chuyển để đảm bảo độ hoàn mỹ 100%.
                                     </p>
@@ -241,14 +247,11 @@
                             </div>
                         </div>
 
-                        <!-- CỤM NÚT TƯƠNG TÁC GIỎ HÀNG VÀ MUA NGAY -->
                         <div class="d-flex gap-3 pt-4 border-top mt-5 justify-content-end">
-                            <!-- 🟢 ĐÃ SỬA: Đổi type="submit" thành type="button" và thêm id="btnAddToCartAjax" -->
                             <button type="button" id="btnAddToCartAjax" class="btn btn-cart-luxury d-inline-flex align-items-center gap-2">
                                 <i class="bi bi-bag-plus"></i> Thêm vào giỏ hàng
                             </button>
 
-                            <!-- Nút Mua ngay kích hoạt hàm chuyển trang hỏa tốc -->
                             <button type="button" class="btn btn-buy-now-luxury d-inline-flex align-items-center gap-2" onclick="triggerInstantCheckout()">
                                 <i class="bi bi-lightning-charge-fill"></i> Mua ngay
                             </button>
@@ -277,6 +280,7 @@
         }
 
         // 2. Tăng giảm số lượng đơn hoa
+        // Đã gỡ bỏ ép buộc can thiệp thuộc tính để tương thích mượt mà với input
         function adjustQty(amount) {
             const qtyInput = document.getElementById('quantityDisplay');
             let currentVal = parseInt(qtyInput.value) || 1;
@@ -285,7 +289,7 @@
             qtyInput.value = currentVal;
         }
 
-        // 🟢 3. XỬ LÝ AJAX THUẦN: THÊM VÀO GIỎ KHÔNG CHUYỂN TRANG
+        // 3. XỬ LÝ AJAX THUẦN: THÊM VÀO GIỎ KHÔNG CHUYỂN TRANG
         document.getElementById('btnAddToCartAjax').addEventListener('click', function (e) {
             e.preventDefault();
 
@@ -300,7 +304,6 @@
                 }
             })
                 .then(response => {
-                    // 🌟 CHỐT CHẶN TRIỆT ĐỂ: Nếu Server trả về lỗi 401 (Chưa đăng nhập)
                     if (response.status === 401) {
                         alert("Vui lòng đăng nhập tài khoản để thực hiện đặt hoa! 🌸");
                         window.location.href = '/Account/Login?ReturnUrl=' + encodeURIComponent(window.location.pathname);
@@ -318,7 +321,7 @@
                 .catch(error => console.error('Error:', error));
         });
 
-        // 🟢 4. XỬ LÝ MUA NGAY: THÊM VÀO GIỎ XONG BAY THẲNG VÀO TRANG GIỎ HÀNG
+        // 4. XỬ LÝ MUA NGAY: THÊM VÀO GIỎ XONG BAY THẲNG VÀO TRANG GIỎ HÀNG
         function triggerInstantCheckout() {
             const form = document.getElementById('orderForm');
             const formData = new FormData(form);
@@ -331,10 +334,8 @@
                 }
             })
                 .then(response => {
-                    // 🌟 CHỐT CHẶN TRIỆT ĐỂ: Nếu bấm "Mua ngay" mà chưa đăng nhập
                     if (response.status === 401) {
                         alert("Vui lòng đăng nhập tài khoản để thực hiện mua hoa! 🌸");
-                        // Đá về trang Login, sau khi đăng nhập xong tự quay lại đúng trang hoa này
                         window.location.href = '/Account/Login?ReturnUrl=' + encodeURIComponent(window.location.pathname);
                         return;
                     }

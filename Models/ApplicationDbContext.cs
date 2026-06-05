@@ -21,11 +21,8 @@ namespace WebBanHoa.Models
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            // 🔴 BẮT BUỘC: Giữ nguyên dòng này ở đầu tiên để thiết lập cấu trúc bảng đăng nhập Identity
             base.OnModelCreating(builder);
 
-            // 🟢 CHỐT CHẶN VÀNG: Ép Entity Framework phớt lờ hoàn toàn class CartItem (Giỏ hàng Session)
-            // Không cho phép hệ thống quét class này để tránh lỗi đòi khóa chính (Primary Key) gây sập trang 500
             builder.Ignore<CartItem>();
         }
     }

@@ -3,39 +3,68 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
-<ul class="navbar-nav align-items-center">
+<ul class="navbar-nav align-items-center gap-2">
     @if (SignInManager.IsSignedIn(User))
-    {
-        // Lấy ra toàn bộ đối tượng người dùng đang đăng nhập từ Database
+    {      
         var currentUser = await UserManager.GetUserAsync(User);
 
-        <li class="nav-item">
-            @if (User.IsInRole("Admin"))
-            {
-                <a class="nav-link text-dark fw-bold" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
-                    <i class="fas fa-user-shield text-orange me-1"></i>
-                    Admin: @(currentUser?.FullName ?? User.Identity?.Name?.Split('@')[0])
-                </a>
-            }
-            else
-            {
-                <a class="nav-link text-dark fw-semibold" href="#">
-                    <i class="fas fa-user text-secondary me-1"></i>
-                    Xin chào, @(currentUser?.FullName ?? User.Identity?.Name?.Split('@')[0])!
-                </a>
-            }
-        </li>
+        @if (User.IsInRole("Admin"))
+        {
+            <li class="nav-item">
+                <div class="d-flex align-items-center gap-2">
+                    <a asp-area="" asp-controller="Account" asp-action="Profile" class="d-inline-block position-relative profile-avatar-wrapper p-0" title="Hồ sơ cá nhân Admin">
+                        <div class="position-relative">
+                            <img src="@(string.IsNullOrEmpty(currentUser?.Avatar) ? "/images/avartar-admin.jpg" : currentUser.Avatar)"
+                                 class="rounded-circle object-fit-cover border border-2 border-danger shadow-sm"
+                                 style="width: 38px; height: 38px; transition: all 0.3s ease;"
+                                 alt="Admin Avatar">
+                            <span class="position-absolute bottom-0 end-0 bg-danger border border-light rounded-circle" style="width: 10px; height: 10px;" title="Admin trực tuyến"></span>
+                        </div>
+                    </a>
 
-        <li class="nav-item ms-3">
+                    <a class="nav-link text-dark fw-bold p-0 small" asp-area="Admin" asp-controller="Dashboard" asp-action="Index" title="Vào trang quản trị">
+                        Admin: @(currentUser?.FullName ?? User.Identity?.Name?.Split('@')[0])
+                    </a>
+                </div>
+            </li>
+        }
+        else
+        {
+            <!-- GIAO DIỆN HIỂN THỊ DÀNH CHO KHÁCH HÀNG (USER) -->
+            <li class="nav-item">
+                <!-- Kích vào ảnh đại diện sẽ bay thẳng vào trang Profile cá nhân -->
+                <a class="d-inline-block position-relative profile-avatar-wrapper nav-link p-0"
+                   asp-area="" asp-controller="Account" asp-action="Profile"
+                   title="Hồ sơ cá nhân">
+
+                    <img src="@(string.IsNullOrEmpty(currentUser?.Avatar) ? "/images/avartar-user1.jpg" : currentUser.Avatar)"
+                         class="rounded-circle object-fit-cover border border-2 shadow-sm"
+                         style="width: 40px; height: 40px; border-color: #DE8F9F !important; transition: all 0.3s ease;"
+                         alt="User Avatar"
+                         onerror="this.src='https://api.dicebear.com/7.x/adventurer/svg?seed=@(User.Identity?.Name)'">
+                </a>
+            </li>
+        }
+
+        <li class="nav-item ms-2">
             <form class="form-inline" asp-area="" asp-controller="Account" asp-action="Logout" method="post">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="nav-link btn btn-link text-secondary border-0 fw-medium">Đăng xuất</button>
+                <button type="submit" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-semibold" style="font-size: 13px;">
+                    Đăng xuất
+                </button>
             </form>
         </li>
     }
     else
     {
-        <li class="nav-item"><a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Đăng ký</a></li>
-        <li class="nav-item ms-2"><a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Đăng nhập</a></li>
+        <li class="nav-item"><a class="nav-link text-dark fw-medium" asp-controller="Account" asp-action="Register">Đăng ký</a></li>
+        <li class="nav-item ms-2"><a class="nav-link text-dark fw-medium" asp-controller="Account" asp-action="Login">Đăng nhập</a></li>
     }
 </ul>
+
+<style>
+    .profile-avatar-wrapper:hover img {
+        transform: scale(1.06);
+        box-shadow: 0 4px 12px rgba(163, 72, 99, 0.15) !important;
+    }
+</style>

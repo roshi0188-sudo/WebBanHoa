@@ -11,15 +11,15 @@ namespace WebBanHoa.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // --- PHẦN 1: DỮ LIỆU CỬA HÀNG HOA (GIỮ NGUYÊN) ---
+            // --- DỮ LIỆU CỬA HÀNG HOA ---
             migrationBuilder.InsertData(
                 table: "Categories",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-        { 1, "Hoa Khai Trương" },
-        { 2, "Hoa Sinh Nhật" },
-        { 3, "Hoa Tình Yêu" }
+                    { 1, "Hoa Khai Trương" },
+                    { 2, "Hoa Sinh Nhật" },
+                    { 3, "Hoa Tình Nhân" }
                 });
 
             migrationBuilder.InsertData(
@@ -27,14 +27,13 @@ namespace WebBanHoa.Migrations
                 columns: new[] { "Id", "Name", "Price", "Description", "ImageUrl", "CategoryId" },
                 values: new object[,]
                 {
-        { 1, "Bó Hoa Hồng Nhạt Pastel", 450000m, "Sự kết hợp tinh tế giữa hoa hồng hồng và lá phụ nhập khẩu mang phong cách nhẹ nhàng.", "/images/hoa1.jpg", 3 },
-        { 2, "Kệ Hoa Khai Trương Hồng Phát", 1250000m, "Kệ hoa sang trọng với tông màu đỏ, vàng chủ đạo thay cho lời chúc làm ăn phát đạt.", "/images/hoa2.jpg", 1 },
-        { 3, "Giỏ Hoa Hướng Dương Rực Rỡ", 350000m, "Giỏ hoa hướng dương phối cùng thanh liễu mang lại năng lượng tích cực ngày sinh nhật.", "/images/hoa3.jpg", 2 }
+                    { 1, "Bó Hoa Hồng Nhạt Pastel", 450000m, "Sự kết hợp tinh tế giữa hoa hồng hồng và lá phụ nhập khẩu mang phong cách nhẹ nhàng.", "/images/hoa1.jpg", 3 },
+                    { 2, "Hoa Khai Trương Hồng Phát", 1250000m, "Kệ hoa sang trọng với tông màu đỏ, vàng chủ đạo thay cho lời chúc làm ăn phát đạt.", "/images/hoa2.jpg", 1 },
+                    { 3, "Giỏ Hoa Hướng Dương Rực Rỡ", 350000m, "Giỏ hoa hướng dương phối cùng thanh liễu mang lại năng lượng tích cực ngày sinh nhật.", "/images/hoa3.jpg", 2 }
                 });
 
-            // --- PHẦN 2: THÊM DỮ LIỆU ĐĂNG NHẬP (CẬP NHẬT THEO APPLICATIONUSER) ---
+            // --- THÊM DỮ LIỆU ĐĂNG NHẬP  ---
 
-            // Cấu hình ID cố định cho Roles và Users để dễ dàng map trong bảng trung gian
             string adminRoleId = "role-admin-id-001";
             string userRoleId = "role-user-id-002";
 
@@ -47,8 +46,8 @@ namespace WebBanHoa.Migrations
                 columns: new[] { "Id", "Name", "NormalizedName", "ConcurrencyStamp" },
                 values: new object[,]
                 {
-        { adminRoleId, "Admin", "ADMIN", null },
-        { userRoleId, "User", "USER", null }
+                    { adminRoleId, "Admin", "ADMIN", null },
+                    { userRoleId, "User", "USER", null }
                 });
 
             // Tạo bộ mã hóa mật khẩu chuẩn theo thực thể ApplicationUser mới
@@ -82,30 +81,30 @@ namespace WebBanHoa.Migrations
             };
             customerUser.PasswordHash = passwordHasher.HashPassword(customerUser, "User@123");
 
-            // 2. Chèn Tài khoản vào bảng AspNetUsers (Bao gồm cả các cột mở rộng mới)
+            // 2. Chèn Tài khoản vào bảng AspNetUsers 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[]
                 {
-        "Id", "UserName", "NormalizedUserName", "Email", "NormalizedEmail",
-        "EmailConfirmed", "PasswordHash", "SecurityStamp", "ConcurrencyStamp",
-        "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEnabled", "AccessFailedCount",
-        "FullName", "Address", "Avatar", "JoinDate" // <-- Thêm các cột mới của ApplicationUser
+                    "Id", "UserName", "NormalizedUserName", "Email", "NormalizedEmail",
+                    "EmailConfirmed", "PasswordHash", "SecurityStamp", "ConcurrencyStamp",
+                    "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEnabled", "AccessFailedCount",
+                    "FullName", "Address", "Avatar", "JoinDate"
                 },
                 values: new object[,]
                 {
-        {
-            adminUser.Id, adminUser.UserName, adminUser.NormalizedUserName, adminUser.Email, adminUser.NormalizedEmail,
-            adminUser.EmailConfirmed, adminUser.PasswordHash, adminUser.SecurityStamp, adminUser.ConcurrencyStamp,
-            false, false, true, 0,
-            "Võ Dương Hồng Lam", "Thành phố Hồ Chí Minh", "/images/avatar-admin.png", DateTime.Now
-        },
-        {
-            customerUser.Id, customerUser.UserName, customerUser.NormalizedUserName, customerUser.Email, customerUser.NormalizedEmail,
-            customerUser.EmailConfirmed, customerUser.PasswordHash, customerUser.SecurityStamp, customerUser.ConcurrencyStamp,
-            false, false, true, 0,
-            "Bella Miller", "123 Đường Ngành Hoa", "/images/avatar-customer.png", DateTime.Now
-        }
+                    {
+                        adminUser.Id, adminUser.UserName, adminUser.NormalizedUserName, adminUser.Email, adminUser.NormalizedEmail,
+                        adminUser.EmailConfirmed, adminUser.PasswordHash, adminUser.SecurityStamp, adminUser.ConcurrencyStamp,
+                        false, false, true, 0,
+                        "Võ Dương Hồng Lam", "Thành phố Hồ Chí Minh", "/images/avatar-admin.jpg", DateTime.Now
+                    },
+                    {
+                        customerUser.Id, customerUser.UserName, customerUser.NormalizedUserName, customerUser.Email, customerUser.NormalizedEmail,
+                        customerUser.EmailConfirmed, customerUser.PasswordHash, customerUser.SecurityStamp, customerUser.ConcurrencyStamp,
+                        false, false, true, 0,
+                        "Bella Miller", "123 Đường ", "/images/avatar-user1.jpg", DateTime.Now
+                    }
                 });
 
             // 3. Gán quyền cho tài khoản trong bảng trung gian AspNetUserRoles
@@ -114,8 +113,8 @@ namespace WebBanHoa.Migrations
                 columns: new[] { "UserId", "RoleId" },
                 values: new object[,]
                 {
-        { adminUserId, adminRoleId },     // Tài khoản admin nhận quyền Admin
-        { customerUserId, userRoleId }    // Tài khoản customer nhận quyền User
+                    { adminUserId, adminRoleId },     // Tài khoản admin nhận quyền Admin
+                    { customerUserId, userRoleId }    // Tài khoản customer nhận quyền User
                 });
         }
 

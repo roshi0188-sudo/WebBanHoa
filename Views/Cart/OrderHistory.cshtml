@@ -1,0 +1,166 @@
+﻿@model IEnumerable<WebBanHoa.Models.Order>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Lịch sử đặt hoa - Floral LAM";
+}
+
+<style>
+    /* Card tổng thể phong cách Boutique */
+    .history-card {
+        background: white;
+        border-radius: 24px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(163, 72, 99, 0.02);
+        padding: 35px;
+    }
+
+    /* Định dạng bảng đơn hàng sang trọng */
+    .table-luxury {
+        vertical-align: middle;
+    }
+
+        .table-luxury thead th {
+            background-color: #FAF6F8;
+            color: #4A5568;
+            font-weight: 600;
+            text-uppercase: true;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            padding: 16px;
+            border: none;
+        }
+
+        .table-luxury tbody td {
+            padding: 20px 16px;
+            border-bottom: 1px solid #F3EAEF;
+            color: #2D3748;
+            font-size: 14px;
+        }
+
+    /* Bo tròn Badge trạng thái */
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-pending {
+        background-color: #FEFCBF;
+        color: #B7791F;
+    }
+    /* Chờ xử lý */
+    .status-shipping {
+        background-color: #EBF8FF;
+        color: #2B6CB0;
+    }
+    /* Đang giao */
+    .status-completed {
+        background-color: #E6FFFA;
+        color: #319795;
+    }
+    /* Đã hoàn thành */
+    .status-canceled {
+        background-color: #FED7D7;
+        color: #E53E3E;
+    }
+    /* Đã hủy */
+
+    /* Định dạng chi tiết hoa nhỏ bên trong đơn */
+    .order-item-mini {
+        font-size: 13px;
+        color: #718096;
+        background-color: #F8F9FA;
+        padding: 4px 10px;
+        border-radius: 8px;
+        display: inline-block;
+        margin-right: 6px;
+        margin-bottom: 6px;
+    }
+</style>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+
+            <div class="mb-4">
+                <h3 class="fw-bold text-dark m-0" style="font-family: 'Playfair Display', serif;">Lịch Sử Đặt Hoa</h3>
+                <small class="text-muted">Theo dõi và quản lý danh sách các bó hoa nghệ thuật bạn đã đặt tại Floral LAM</small>
+            </div>
+
+            <div class="card history-card">
+                @if (Model != null && Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-luxury w-100 m-0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 12%">Mã đơn</th>
+                                    <th style="width: 18%">Ngày đặt</th>
+                                    <th style="width: 35%">Chi tiết mẫu hoa đặt</th>
+                                    <th style="width: 15%">Tổng tiền</th>
+                                    <th style="width: 20%">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model)
+                                {
+                                    // Gán màu sắc sinh động động theo trạng thái thực tế
+                                    string badgeClass = "status-pending";
+                                    if (order.OrderStatus == "Đang giao") { badgeClass = "status-shipping"; }
+                                    else if (order.OrderStatus == "Đã hoàn thành" || order.OrderStatus == "Đã giao") { badgeClass = "status-completed"; }
+                                    else if (order.OrderStatus == "Đã hủy") { badgeClass = "status-canceled"; }
+
+                                    <tr>
+                                        <td class="fw-bold" style="color: #A34863;">#LAM-@order.Id</td>
+                                        <td class="text-muted">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>
+                                            @if (order.OrderDetails != null && order.OrderDetails.Any())
+                                            {
+                                                foreach (var detail in order.OrderDetails)
+                                                {
+                                                    <div class="order-item-mini">
+                                                        <span>🌸 @(detail.Product?.Name ?? "Mẫu hoa hệ thống")</span>
+                                                        <strong class="text-dark">x@detail.Quantity</strong>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <small class="text-muted">Không có thông tin sản phẩm</small>
+                                            }
+                                        </td>
+                                        <td class="fw-bold text-dark">@order.TotalAmount.ToString("#,##0") đ</td>
+                                        <td>
+                                            <span class="status-badge @badgeClass">
+                                                <i class="bi bi-circle-fill" style="font-size: 5px;"></i> @order.OrderStatus
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <!-- GIAO DIỆN TRỐNG KHI USER CHƯA TỪNG ĐẶT HOA -->
+                    <div class="text-center py-5">
+                        <i class="bi bi-bag-x display-3 text-muted mb-3 d-block"></i>
+                        <h5 class="fw-bold text-secondary">Bạn chưa có đơn đặt hoa nào</h5>
+                        <p class="text-muted small mb-4">Hãy ghé thăm trang chủ bộ sưu tập để chọn những bó hoa tươi thắm nhất nhé.</p>
+                        <a asp-controller="Home" asp-action="Index" class="btn text-white rounded-pill px-4 fw-semibold text-uppercase small"
+                           style="background: linear-gradient(135deg, #DE8F9F, #A34863); border: none; font-size: 12px;">
+                            Khám phá kho hoa ngay
+                        </a>
+                    </div>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,163 @@
+﻿@model WebBanHoa.Models.Order
+@{
+    ViewData["Title"] = "Xác nhận đặt hoa";
+    var cartItems = ViewBag.CartItems as List<WebBanHoa.Models.ViewModels.CartItem>;
+}
+
+<style>
+    /* Tổng thể Luxury Tối giản */
+    .checkout-title {
+        font-family: 'Playfair Display', serif;
+        color: #2D3748;
+        letter-spacing: -0.5px;
+    }
+
+    .checkout-card {
+        background: white;
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(163, 72, 99, 0.02);
+        padding: 30px;
+    }
+
+    .checkout-section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #4A5568;
+        border-bottom: 1px solid #F3EAEF;
+        padding-bottom: 12px;
+    }
+
+    /* Tinh chỉnh Input Fields */
+    .checkout-form-control {
+        background-color: #FAFAFA;
+        border: 1px solid #E2E8F0;
+        transition: all 0.3s ease;
+    }
+
+        .checkout-form-control:focus {
+            background-color: white;
+            border-color: #DE8F9F;
+            box-shadow: 0 0 0 3px rgba(222, 143, 159, 0.15);
+        }
+
+    /* Danh sách tóm tắt sản phẩm đặt */
+    .checkout-item-row {
+        border-bottom: 1px dashed #E2E8F0;
+        padding: 12px 0;
+    }
+
+        .checkout-item-row:last-child {
+            border-bottom: none;
+        }
+
+    /* Các nút hành động */
+    .btn-submit-order {
+        background: linear-gradient(135deg, #DE8F9F, #A34863);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-submit-order:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(163, 72, 99, 0.2);
+        }
+
+    .btn-back-cart {
+        background-color: #F7FAFC;
+        border: 1px solid #E2E8F0;
+        color: #718096;
+        transition: all 0.3s ease;
+    }
+
+        .btn-back-cart:hover {
+            background-color: #EDF2F7;
+            color: #4A5568;
+        }
+</style>
+
+<div class="container mt-5 py-4" style="max-width: 950px;">
+    <div class="text-center mb-5">
+        <h3 class="fw-bold checkout-title">Xác Nhận Đơn Hàng</h3>
+        <p class="text-muted small">Vui lòng kiểm tra kỹ thông tin giao nhận và danh sách hoa tươi trước khi xác nhận đặt đơn.</p>
+    </div>
+
+    <form asp-controller="Cart" asp-action="Checkout" method="post">
+        @Html.AntiForgeryToken()
+
+        <!-- 🟢 SỬA DÒNG NÀY: Dùng thuộc tính asp-route để tự động gán thẳng giá trị vào URL nhận của phương thức POST -->
+        <input type="hidden" name="selectedProducts" value="@(Context.Request.Query["selectedProducts"].ToString() ?? ViewContext.RouteData.Values["selectedProducts"]?.ToString())" />
+
+        <!-- Đồng thời hiển thị thông báo lỗi chi tiết ra màn hình để biết hệ thống đang thiếu dữ liệu gì -->
+        <div asp-validation-summary="All" class="text-danger small mb-3 fw-bold"></div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card checkout-card h-100">
+                    <h5 class="checkout-section-title mb-4">
+                        <i class="bi bi-geo-alt me-2" style="color: #A34863;"></i>Thông tin giao hoa
+                    </h5>
+
+                    <div class="mb-4">
+                        <label asp-for="PhoneNumber" class="form-label small fw-bold text-secondary">Số điện thoại người nhận</label>
+                        <input asp-for="PhoneNumber" class="form-control checkout-form-control rounded-pill px-3 py-2" placeholder="Nhập số điện thoại liên hệ..." />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ShippingAddress" class="form-label small fw-bold text-secondary">Địa chỉ giao hoa chi tiết</label>
+                        <textarea asp-for="ShippingAddress" class="form-control checkout-form-control rounded-4 px-3 py-3" rows="5" placeholder="Ghi cụ thể số nhà, tên đường, phường/xã, quận/huyện..."></textarea>
+                        <span asp-validation-for="ShippingAddress" class="text-danger small mt-1 d-block"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card checkout-card h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <h5 class="checkout-section-title mb-3">
+                            <i class="bi bi-journal-text me-2" style="color: #A34863;"></i>Tóm tắt mẫu hoa đặt mua
+                        </h5>
+
+                        <div class="overflow-y-auto px-1" style="max-height: 240px;">
+                            @if (cartItems != null && cartItems.Any())
+                            {
+                                foreach (var item in cartItems)
+                                {
+                                    <div class="d-flex align-items-center justify-content-between checkout-item-row">
+                                        <div>
+                                            <span class="fw-bold text-dark d-block" style="font-size: 14px;">@item.ProductName</span>
+                                            <small class="text-muted">Số lượng: @item.Quantity</small>
+                                        </div>
+                                        <div class="fw-semibold text-end text-dark" style="font-size: 14px;">
+                                            @item.TotalPrice.ToString("#,##0") đ
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="fw-bold text-secondary" style="font-size: 15px;">Tổng tiền:</span>
+                            <span class="fw-bold" style="color: #A34863; font-size: 22px;">@Model.TotalAmount.ToString("#,##0") đ</span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-submit-order w-100 py-2.5 rounded-pill fw-bold shadow-sm">
+                                Xác nhận đặt đơn hoa
+                            </button>
+                            <a asp-action="Index" class="btn btn-back-cart rounded-pill w-100 py-2.5 fw-semibold text-center text-decoration-none" style="font-size: 14px;">
+                                Quay lại
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>

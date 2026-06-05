@@ -1,0 +1,119 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Kế thừa bộ khung ngoài của khách hàng
+    ViewData["Title"] = "Đặt hoa thành công - Floral LAM";
+}
+
+<style>
+    /* Card thông báo phong cách Boutique Luxury tối giản */
+    .success-card {
+        background: white;
+        border-radius: 24px;
+        border: none;
+        box-shadow: 0 10px 40px rgba(163, 72, 99, 0.04);
+        padding: 50px 40px;
+    }
+
+    /* Biểu tượng đóa hoa thành công nền nã */
+    .success-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        background-color: #FFF5F7;
+        color: #A34863;
+        font-size: 36px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 24px;
+        border: 1px solid #F3EAEF;
+    }
+
+    .success-title {
+        font-family: 'Playfair Display', serif;
+        color: #2D3748;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+
+    /* Định dạng mã đơn hàng nổi bật */
+    .order-code-highlight {
+        color: #A34863;
+        background-color: #FAF6F8;
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Các nút điều hướng */
+    .btn-history-luxury {
+        background: linear-gradient(135deg, #DE8F9F, #A34863);
+        color: white !important;
+        border: none;
+        border-radius: 24px;
+        padding: 12px 32px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-history-luxury:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(163, 72, 99, 0.2);
+        }
+
+    .btn-home-luxury {
+        background-color: #F8F9FA;
+        border: 1px solid #E2E8F0;
+        color: #718096 !important;
+        border-radius: 24px;
+        padding: 12px 32px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .btn-home-luxury:hover {
+            background-color: #EDF2F7;
+            color: #4A5568 !important;
+        }
+</style>
+
+<div class="container my-5 py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7 text-center">
+
+            <div class="card success-card">
+                <div class="success-icon-wrapper">
+                    <i class="bi bi-flower2"></i>
+                </div>
+
+                <h3 class="success-title mb-3">Đặt Hoa Thành Công</h3>
+
+                <p class="text-muted lh-relaxed mx-auto mb-4" style="max-width: 520px; font-size: 15px;">
+                    Cảm ơn bạn đã lựa chọn trao gửi yêu thương cùng Floral LAM. Đơn hàng
+                    <strong class="order-code-highlight">#LAM-@ViewBag.OrderId</strong>
+                    của bạn đã được ghi nhận trên hệ thống. Nghệ nhân của Boutique đang tiến hành tuyển chọn những bông hoa tươi nhất để thiết kế tác phẩm của bạn.
+                </p>
+
+                <div class="p-3 border rounded-4 bg-light text-start mx-auto mb-5" style="max-width: 480px; border-style: dashed !important; border-color: #CBD5E1 !important;">
+                    <div class="d-flex gap-2 small text-secondary align-items-center">
+                        <i class="bi bi-shield-check text-success fs-5"></i>
+                        <div>
+                            <span class="fw-bold text-dark d-block" style="font-size: 13px;">Lưu ý về quy trình phục vụ:</span>
+                            Hình ảnh thành phẩm thực tế sẽ được chụp và gửi qua tài khoản của quý khách để duyệt trước khi shipper tiến hành giao hỏa tốc.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 justify-content-center">
+                    <a asp-controller="Cart" asp-action="OrderHistory" class="btn btn-history-luxury shadow-sm text-decoration-none">
+                        <i class="bi bi-clock-history me-1"></i> Xem lịch sử đơn hàng
+                    </a>
+                    <a href="/" class="btn btn-home-luxury text-decoration-none">
+                        Quay về trang chủ
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

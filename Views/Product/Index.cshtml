@@ -4,12 +4,7 @@
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
             <h2 class="fw-bold" style="font-family: 'Playfair Display', serif; color: #1f1a1e;">Danh mục sản phẩm</h2>
-            <p class="text-muted" style="font-family: 'Montserrat', sans-serif;">Chọn hoa để quản lý hoặc chỉnh sửa</p>
         </div>
-        <a asp-action="Add" class="btn rounded-pill px-4 py-2 shadow-sm"
-           style="background: linear-gradient(135deg, #0058be 0%, #fd56a7 100%); color: white; transition: 0.4s;">
-            <i class="bi bi-plus-lg me-1"></i> Thêm hoa mới
-        </a>
     </div>
 
     <div class="row g-4">
@@ -29,12 +24,6 @@
                             <div class="d-grid gap-2 w-75">
                                 <a asp-controller="Home" asp-action="Display" asp-route-id="@item.Id"
                                    class="btn btn-outline-dark rounded-pill">Xem chi tiết</a>
-
-                                <a asp-controller="Product" asp-action="Update" asp-route-id="@item.Id"
-                                   class="btn btn-outline-primary rounded-pill">Chỉnh sửa</a>
-
-                                <a asp-controller="Product" asp-action="Delete" asp-route-id="@item.Id"
-                                   class="btn btn-outline-danger rounded-pill">Xóa hoa</a>
                             </div>
                         </div>
                     </div>

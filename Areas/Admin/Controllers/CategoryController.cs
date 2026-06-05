@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using WebBanHoa.Models;
 using WebBanHoa.Repositories;
 
-namespace WebBanHoa.Controllers
+namespace WebBanHoa.Areas.Admin.Controllers
 {
+    [Area("Admin")] 
+    [Authorize(Roles = "Admin")] // Khóa bảo mật nghiêm ngặt bằng Role thay vì [Authorize] chung chung
     public class CategoryController : Controller
     {
         private readonly ICategoryRepository _categoryRepository;
@@ -22,13 +25,13 @@ namespace WebBanHoa.Controllers
             return View(categories);
         }
 
-        // 2. THÊM DANH MỤC - GIAO DIỆN (GET)
+        // 2. THÊM DANH MỤC - GIAO DIỆN (GET) -> Đổi từ Add thành Create để khớp với View
         public IActionResult Add()
         {
             return View();
         }
 
-        // 3. THÊM DANH MỤC - XỬ LÝ DỮ LIỆU (POST)
+        // 3. THÊM DANH MỤC - XỬ LÝ DỮ LIỆU (POST) -> Đổi từ Add thành Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(Category category)
@@ -41,7 +44,7 @@ namespace WebBanHoa.Controllers
             return View(category);
         }
 
-        // 4. CẬP NHẬT DANH MỤC - GIAO DIỆN (GET)
+        // 4. CẬP NHẬT DANH MỤC - GIAO DIỆN (GET) -> Đổi từ Update thành Edit cho đúng chuẩn
         public async Task<IActionResult> Update(int id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);
@@ -52,7 +55,7 @@ namespace WebBanHoa.Controllers
             return View(category);
         }
 
-        // 5. CẬP NHẬT DANH MỤC - XỬ LÝ DỮ LIỆU (POST)
+        // 5. CẬP NHẬT DANH MỤC - XỬ LÝ DỮ LIỆU (POST) -> Đổi từ Update thành Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(int id, Category category)

@@ -1,0 +1,101 @@
+@model WebBanHoa.Models.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8fafc;
+    }
+
+    .login-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-orange {
+        background-color: #FF34B3;
+        color: white;
+        border: none;
+        transition: background-color 0.2s;
+    }
+
+        .btn-orange:hover {
+            background-color: #e0289b;
+            color: white;
+        }
+
+    .text-orange {
+        color: #FF34B3 !important;
+    }
+
+    .form-control:focus {
+        border-color: #FF34B3;
+        box-shadow: 0 0 0 0.25rem rgba(255, 52, 179, 0.25);
+    }
+</style>
+
+<div class="container mt-5 py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="login-card p-5">
+                <div class="text-center mb-4">
+                    <span class="display-5">🌸</span>
+                    <h3 class="fw-bold text-dark">Floral Lam</h3>
+                    <p class="text-muted small">Chào mừng bạn quay trở lại shop hoa của LAM</p>
+                </div>
+
+                <form asp-controller="Account" asp-action="Login" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="returnUrl" value="@(string.IsNullOrEmpty(Context.Request.Query["returnUrl"]) ? Model.ReturnUrl : Context.Request.Query["returnUrl"])" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label small fw-semibold text-secondary">Địa chỉ Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-envelope"></i></span>
+                            <input asp-for="Email" class="form-control border-start-0 bg-light shadow-none" placeholder="Nhập địa chỉ email..." />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label small fw-semibold text-secondary">Mật khẩu</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-lock"></i></span>
+                            <input asp-for="Password" type="password" class="form-control border-start-0 bg-light shadow-none" placeholder="Nhập mật khẩu..." />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4 d-flex justify-content-between align-items-center">
+                        <div class="form-check">
+                            <input asp-for="RememberMe" class="form-check-input shadow-none" />
+                            <label asp-for="RememberMe" class="form-check-label small text-muted">Ghi nhớ đăng nhập</label>
+                        </div>
+                        <a href="#" class="small text-decoration-none text-orange">Quên mật khẩu?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-orange w-100 py-2 rounded-3 fw-bold shadow-sm">Đăng nhập</button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <p class="small text-muted mb-0">Chưa có tài khoản? <a asp-action="Register" class="text-decoration-none text-orange fw-medium">Đăng ký ngay</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

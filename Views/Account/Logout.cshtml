@@ -1,0 +1,11 @@
+@if (User.Identity?.IsAuthenticated ?? false)
+{
+    <li class="nav-item">
+        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+            @Html.AntiForgeryToken() <button type="submit" class="nav-link btn btn-link text-secondary fw-medium border-0 py-2 d-flex align-items-center" style="text-decoration: none; box-shadow: none;">
+            <i class="fas fa-sign-out-alt me-2 text-danger"></i>
+            <span>Đăng xuất (@User.Identity.Name)</span>
+        </button>
+    </form>
+</li>
+}

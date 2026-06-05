@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor httpContextAccessor
+<!DOCTYPE html>
 <html lang="vi" class="h-100">
 <head>
     <meta charset="utf-8" />
@@ -41,20 +43,38 @@
             font-weight: 500;
         }
 
-            .navbar-nav .nav-link:hover {
-                font-weight: bold !important;
-                color: #d63384 !important;
-            }
-
-        .navbar-nav .btn-outline-success {
-            transition: all 0.2s ease-in-out;
+        .navbar-nav .nav-link:hover {
+            font-weight: bold !important;
+            color: #d63384 !important;
         }
 
-            .navbar-nav .btn-outline-success:hover {
-                font-weight: bold !important;
-                background-color: #198754 !important;
-                color: white !important;
-            }
+        /* Tinh chỉnh Badge Giỏ hàng Boutique cao cấp */
+        .cart-icon-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            color: #2D3748;
+            transition: all 0.3s ease;
+        }
+
+        .cart-icon-wrapper:hover {
+            color: #d63384;
+            transform: scale(1.05);
+        }
+
+        .cart-badge-luxury {
+            position: absolute;
+            top: -6px;
+            right: -10px;
+            background-color: #d63384;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 6px;
+            border-radius: 20px;
+            line-height: 1;
+            box-shadow: 0 2px 6px rgba(214, 51, 132, 0.4);
+        }
     </style>
 </head>
 <body class="h-100">
@@ -71,26 +91,64 @@
                     </button>
 
                     <div class="collapse navbar-collapse justify-content-end" id="navbarFloralLam">
-                        <ul class="navbar-nav align-items-center gap-2">
+                        <ul class="navbar-nav align-items-center gap-3">
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Product" asp-action="Index">Sản phẩm</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Category" asp-action="Index">Quản lý danh mục</a>
-                            </li>
+
+                            @if (User.Identity?.IsAuthenticated ?? false)
+                            {
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-danger fw-bold" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                                            <i class="bi bi-shield-lock-fill"></i> Vào trang Quản trị
+                                        </a>
+                                    </li>
+                                }
+
+                                @if (User.IsInRole("User"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Sản phẩm</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Cart" asp-action="OrderHistory">Lịch sử đơn</a>
+                                    </li>
+
+                                    // Khối C# xử lý lấy Session đọc dữ liệu độc lập
+                                    {
+                                        // 🟢 ĐÃ SỬA: Gọi biến httpContextAccessor (chữ h viết thường) đã được inject
+                                        var sessionData = httpContextAccessor.HttpContext?.Session.GetString("BoutiqueCart");
+                                        var cartCount = 0;
+
+                                        if (!string.IsNullOrEmpty(sessionData))
+                                        {
+                                            var cart = System.Text.Json.JsonSerializer.Deserialize<List<WebBanHoa.Models.ViewModels.CartItem>>(sessionData);
+                                            if (cart != null)
+                                            {
+                                                cartCount = cart.Sum(x => x.Quantity);
+                                            }
+                                        }
+
+                                        <li class="nav-item ms-lg-2">
+                                            <a asp-area="" asp-controller="Cart" asp-action="Index" class="nav-link cart-icon-wrapper">
+                                                <i class="bi bi-bag-heart fs-5"></i>
+                                                @if (cartCount > 0)
+                                                {
+                                                    <span class="cart-badge-luxury">@cartCount</span>
+                                                }
+                                            </a>
+                                        </li>
+                                    }
+                                }
+                            }
+
                             <li class="nav-item">
                                 <a class="nav-link text-dark" href="#">Liên hệ</a>
                             </li>
-                            <li class="nav-item ms-lg-2">
-                                <a class="btn btn-outline-success rounded-pill px-3 py-1 d-flex align-items-center gap-2" asp-controller="Cart" asp-action="Index">
-                                    <i class="bi bi-cart-fill"></i> Giỏ hàng
-                                    <span class="badge bg-success">0</span>
-                                </a>
-                            </li>
                         </ul>
+                        <partial name="_LoginPartial" />
                     </div>
                 </div>
             </nav>

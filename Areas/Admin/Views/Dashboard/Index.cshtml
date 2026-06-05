@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Dashboard - Floral LAM";
+}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark m-0" style="font-family: 'Plus Jakarta Sans', sans-serif;">Dashboard</h2>
+        <span class="badge bg-danger p-2 fs-6" style="border-radius: 10px;"><i class="bi bi-shield-lock-fill"></i> Quyền: Administrator</span>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 p-4 bg-white" style="border-radius: 24px;">
+                <h5 class="fw-bold text-secondary mb-3"><i class="bi bi-gear-fill" style="color: #A34863;"></i> Hệ thống vận hành ổn định</h5>
+                <p class="text-muted small">Chào mừng bạn quản trị viên đã quay trở lại. Hệ thống bán hoa tươi Floral LAM đang vận hành trơn tru.</p>
+                <div class="mt-4">
+                    <a asp-area="Admin" asp-controller="OrderManager" asp-action="Index" class="btn px-4 py-2 fw-semibold shadow-sm" style="border: 1px solid #DE8F9F; color: #A34863; background-color: #FFF0F5; border-radius: 20px;">
+                        <i class="bi bi-receipt me-2"></i> Xem Toàn Bộ Đơn Hàng
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

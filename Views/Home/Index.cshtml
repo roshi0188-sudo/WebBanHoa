@@ -64,21 +64,20 @@
                     </div>
 
                     <div class="card-body p-4 d-flex flex-column justify-content-between bg-white text-center">
-                        <div>
-                            <h4 class="fw-bold text-truncate mb-2" style="font-family: 'Playfair Display', serif; color: #1f1a1e; font-size: 22px;">
-                                @item.Name
-                            </h4>
-                            <p class="text-muted small text-truncate-2 mb-3 px-2" style="font-family: 'Montserrat', sans-serif; color: #424754 !important; min-height: 40px; line-height: 1.5;">
-                                @item.Description
-                            </p>
-                        </div>
-                        <div class="pt-2">
-                            <span class="fw-bold d-block mb-3" style="font-family: 'Montserrat', sans-serif; color: #b4136d; font-size: 20px;">
-                                @string.Format("{0:N0}đ", item.Price)
-                            </span>
-                            <a asp-controller="Home" asp-action="Display" asp-route-id="@item.Id" class="btn btn-outline-premium rounded-pill w-100 py-2 fw-semibold text-uppercase transition-all">
+                        <div class="pt-2 d-flex gap-2">
+                            <a asp-controller="Home" asp-action="Display" asp-route-id="@item.Id"
+                               class="btn btn-outline-premium rounded-pill w-50 py-2 fw-semibold text-uppercase transition-all small" style="font-size: 11px;">
                                 Chi tiết
                             </a>
+
+                            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="w-50">
+                                <input type="hidden" name="productId" value="@item.Id" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <button type="button" class="btn text-white rounded-pill w-100 py-2 fw-semibold text-uppercase transition-all small"
+                                        style="background: linear-gradient(135deg, #DE8F9F, #A34863); border: none; font-size: 11px;">
+                                    <i class="bi bi-cart-plus me-1"></i> Thêm vào giỏ
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

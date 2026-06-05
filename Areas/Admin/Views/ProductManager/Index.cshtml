@@ -1,0 +1,298 @@
+﻿@model IEnumerable<WebBanHoa.Models.Product>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý sản phẩm";
+}
+
+<style>
+    /* 1. Card thông số thống kê Premium */
+    .stat-card {
+        background: white;
+        border: none;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background-color: #FFF0F5;
+        color: #A34863;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    /* 2. Bộ lọc và Button Thêm */
+    .filter-select {
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 8px 16px;
+        font-size: 14px;
+        color: #4A5568;
+        background-color: white;
+    }
+
+    .btn-add-product {
+        background: linear-gradient(135deg, #DE8F9F, #A34863);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 24px;
+        font-weight: 600;
+        transition: 0.4s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .btn-add-product:hover {
+            color: white;
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+    /* 3. Grid Card Sản phẩm tinh chỉnh theo style Luxury */
+    .product-card {
+        background: white;
+        border-radius: 20px;
+        transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        position: relative;
+        z-index: 2;
+        cursor: pointer;
+    }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(163, 72, 99, 0.1) !important;
+        }
+
+            .product-card:hover img {
+                transform: scale(1.08);
+            }
+
+    /* Mặc định ẩn hoàn toàn Overlay và khóa tương tác chuột của nó */
+    .action-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(8px);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 5;
+    }
+
+    /* Kích hoạt hiển thị overlay khi hover card hoặc kích hoạt class active */
+    .product-card:hover .action-overlay,
+    .product-card.active .action-overlay {
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    /* Badge trạng thái tồn kho trên Card */
+    .badge-stock-tag {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        z-index: 4;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .badge-in-stock {
+        background-color: #E6FFFA;
+        color: #319795;
+    }
+
+    .badge-low-stock {
+        background-color: #FEFCBF;
+        color: #B7791F;
+    }
+
+    .badge-out-stock {
+        background-color: #FED7D7;
+        color: #E53E3E;
+    }
+</style>
+
+<div class="admin-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold m-0" style="color: #1f1a1e;">Quản Lý Sản Phẩm</h3>
+        <small class="text-muted">Xem, chỉnh sửa và quản lý danh sách sản phẩm hoa toàn hệ thống</small>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <div class="search-box d-flex align-items-center gap-2 bg-white border px-3 py-1" style="border-radius: 20px;">
+            <i class="bi bi-search text-muted"></i>
+            <input type="text" class="border-0" style="outline:none; font-size: 14px;" placeholder="Tìm kiếm kho hoa...">
+        </div>
+        <i class="bi bi-gear fs-5 text-muted"></i>
+        <div class="d-flex align-items-center gap-2 ms-2">
+            <div class="text-end">
+                <p class="m-0 small fw-bold">Quản trị viên</p>
+                <small class="text-muted" style="font-size: 11px;">Điều hành cửa hàng</small>
+            </div>
+            <img src="/images/avatar-admin.png" class="rounded-circle" style="width: 36px; height: 36px; object-fit: cover;" onerror="this.src='https://placehold.co/36'">
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4 mt-1">
+    <div class="col-md-3">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <small class="text-uppercase text-muted fw-bold" style="font-size: 11px;">Tổng Sản Phẩm</small>
+                <h3 class="fw-bold my-1">@(Model?.Count() ?? 0)</h3>
+                <small class="text-success fw-bold"><i class="bi bi-arrow-up-short"></i> Hệ thống sẵn sàng</small>
+            </div>
+            <div class="stat-icon"><i class="bi bi-journal-check"></i></div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <small class="text-uppercase text-muted fw-bold" style="font-size: 11px;">Hết hàng / Sắp hết</small>
+                <h3 class="fw-bold my-1">@((Model != null) ? Model.Count(x => x.Id % 5 == 0 || x.Id % 3 == 0) : 0)</h3>
+                <small class="text-warning fw-bold"><i class="bi bi-exclamation-circle"></i> Cần lưu ý</small>
+            </div>
+            <div class="stat-icon"><i class="bi bi-grid-3x3-gap"></i></div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <small class="text-uppercase text-muted fw-bold" style="font-size: 11px;">Tổng đơn hàng</small>
+                <h3 class="fw-bold my-1">856</h3>
+                <small class="text-muted">Đơn trong tháng</small>
+            </div>
+            <div class="stat-icon"><i class="bi bi-bag-heart"></i></div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card d-flex align-items-center justify-content-between">
+            <div>
+                <small class="text-uppercase text-muted fw-bold" style="font-size: 11px;">Doanh thu tháng</small>
+                <h3 class="fw-bold my-1">42,500k</h3>
+                <small class="text-success fw-bold"><i class="bi bi-arrow-up-short"></i> +8% Tăng trưởng</small>
+            </div>
+            <div class="stat-icon"><i class="bi bi-currency-dollar"></i></div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex gap-3">
+        <select class="filter-select"><option>Tất cả danh mục</option></select>
+        <select class="filter-select"><option>Trạng thái tồn kho</option></select>
+    </div>
+    <a asp-area="Admin" asp-controller="ProductManager" asp-action="Create" class="btn btn-add-product gap-2 shadow-sm">
+        <i class="bi bi-plus-lg"></i> Thêm sản phẩm mới
+    </a>
+</div>
+
+<div class="row g-4">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var item in Model)
+        {
+            string statusClass = "badge-in-stock";
+            string statusText = "Còn hàng";
+            if (item.Id % 3 == 0) { statusClass = "badge-out-stock"; statusText = "Hết hàng"; }
+            else if (item.Id % 5 == 0) { statusClass = "badge-low-stock"; statusText = "Sắp hết hàng"; }
+
+            <div class="col-sm-6 col-md-4 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm overflow-hidden product-card">
+                    <div class="position-relative overflow-hidden" style="aspect-ratio: 4/5;">
+                        <span class="badge-stock-tag @statusClass">@statusText</span>
+
+                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/banner.jpg" : item.ImageUrl)"
+                             class="w-100 h-100 object-fit-cover"
+                             style="transition: transform 0.7s ease; display: block;"
+                             onerror="this.src='https://placehold.co/400x500'">
+
+                        <div class="action-overlay">
+                            <div class="d-grid gap-2 w-75">
+                                <a asp-area="Admin" asp-controller="ProductManager" asp-action="Details" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-dark rounded-pill fw-semibold">Xem chi tiết</a>
+
+                                <a asp-area="Admin" asp-controller="ProductManager" asp-action="Edit" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold" style="border-color: #DE8F9F; color: #A34863;">Sửa thông tin</a>
+
+                                <a asp-area="Admin" asp-controller="ProductManager" asp-action="Delete" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-danger rounded-pill fw-semibold">Xóa mẫu hoa</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-3 bg-white">
+                        <h6 class="fw-bold mb-1 text-dark text-truncate" title="@item.Name">@item.Name</h6>
+
+                        @if (item.Category != null)
+                        {
+                            <small class="text-muted d-block mb-1" style="font-size:12px;">
+                                <i class="bi bi-tag-fill me-1" style="color: #DE8F9F;"></i>@item.Category.Name
+                            </small>
+                        }
+                        else
+                        {
+                            <small class="text-muted d-block mb-1" style="font-size:12px;">
+                                <i class="bi bi-tag-fill me-1"></i>Chưa phân loại
+                            </small>
+                        }
+
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <span class="fw-bold" style="color: #A34863; font-size: 15px;">@item.Price.ToString("#,##0") đ</span>
+                            <small class="text-muted" style="font-size: 11px;">Mã: FP-@item.Id</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12 text-center py-5">
+            <div class="card border-0 shadow-sm p-5 bg-white rounded-4">
+                <i class="bi bi-flower1 display-4 text-muted mb-3"></i>
+                <h5 class="fw-bold text-secondary">Kho hàng lưu trữ hiện đang trống</h5>
+                <p class="text-muted small">Hãy nhấn nút "Thêm sản phẩm mới" để bổ sung mẫu hoa lên hệ thống.</p>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // JS hoàn chỉnh: Ngăn chặn sự kiện click lan ra ngoài thẻ card cha khi nhấn nút hành động
+        document.querySelectorAll('.action-overlay a').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+
+        // Hỗ trợ thiết bị di động click khoảng trống để bật tắt menu overlay độc lập
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('click', function (e) {
+                if (e.target.closest('a')) return;
+                const isActive = this.classList.contains('active');
+                document.querySelectorAll('.product-card').forEach(c => c.classList.remove('active'));
+                if (!isActive) { this.classList.add('active'); }
+            });
+        });
+    </script>
+}

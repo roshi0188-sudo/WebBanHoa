@@ -1,0 +1,249 @@
+﻿@model WebBanHoa.Models.Product
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Chi tiết sản phẩm";
+}
+
+<style>
+    /* Card tổng thể phong cách Boutique Premium */
+    .details-card {
+        background: white;
+        border-radius: 24px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(163, 72, 99, 0.03);
+        padding: 45px;
+    }
+
+    /* Khung chứa ảnh đại diện cao cấp */
+    .main-image-wrapper {
+        border-radius: 20px;
+        overflow: hidden;
+        aspect-ratio: 4/5;
+        box-shadow: 0 12px 32px rgba(163, 72, 99, 0.06);
+        background-color: #F8F9FA;
+        transition: transform 0.4s ease;
+    }
+
+    /* Album ảnh nhỏ đi kèm */
+    .sub-image-item {
+        width: 75px;
+        height: 75px;
+        border-radius: 12px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+        .sub-image-item:hover, .sub-image-item.active {
+            border-color: #DE8F9F;
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(222, 143, 159, 0.2);
+        }
+
+    /* Định dạng giá tiền Premium */
+    .product-price-luxury {
+        font-size: 32px;
+        font-weight: 700;
+        color: #A34863;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        letter-spacing: -0.5px;
+    }
+
+    /* Nhãn Badge trạng thái */
+    .badge-luxury {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .badge-in-stock {
+        background-color: #E6FFFA;
+        color: #319795;
+    }
+
+    .badge-low-stock {
+        background-color: #FEFCBF;
+        color: #B7791F;
+    }
+
+    .badge-out-stock {
+        background-color: #FED7D7;
+        color: #E53E3E;
+    }
+
+    /* Khối thông tin chăm sóc hoa Premium thay thế cho khối ID cũ */
+    .boutique-care-box {
+        background: linear-gradient(135deg, #FAF8FA 0%, #FFF5F7 100%);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid #F3EAEF;
+    }
+
+    /* Các nút điều hướng */
+    .btn-edit-luxury {
+        background: linear-gradient(135deg, #DE8F9F, #A34863);
+        color: white !important;
+        border: none;
+        border-radius: 20px;
+        padding: 12px 28px;
+        font-weight: 600;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-edit-luxury:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(163, 72, 99, 0.2);
+        }
+
+    .btn-back-luxury {
+        border: 1px solid #E2E8F0;
+        background-color: #F8F9FA;
+        color: #718096 !important;
+        border-radius: 20px;
+        padding: 12px 28px;
+        font-weight: 500;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-back-luxury:hover {
+            background-color: #EDF2F7;
+            color: #4A5568 !important;
+        }
+
+    .back-link-top {
+        color: #718096;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+        .back-link-top:hover {
+            color: #A34863 !important;
+            transform: translateX(-4px);
+        }
+</style>
+
+<div class="admin-header mb-4">
+    <div class="d-flex align-items-center gap-3">
+        <a asp-area="Admin" asp-controller="ProductManager" asp-action="Index" class="back-link-top text-decoration-none d-inline-flex align-items-center gap-2">
+            <i class="bi bi-chevron-left"></i> Quay về danh sách kho hoa
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center mt-3 mb-5">
+    <div class="col-xl-10">
+        <div class="details-card">
+            <div class="row g-5">
+
+                <div class="col-md-5">
+                    <div class="main-image-wrapper mb-3">
+                        <img id="mainProductImage" src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/banner.jpg" : Model.ImageUrl)"
+                             class="w-100 h-100 object-fit-cover"
+                             style="transition: opacity 0.2s ease;"
+                             onerror="this.src='https://placehold.co/400x500'">
+                    </div>
+
+                    @if (Model.ImageUrls != null && Model.ImageUrls.Any())
+                    {
+                        <div class="d-flex gap-2 overflow-x-auto pb-2">
+                            <img src="@Model.ImageUrl" class="sub-image-item active" onclick="changePreviewImage(this)">
+                            @foreach (var imgPath in Model.ImageUrls)
+                            {
+                                <img src="@imgPath" class="sub-image-item" onclick="changePreviewImage(this)">
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="col-md-7 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="text-uppercase tracking-wider fw-bold text-muted small" style="letter-spacing: 0.5px;">
+                                <i class="bi bi-tag-fill me-1" style="color: #DE8F9F;"></i> @(Model.Category?.Name ?? "Chưa phân loại")
+                            </span>
+
+                            @{
+                                string statusClass = "badge-in-stock";
+                                string statusText = "Còn hàng tại Boutique";
+                                if (Model.Id % 3 == 0) { statusClass = "badge-out-stock"; statusText = "Hết hàng tạm thời"; }
+                                else if (Model.Id % 5 == 0) { statusClass = "badge-low-stock"; statusText = "Sắp hết hàng"; }
+                            }
+                            <span class="badge-luxury @statusClass">
+                                <i class="bi bi-circle-fill" style="font-size: 6px;"></i> @statusText
+                            </span>
+                        </div>
+
+                        <h2 class="fw-bold mb-2" style="color: #2D3748; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px;">@Model.Name</h2>
+
+                        <div class="my-4">
+                            <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Giá niêm yết hệ thống</small>
+                            <span class="product-price-luxury">@Model.Price.ToString("#,##0") đ</span>
+                        </div>
+
+                        <hr class="text-muted opacity-25 my-4">
+
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-secondary text-uppercase mb-2" style="font-size: 12px; letter-spacing: 0.5px;">Mô tả ý nghĩa bó hoa</h6>
+                            <p class="text-dark lh-relaxed" style="font-size: 14px; color: #4A5568 !important; white-space: pre-line;">
+                                @(string.IsNullOrEmpty(Model.Description) ? "Mẫu thiết kế hoa tươi cao cấp chưa được cập nhật câu chuyện mô tả chi tiết." : Model.Description)
+                            </p>
+                        </div>
+
+                        <div class="boutique-care-box d-flex align-items-start gap-3 mt-4">
+                            <span class="fs-4">✨</span>
+                            <div>
+                                <h6 class="fw-bold m-0" style="color: #A34863; font-size: 13px;">Ghi chú quản lý Boutique</h6>
+                                <p class="text-muted m-0 mt-1" style="font-size: 12px; line-height: 1.5;">
+                                    Sản phẩm này hiển thị trực tiếp trên giao diện cửa hàng chính thức. Hình ảnh sắc nét và câu chuyện mô tả cuốn hút sẽ giúp gia tăng tỷ lệ đặt hoa từ khách hàng.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 pt-4 border-top mt-5 justify-content-end">
+                        <a asp-area="Admin" asp-controller="ProductManager" asp-action="Index" class="btn btn-back-luxury">
+                            <i class="bi bi-arrow-left"></i> Quay lại
+                        </a>
+                        <a asp-area="Admin" asp-controller="ProductManager" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-edit-luxury shadow-sm">
+                            <i class="bi bi-pencil-square"></i> Chỉnh sửa kho hàng
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // JS xử lý đổi ảnh đại diện mượt mà khi bấm Album ảnh nhỏ
+        function changePreviewImage(element) {
+            document.querySelectorAll('.sub-image-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+
+            const mainImg = document.getElementById('mainProductImage');
+            mainImg.style.opacity = 0;
+            setTimeout(() => {
+                mainImg.src = element.src;
+                mainImg.style.opacity = 1;
+            }, 150);
+        }
+    </script>
+}

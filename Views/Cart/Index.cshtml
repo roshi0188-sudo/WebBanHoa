@@ -1,0 +1,260 @@
+﻿@model IEnumerable<WebBanHoa.Models.ViewModels.CartItem>
+@{
+    ViewData["Title"] = "Giỏ hàng của bạn";
+}
+
+<style>
+    /* Hộp chọn Checkbox Custom phong cách Premium */
+    .cart-checkbox {
+        width: 20px;
+        height: 20px;
+        accent-color: #A34863;
+        cursor: pointer;
+    }
+
+    /* Bộ tăng giảm số lượng mini trong bảng */
+    .qty-control-group {
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        background-color: #F8F9FA;
+        padding: 2px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100px;
+    }
+
+    .btn-qty-mini {
+        width: 26px;
+        height: 26px;
+        border-radius: 50% !important;
+        border: none;
+        background: white;
+        color: #4A5568;
+        font-weight: bold;
+        font-size: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .btn-qty-mini:hover {
+            background-color: #DE8F9F;
+            color: white;
+        }
+
+    .qty-num-input {
+        width: 30px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #2D3748;
+    }
+</style>
+
+<div class="container mt-5 py-4">
+    <h3 class="fw-bold mb-4" style="color: #1f1a1e;">
+        <i class="bi bi-bag-heart me-2" style="color: #A34863;"></i>Giỏ hàng mẫu hoa
+    </h3>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm p-3 bg-white rounded-4">
+                    <div class="table-responsive">
+                        <table class="table align-middle m-0">
+                            <thead>
+                                <tr class="text-secondary small text-uppercase">
+                                    <th style="width: 40px;" class="text-center">
+                                        <input type="checkbox" id="selectAllCart" class="cart-checkbox" checked />
+                                    </th>
+                                    <th>Mẫu Hoa</th>
+                                    <th>Giá tiền</th>
+                                    <th style="width: 120px;" class="text-center">Số lượng</th>
+                                    <th>Tổng cộng</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="cart-row" data-product-id="@item.ProductId" data-price="@item.Price">
+                                        <td class="text-center">
+                                            <input type="checkbox" class="cart-checkbox item-select" checked data-product-id="@item.ProductId" />
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/default_flower.jpg" : item.ImageUrl)"
+                                                     class="rounded-3" style="width: 65px; height: 80px; object-fit: cover;"
+                                                     onerror="this.src='https://placehold.co/100'">
+                                                <span class="fw-bold text-dark">@item.ProductName</span>
+                                            </div>
+                                        </td>
+                                        <td class="fw-semibold">@item.Price.ToString("#,##0") đ</td>
+                                        <td class="text-center">
+                                            <div class="qty-control-group">
+                                                <button type="button" class="btn-qty-mini" onclick="updateQuantityAjax(@item.ProductId, -1)">-</button>
+                                                <input type="number" class="qty-num-input text-center border-0 bg-transparent p-0"
+                                                       id="qty-input-@item.ProductId" value="@item.Quantity" min="1" readonly />
+                                                <button type="button" class="btn-qty-mini" onclick="updateQuantityAjax(@item.ProductId, 1)">+</button>
+                                            </div>
+                                        </td>
+                                        <td class="fw-bold item-total-price" id="total-price-@item.ProductId" style="color: #A34863;">
+                                            @item.TotalPrice.ToString("#,##0") đ
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-productId="@item.ProductId" class="text-danger">
+                                                <i class="bi bi-trash3-fill"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm p-4 bg-white rounded-4 text-center">
+                    <h5 class="fw-bold mb-3 text-secondary">Tóm tắt đơn hàng</h5>
+                    <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <span>Số mẫu hoa đã chọn:</span>
+                        <span id="selectedCount">0</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-4 fs-5 fw-bold">
+                        <span>Tổng tiền thanh toán:</span>
+                        <span id="cartGrandTotal" style="color: #A34863;">0 đ</span>
+                    </div>
+                    <button type="button" onclick="proceedToCheckout()" class="btn text-white w-100 py-2.5 rounded-pill fw-bold shadow-sm"
+                            style="background: linear-gradient(135deg, #DE8F9F, #A34863); border:none;">
+                        Tiến hành đặt hoa
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="card border-0 shadow-sm p-5 bg-white rounded-4" style="max-width: 500px; margin: 0 auto;">
+                <span style="font-size: 3rem;">🌸</span>
+                <h5 class="fw-bold text-secondary mt-2">Giỏ hàng của bạn đang trống rỗng</h5>
+                <p class="text-muted small">Hãy quay lại trang chủ để lựa chọn những bó hoa tươi tắn nhất nhé.</p>
+                <a href="/" class="btn text-white rounded-pill px-4 py-2 mt-2" style="background-color: #A34863; text-decoration: none;">Quay về trang sản phẩm</a>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            calculateCartTotal();
+
+            // Xử lý nút Chọn tất cả (Select All)
+            const selectAllCheck = document.getElementById('selectAllCart');
+            if (selectAllCheck) {
+                selectAllCheck.addEventListener('change', function () {
+                    document.querySelectorAll('.item-select').forEach(checkbox => {
+                        checkbox.checked = this.checked;
+                    });
+                    calculateCartTotal();
+                });
+            }
+
+            // Xử lý sự kiện khi thay đổi trạng thái chọn của từng box lẻ
+            document.querySelectorAll('.item-select').forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    calculateCartTotal();
+                });
+            });
+        });
+
+        // 1. HÀM JAVASCRIPT: TỰ TÍNH TOÁN LẠI TIỀN TRỰC TIẾP TRÊN INTERFACE (REALTIME)
+        function calculateCartTotal() {
+            let totalAmount = 0;
+            let selectedCount = 0;
+
+            document.querySelectorAll('.cart-row').forEach(row => {
+                const checkbox = row.querySelector('.item-select');
+                if (checkbox && checkbox.checked) {
+                    const price = parseFloat(row.getAttribute('data-price')) || 0;
+                    const id = row.getAttribute('data-product-id');
+                    const qtyInput = document.getElementById('qty-input-' + id);
+                    const qty = parseInt(qtyInput.value) || 1;
+
+                    totalAmount += price * qty;
+                    selectedCount++;
+                }
+            });
+
+            // Ghi nhận số lượng và định dạng lại chuỗi hiển thị tiền VND sang trọng
+            const countElem = document.getElementById('selectedCount');
+            const totalElem = document.getElementById('cartGrandTotal');
+            if(countElem) countElem.innerText = selectedCount;
+            if(totalElem) totalElem.innerText = totalAmount.toLocaleString('vi-VN') + " đ";
+        }
+
+        // 🟢 2. XỬ LÝ AJAX NGẦM: TĂNG GIẢM SỐ LƯỢNG KHÔNG TẢI LẠI TRANG
+        function updateQuantityAjax(productId, changeAmount) {
+            const qtyInput = document.getElementById('qty-input-' + productId);
+            let currentQty = parseInt(qtyInput.value) || 1;
+            let newQty = currentQty + changeAmount;
+
+            if (newQty < 1) return; // Không cho phép giảm xuống dưới 1
+
+            // Thu thập dữ liệu gửi lên Backend CartController
+            const formData = new FormData();
+            formData.append('productId', productId);
+            formData.append('quantity', changeAmount); // Truyền giá trị sai lệch (+1 hoặc -1)
+
+            fetch('/Cart/AddToCart', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest' // Khai báo cuộc gọi AJAX ngầm
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Cập nhật số lượng mới lên ô Input hiển thị
+                    qtyInput.value = newQty;
+
+                    // Tính lại tổng tiền riêng của bó hoa này trên dòng
+                    const row = qtyInput.closest('.cart-row');
+                    const price = parseFloat(row.getAttribute('data-price')) || 0;
+                    const itemTotalElem = document.getElementById('total-price-' + productId);
+                    if(itemTotalElem) {
+                        itemTotalElem.innerText = (price * newQty).toLocaleString('vi-VN') + " đ";
+                    }
+
+                    // Tính lại tổng tiền lớn và đồng bộ số nhảy trên Icon túi hàng Layout
+                    calculateCartTotal();
+                } else {
+                    alert("Cập nhật số lượng thất bại. Vui lòng thử lại!");
+                }
+            })
+            .catch(error => console.error('Lỗi luồng tăng giảm:', error));
+        }
+
+        // 🟢 3. XỬ LÝ CHECKOUT: CHỈ ĐẨY SẢN PHẨM ĐƯỢC CHỌN SANG TRANG THANH TOÁN
+        function proceedToCheckout() {
+            const selectedIds = [];
+            document.querySelectorAll('.item-select:checked').forEach(cb => {
+                selectedIds.push(cb.getAttribute('data-product-id'));
+            });
+
+            if (selectedIds.length === 0) {
+                alert("Vui lòng tích chọn ít nhất một mẫu hoa để tiến hành đặt hàng! 🌸");
+                return;
+            }
+
+            // Gợi ý nghiệp vụ nâng cao: Nếu bạn muốn lọc hóa đơn chỉ mua riêng các ID được tích chọn,
+            // có thể gửi kèm chuỗi query chuỗi IDs qua URL sang trang Checkout:
+            window.location.href = '/Cart/Checkout?selectedProducts=' + selectedIds.join(',');
+        }
+    </script>
+}

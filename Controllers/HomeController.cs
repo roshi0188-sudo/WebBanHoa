@@ -3,9 +3,11 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using WebBanHoa.Models;
 using WebBanHoa.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebBanHoa.Controllers
 {
+    // ?? ?Ã S?A: B? thu?c tính [Authorize] ? c?p Controller ?? khách hàng vãng lai t? do xem trang ch?
     public class HomeController : Controller
     {
         private readonly IProductRepository _productRepository;
@@ -16,18 +18,16 @@ namespace WebBanHoa.Controllers
             _productRepository = productRepository;
         }
 
-        // L?y danh sách hoa th?c t? hi?n th? lên Trang ch?
+        // TRANG CH? HI?N TH? DANH SÁCH HOA (Ai c?ng vào ???c)
         public async Task<IActionResult> Index()
         {
             var products = await _productRepository.GetAllAsync();
             return View(products);
         }
 
-        // S?A L?I: Chuy?n hành ??ng Display sang Async và dùng ?úng _productRepository thay vì _context
-        // ???ng d?n th?c t? khi ch?y h? th?ng: /Home/Display/{id}
+        // TRANG XEM CHI TI?T BÓ HOA (Khách vãng lai c?ng ph?i xem ???c ?? b?m Mua)
         public async Task<IActionResult> Display(int id)
         {
-            // G?i hàm l?y chi ti?t s?n ph?m kèm danh m?c (Category) t? Repository
             var product = await _productRepository.GetByIdAsync(id);
 
             if (product == null)
@@ -35,9 +35,10 @@ namespace WebBanHoa.Controllers
                 return NotFound();
             }
 
-            return View(product);
+            return View(product); // Tìm file: Views/Home/Display.cshtml (??u file nh?n: @model WebBanHoa.Models.Product)
         }
 
+        // Các trang ph?, chính sách b?o m?t
         public IActionResult Privacy()
         {
             return View();

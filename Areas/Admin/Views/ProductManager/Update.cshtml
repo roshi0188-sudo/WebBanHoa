@@ -1,0 +1,168 @@
+﻿@model WebBanHoa.Models.Product
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Cập nhật thông tin hoa";
+}
+
+<style>
+    /* Cấu trúc Form Card Luxury */
+    .form-card {
+        background: white;
+        border-radius: 24px;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        padding: 40px;
+    }
+
+    /* Tinh chỉnh ô nhập liệu độc lập */
+    .form-control-luxury, .form-select-luxury {
+        display: block;
+        width: 100%;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 12px !important;
+        padding: 12px 16px !important;
+        font-size: 14px;
+        background-color: #F8F9FA !important;
+        color: #2D3748 !important;
+        transition: all 0.3s ease;
+    }
+
+        .form-control-luxury:focus, .form-select-luxury:focus {
+            background-color: white !important;
+            border-color: #DE8F9F !important;
+            box-shadow: 0 0 0 4px rgba(222, 143, 159, 0.1) !important;
+            outline: none;
+        }
+
+    /* Button Lưu cập nhật Luxury Premium */
+    .btn-save-product {
+        background: linear-gradient(135deg, #DE8F9F, #A34863);
+        color: white !important;
+        border: none;
+        border-radius: 20px;
+        padding: 12px 32px;
+        font-weight: 600;
+        transition: 0.3s;
+        text-decoration: none;
+    }
+
+        .btn-save-product:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(163, 72, 99, 0.2);
+        }
+
+    /* Button Quay lại Luxury */
+    .btn-cancel-luxury {
+        border: 1px solid #E2E8F0;
+        background-color: #F8F9FA;
+        color: #718096 !important;
+        border-radius: 20px;
+        padding: 12px 32px;
+        font-weight: 500;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-cancel-luxury:hover {
+            background-color: #EDF2F7;
+            color: #4A5568 !important;
+        }
+
+    /* Link quay lại bám top điều hướng nhanh */
+    .back-link-luxury {
+        color: #718096;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+        .back-link-luxury:hover {
+            color: #A34863 !important;
+            transform: translateX(-4px);
+        }
+</style>
+
+<div class="admin-header mb-4">
+    <div class="d-flex align-items-center gap-3">
+        <a asp-area="Admin" asp-controller="ProductManager" asp-action="Index" class="back-link-luxury text-decoration-none d-inline-flex align-items-center gap-2">
+            <i class="bi bi-chevron-left"></i> Quay về danh sách kho sản phẩm
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center mt-3 mb-5">
+    <div class="col-lg-7 col-md-9">
+        <div class="form-card">
+
+            <div class="mb-4 text-center">
+                <span style="font-size: 2.5rem;">🌸</span>
+                <h4 class="fw-bold m-0 mt-2" style="color: #2D3748; font-family: 'Plus Jakarta Sans', sans-serif;">Chỉnh Sửa Bó Hoa</h4>
+                <p class="text-muted small m-0 mt-1">Cập nhật lại giá cả, hình ảnh hoặc danh mục phân loại cho mẫu thiết kế</p>
+            </div>
+
+            <form asp-area="Admin" asp-controller="ProductManager" asp-action="Edit" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                @* CÁC TRƯỜNG HIDDEN QUAN TRỌNG: Giữ nguyên để Model Binder không làm mất khóa chính *@
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="ImageUrl" />
+
+                <div class="mb-4">
+                    <label asp-for="Name" class="form-label small fw-bold text-secondary text-uppercase" style="letter-spacing: 0.5px;">Tên sản phẩm hoa</label>
+                    <input asp-for="Name" class="form-control-luxury" placeholder="Nhập tên mẫu thiết kế..." />
+                    <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="Price" class="form-label small fw-bold text-secondary text-uppercase" style="letter-spacing: 0.5px;">Giá bán điều chỉnh (đ)</label>
+                        <input asp-for="Price" type="number" class="form-control-luxury" placeholder="Nhập giá tiền..." />
+                        <span asp-validation-for="Price" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="CategoryId" class="form-label small fw-bold text-secondary text-uppercase" style="letter-spacing: 0.5px;">Phân loại danh mục</label>
+                        <!-- 🛠️ ĐÃ FIX: Chuyển class sang form-select-luxury chuẩn đồng bộ -->
+                        <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select-luxury"></select>
+                        <span asp-validation-for="CategoryId" class="text-danger small mt-1 d-block"></span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label small fw-bold text-secondary text-uppercase" style="letter-spacing: 0.5px;">Mô tả ý nghĩa / Số lượng bông thiết kế</label>
+                    <!-- 🛠️ ĐÃ FIX: Chuyển class sang form-control-luxury chuẩn bo góc cho textarea -->
+                    <textarea asp-for="Description" class="form-control-luxury" rows="4" placeholder="Nhập mô tả cập nhật mới cho bó hoa..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-secondary text-uppercase" style="letter-spacing: 0.5px;">Hình ảnh sản phẩm đại diện</label>
+                    <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-3 border" style="border-color: #E2E8F0 !important;">
+                        <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/banner.jpg" : Model.ImageUrl)"
+                             class="rounded-3 border object-fit-cover"
+                             style="width: 75px; height: 75px; min-width: 75px;"
+                             onerror="this.src='https://placehold.co/75'">
+                        <div class="flex-grow-1">
+                            <p class="mb-2 small text-muted fw-medium"><i class="bi bi-image me-1"></i> Tải ảnh mới lên nếu muốn thay thế ảnh hiện tại:</p>
+                            
+                            <input type="file" name="newImageUrl" class="form-control-luxury" style="padding: 6px 12px !important; font-size: 13px;" accept="image/*" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 pt-4 border-top mt-5 justify-content-end">
+                    <a asp-area="Admin" asp-controller="ProductManager" asp-action="Index" class="btn btn-cancel-luxury text-center"> Hủy bỏ </a>
+                    <button type="submit" class="btn btn-save-product shadow-sm"> Lưu cập nhật </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

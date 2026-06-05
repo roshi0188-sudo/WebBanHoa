@@ -1,0 +1,41 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using WebBanHoa.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav align-items-center">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        // Lấy ra toàn bộ đối tượng người dùng đang đăng nhập từ Database
+        var currentUser = await UserManager.GetUserAsync(User);
+
+        <li class="nav-item">
+            @if (User.IsInRole("Admin"))
+            {
+                <a class="nav-link text-dark fw-bold" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                    <i class="fas fa-user-shield text-orange me-1"></i>
+                    Admin: @(currentUser?.FullName ?? User.Identity?.Name?.Split('@')[0])
+                </a>
+            }
+            else
+            {
+                <a class="nav-link text-dark fw-semibold" href="#">
+                    <i class="fas fa-user text-secondary me-1"></i>
+                    Xin chào, @(currentUser?.FullName ?? User.Identity?.Name?.Split('@')[0])!
+                </a>
+            }
+        </li>
+
+        <li class="nav-item ms-3">
+            <form class="form-inline" asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="nav-link btn btn-link text-secondary border-0 fw-medium">Đăng xuất</button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item"><a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Đăng ký</a></li>
+        <li class="nav-item ms-2"><a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Đăng nhập</a></li>
+    }
+</ul>

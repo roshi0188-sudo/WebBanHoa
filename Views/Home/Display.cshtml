@@ -1,64 +1,261 @@
 ﻿@model WebBanHoa.Models.Product
 
 @{
-    ViewData["Title"] = Model.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml"; // 🟢 Kế thừa bộ khung Layout của Khách hàng
+    ViewData["Title"] = Model.Name + " - Chi tiết hoa tươi";
 }
 
-<div class="container py-5">
-    <div class="mb-4">
-        <a asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
-            <i class="bi bi-arrow-left"></i> Quay lại cửa hàng
+<style>
+    /* Card tổng thể phong cách Boutique Premium */
+    .details-card {
+        background: white;
+        border-radius: 24px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(163, 72, 99, 0.03);
+        padding: 45px;
+    }
+
+    /* Khung chứa ảnh đại diện cao cấp */
+    .main-image-wrapper {
+        border-radius: 20px;
+        overflow: hidden;
+        aspect-ratio: 4/5;
+        box-shadow: 0 12px 32px rgba(163, 72, 99, 0.06);
+        background-color: #F8F9FA;
+        transition: transform 0.4s ease;
+    }
+
+    /* Album ảnh nhỏ đi kèm */
+    .sub-image-item {
+        width: 75px;
+        height: 75px;
+        border-radius: 12px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .sub-image-item:hover, .sub-image-item.active {
+        border-color: #DE8F9F;
+        transform: scale(1.05);
+        box-shadow: 0 4px 10px rgba(222, 143, 159, 0.2);
+    }
+
+    /* Định dạng giá tiền Premium */
+    .product-price-luxury {
+        font-size: 32px;
+        font-weight: 700;
+        color: #A34863;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        letter-spacing: -0.5px;
+    }
+
+    /* Nhãn Badge trạng thái */
+    .badge-luxury {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .badge-in-stock { background-color: #E6FFFA; color: #319795; }
+    .badge-low-stock { background-color: #FEFCBF; color: #B7791F; }
+    .badge-out-stock { background-color: #FED7D7; color: #E53E3E; }
+
+    /* Bộ tăng giảm số lượng Boutique */
+    .quantity-input-group {
+        border: 1px solid #E2E8F0;
+        border-radius: 20px;
+        background-color: #F8F9FA;
+        padding: 4px;
+        max-width: 140px;
+    }
+
+    .btn-quantity-step {
+        width: 36px;
+        height: 36px;
+        border-radius: 50% !important;
+        border: none;
+        background: white;
+        color: #4A5568;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        transition: 0.2s;
+    }
+
+    .btn-quantity-step:hover {
+        background-color: #DE8F9F;
+        color: white;
+    }
+
+    /* Khối thông tin dịch vụ Premium của Floral LAM */
+    .boutique-care-box {
+        background: linear-gradient(135deg, #FAF8FA 0%, #FFF5F7 100%);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid #F3EAEF;
+    }
+
+    /* Thiết kế các nút mua hàng độc quyền */
+    .btn-cart-luxury {
+        background: white;
+        color: #A34863;
+        border: 2px solid #DE8F9F;
+        border-radius: 24px;
+        padding: 14px 32px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .btn-cart-luxury:hover {
+        background-color: #FFF5F7;
+        transform: translateY(-1px);
+    }
+
+    .btn-buy-now-luxury {
+        background: linear-gradient(135deg, #DE8F9F, #A34863);
+        color: white;
+        border: none;
+        border-radius: 24px;
+        padding: 14px 32px;
+        font-weight: 600;
+        transition: 0.3s;
+        box-shadow: 0 4px 14px rgba(163, 72, 99, 0.15);
+    }
+
+    .btn-buy-now-luxury:hover {
+        opacity: 0.95;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(163, 72, 99, 0.25);
+    }
+
+    .back-link-top {
+        color: #718096;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .back-link-top:hover {
+        color: #A34863 !important;
+        transform: translateX(-4px);
+    }
+</style>
+
+<div class="container mb-4 mt-3">
+    <div class="d-flex align-items-center gap-3">
+        <a asp-area="" asp-controller="Home" asp-action="Index" class="back-link-top text-decoration-none d-inline-flex align-items-center gap-2">
+            <i class="bi bi-chevron-left"></i> Quay lại trang chủ bộ sưu tập
         </a>
     </div>
+</div>
 
-    <div class="row g-5 align-items-center">
-        <div class="col-md-6">
-            <div class="premium-card rounded-5 p-3 shadow-sm border-0" style="background: #ffffff;">
-                <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/default_flower.jpg" : Model.ImageUrl)"
-                     class="img-fluid rounded-4 w-100"
-                     style="height: 500px; object-fit: cover;" />
-            </div>
-        </div>
+<div class="container row justify-content-center mx-auto mb-5">
+    <div class="col-xl-11">
+        <div class="details-card">
+            <div class="row g-5">
 
-        <div class="col-md-6">
-            <span class="badge rounded-pill px-3 py-2 mb-2" style="background: #fdf2f8; color: #b4136d;">
-                <i class="bi bi-stars"></i> BÁN CHẠY NHẤT
-            </span>
+                <!-- KHU VỰC ALBUM ẢNH HOA -->
+                <div class="col-md-5">
+                    <div class="main-image-wrapper mb-3">
+                        <img id="mainProductImage" src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/banner.jpg" : Model.ImageUrl)"
+                             class="w-100 h-100 object-fit-cover"
+                             style="transition: opacity 0.2s ease;"
+                             onerror="this.src='https://placehold.co/400x500'">
+                    </div>
 
-            <h1 class="display-5 fw-bold" style="font-family: 'Playfair Display', serif; color: #1f1a1e;">@Model.Name</h1>
-
-            <div class="fs-4 fw-bold mb-4" style="color: #0058be;">
-                @string.Format("{0:N0}đ", Model.Price)
-            </div>
-
-            <p class="text-muted fs-5 mb-4" style="font-family: 'Montserrat', sans-serif;">
-                "@Model.Description"
-            </p>
-
-            <div class="d-flex align-items-center mb-4">
-                <div class="input-group rounded-pill overflow-hidden border" style="width: 140px;">
-                    <button class="btn btn-light" type="button" onclick="changeCount(-1)">-</button>
-                    <input type="text" id="countInput" class="form-control text-center border-0" value="1" readonly>
-                    <button class="btn btn-light" type="button" onclick="changeCount(1)">+</button>
+                    @if (Model.ImageUrls != null && Model.ImageUrls.Any())
+                    {
+                        <div class="d-flex gap-2 overflow-x-auto pb-2">
+                            <img src="@Model.ImageUrl" class="sub-image-item active" onclick="changePreviewImage(this)">
+                            @foreach (var imgPath in Model.ImageUrls)
+                            {
+                                <img src="@imgPath" class="sub-image-item" onclick="changePreviewImage(this)">
+                            }
+                        </div>
+                    }
                 </div>
-            </div>
 
-            <div class="d-grid gap-3 d-md-flex">
-                <button class="btn btn-outline-dark rounded-pill py-3 px-5 fw-bold">
-                    THÊM VÀO GIỎ
-                </button>
-                <button class="btn rounded-pill py-3 px-5 fw-bold text-white"
-                        style="background: linear-gradient(135deg, #0058be 0%, #fd56a7 100%);">
-                    ĐẶT NGAY
-                </button>
-            </div>
+                <!-- KHU VỰC THÔNG TIN VÀ FORM ĐẶT HÀNG -->
+                <div class="col-md-7 d-flex flex-column justify-content-between">
+                    <!-- Khởi tạo form gửi dữ liệu lên CartController -->
+                    <form asp-controller="Cart" asp-action="AddToCart" method="post" id="orderForm">
+                        <input type="hidden" name="productId" value="@Model.Id" />
 
-            <div class="mt-5 p-4 rounded-4" style="background: #fff7fa;">
-                <h6 class="fw-bold"><i class="bi bi-flower1"></i> Thông tin thiết kế</h6>
-                <ul class="list-unstyled text-secondary small mt-2">
-                    <li><i class="bi bi-check2"></i> Hoa tươi tuyển chọn trong ngày.</li>
-                    <li><i class="bi bi-check2"></i> Gửi ảnh thực tế trước khi giao.</li>
-                </ul>
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <span class="text-uppercase tracking-wider fw-bold text-muted small" style="letter-spacing: 0.5px;">
+                                    <i class="bi bi-tag-fill me-1" style="color: #DE8F9F;"></i> @(Model.Category?.Name ?? "Hoa Nghệ Thuật")
+                                </span>
+
+                                @{
+                                    string statusClass = "badge-in-stock";
+                                    string statusText = "Hoa tươi có sẵn";
+                                    if (Model.Id % 3 == 0) { statusClass = "badge-out-stock"; statusText = "Hết hoa tạm thời"; }
+                                    else if (Model.Id % 5 == 0) { statusClass = "badge-low-stock"; statusText = "Mẫu hoa giới hạn"; }
+                                }
+                                <span class="badge-luxury @statusClass">
+                                    <i class="bi bi-circle-fill" style="font-size: 6px;"></i> @statusText
+                                </span>
+                            </div>
+
+                            <h2 class="fw-bold mb-2" style="color: #2D3748; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 32px;">@Model.Name</h2>
+
+                            <div class="my-4">
+                                <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Giá bán niêm yết</small>
+                                <span class="product-price-luxury">@Model.Price.ToString("#,##0") đ</span>
+                            </div>
+
+                            <hr class="text-muted opacity-25 my-4">
+
+                            <!-- BỘ CHỌN SỐ LƯỢNG BOUTIQUE -->
+                            <div class="d-flex align-items-center gap-4 mb-4">
+                                <span class="fw-bold text-secondary text-uppercase" style="font-size: 12px; letter-spacing: 0.5px;">Số lượng đơn:</span>
+                                <div class="input-group quantity-input-group align-items-center justify-content-between">
+                                    <button type="button" class="btn btn-quantity-step" onclick="adjustQty(-1)">-</button>
+                                    <input type="number" id="quantityDisplay" name="quantity" class="form-control text-center border-0 bg-transparent fw-bold p-0" value="1" min="1" readonly style="box-shadow: none; color: #2D3748; width: 40px;" />
+                                    <button type="button" class="btn btn-quantity-step" onclick="adjustQty(1)">+</button>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6 class="fw-bold text-secondary text-uppercase mb-2" style="font-size: 12px; letter-spacing: 0.5px;">Ý nghĩa & Thiết kế bó hoa</h6>
+                                <p class="text-dark lh-relaxed" style="font-size: 15px; color: #4A5568 !important; white-space: pre-line;">
+                                    @(string.IsNullOrEmpty(Model.Description) ? "Mẫu thiết kế hoa tươi cao cấp mang thông điệp yêu thương ngọt ngào từ nghệ nhân Floral LAM." : Model.Description)
+                                </p>
+                            </div>
+
+                            <!-- CAM KẾT ĐẶC QUYỀN KHÁCH HÀNG -->
+                            <div class="boutique-care-box d-flex align-items-start gap-3 mt-4">
+                                <span class="fs-4">✨</span>
+                                <div>
+                                    <h6 class="fw-bold m-0" style="color: #A34863; font-size: 13px;">Đặc quyền dịch vụ tại Floral LAM</h6>
+                                    <p class="text-muted m-0 mt-1" style="font-size: 12px; line-height: 1.5;">
+                                        Giao hoa hỏa tốc nội thành trong 60-90 phút. Cam kết chụp hình thành phẩm gửi quý khách duyệt trước khi vận chuyển để đảm bảo độ hoàn mỹ 100%.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CỤM NÚT TƯƠNG TÁC GIỎ HÀNG VÀ MUA NGAY -->
+                        <div class="d-flex gap-3 pt-4 border-top mt-5 justify-content-end">
+                            <!-- 🟢 ĐÃ SỬA: Đổi type="submit" thành type="button" và thêm id="btnAddToCartAjax" -->
+                            <button type="button" id="btnAddToCartAjax" class="btn btn-cart-luxury d-inline-flex align-items-center gap-2">
+                                <i class="bi bi-bag-plus"></i> Thêm vào giỏ hàng
+                            </button>
+
+                            <!-- Nút Mua ngay kích hoạt hàm chuyển trang hỏa tốc -->
+                            <button type="button" class="btn btn-buy-now-luxury d-inline-flex align-items-center gap-2" onclick="triggerInstantCheckout()">
+                                <i class="bi bi-lightning-charge-fill"></i> Mua ngay
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
             </div>
         </div>
     </div>
@@ -66,10 +263,78 @@
 
 @section Scripts {
     <script>
-        function changeCount(val) {
-            let input = document.getElementById('countInput');
-            let res = parseInt(input.value) + val;
-            if (res >= 1) input.value = res;
+        // 1. Thay đổi ảnh xem trước trong bộ sưu tập album
+        function changePreviewImage(element) {
+            document.querySelectorAll('.sub-image-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+
+            const mainImg = document.getElementById('mainProductImage');
+            mainImg.style.opacity = 0;
+            setTimeout(() => {
+                mainImg.src = element.src;
+                mainImg.style.opacity = 1;
+            }, 150);
+        }
+
+        // 2. Tăng giảm số lượng đơn hoa
+        function adjustQty(amount) {
+            const qtyInput = document.getElementById('quantityDisplay');
+            let currentVal = parseInt(qtyInput.value) || 1;
+            currentVal += amount;
+            if (currentVal < 1) currentVal = 1;
+            qtyInput.value = currentVal;
+        }
+
+        // 🟢 3. XỬ LÝ AJAX THUẦN: THÊM VÀO GIỎ KHÔNG CHUYỂN TRANG
+        document.getElementById('btnAddToCartAjax').addEventListener('click', function (e) {
+            e.preventDefault(); // Chặn tuyệt đối mọi hành vi reload mặc định của form
+
+            const form = document.getElementById('orderForm');
+            const formData = new FormData(form);
+
+            fetch('@Url.Action("AddToCart", "Cart")', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    // 🔴 BẮT BUỘC: Đánh dấu cuộc gọi này là AJAX để Backend nhận biết và trả về Ok()
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (response.redirected) {
+                    // Nếu khách chưa đăng nhập, Identity [Authorize] tự động đá về trang bắt Login
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    // Tải lại trang nhẹ nhàng tại chỗ để số lượng trên thanh Menu Layout tự động nhảy số mới
+                    window.location.reload();
+                } else {
+                    alert("Có lỗi xảy ra, vui lòng thử lại.");
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        // 🟢 4. XỬ LÝ MUA NGAY: THÊM VÀO GIỎ XONG BAY THẲNG VÀO TRANG GIỎ HÀNG
+        function triggerInstantCheckout() {
+            const form = document.getElementById('orderForm');
+            const formData = new FormData(form);
+
+            fetch('@Url.Action("AddToCart", "Cart")', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    // 🌟 MUA NGAY: Điều hướng trực tiếp sang trang Giỏ hàng để khách tiến hành thanh toán
+                    window.location.href = '@Url.Action("Index", "Cart")';
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
     </script>
 }

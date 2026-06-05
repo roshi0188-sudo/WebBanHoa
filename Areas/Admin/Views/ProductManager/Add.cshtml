@@ -1,0 +1,151 @@
+﻿@model WebBanHoa.Models.Product
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Thêm sản phẩm mới";
+}
+
+<style>
+    /* Cấu trúc Form Card Luxury */
+    .form-card {
+        background: white;
+        border-radius: 24px;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        padding: 40px;
+    }
+
+    /* Tinh chỉnh ô nhập liệu */
+    .form-control-luxury, .form-select-luxury {
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 12px !important;
+        padding: 12px 16px !important;
+        font-size: 14px;
+        background-color: #F8F9FA !important;
+        color: #2D3748 !important;
+        transition: all 0.3s ease;
+    }
+
+        .form-control-luxury:focus, .form-select-luxury:focus {
+            background-color: white !important;
+            border-color: #DE8F9F !important;
+            box-shadow: 0 0 0 4px rgba(222, 143, 159, 0.1) !important;
+            outline: none;
+        }
+
+    /* Button Đăng ký Luxury */
+    .btn-save-product {
+        background: linear-gradient(135deg, #DE8F9F, #A34863);
+        color: white !important;
+        border: none;
+        border-radius: 20px;
+        padding: 12px 32px;
+        font-weight: 600;
+        transition: 0.3s;
+        text-decoration: none;
+    }
+
+        .btn-save-product:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(163, 72, 99, 0.2);
+        }
+
+    /* Button Hủy bỏ Luxury */
+    .btn-cancel-luxury {
+        border: 1px solid #E2E8F0;
+        background-color: #F8F9FA;
+        color: #718096 !important;
+        border-radius: 20px;
+        padding: 12px 32px;
+        font-weight: 500;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-cancel-luxury:hover {
+            background-color: #EDF2F7;
+            color: #4A5568 !important;
+        }
+
+    /* Link quay lại bám top */
+    .back-link-luxury {
+        color: #718096;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+        .back-link-luxury:hover {
+            color: #A34863 !important;
+            transform: translateX(-4px);
+        }
+</style>
+
+<div class="admin-header mb-4">
+    <div class="d-flex align-items-center gap-3">
+        <a asp-area="Admin" asp-controller="ProductManager" asp-action="Index" class="back-link-luxury text-decoration-none d-inline-flex align-items-center gap-2">
+            <i class="bi bi-chevron-left"></i> Quay về quản lý kho sản phẩm
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center mt-3 mb-5">
+    <div class="col-lg-7 col-md-9">
+        <div class="form-card">
+            <div class="mb-4 text-center">
+                <span style="font-size: 2.5rem;">🌸</span>
+                <h4 class="fw-bold m-0 mt-2" style="color: #2D3748; font-family: 'Plus Jakarta Sans', sans-serif;">Thêm Bó Hoa Mới</h4>
+                <p class="text-muted small m-0 mt-1">Cấu hình các thông số, giá bán và hình ảnh hiển thị cho sản phẩm</p>
+            </div>
+
+            <form asp-area="Admin" asp-controller="ProductManager" asp-action="Create" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div class="mb-4">
+                    <label asp-for="Name" class="form-label small fw-bold text-secondary text-uppercase" style="letter-spacing: 0.5px;">Tên sản phẩm hoa</label>
+                    <input asp-for="Name" class="form-control form-control-luxury shadow-none" placeholder="Ví dụ: Bó Hoa Hồng Premium Luxury, Bó Hướng Dương Nắng Ấm..." />
+                    <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="Price" class="form-label small fw-bold text-secondary text-uppercase" style="letter-spacing: 0.5px;">Giá bán thiết lập (đ)</label>
+                        <input asp-for="Price" type="number" class="form-control form-control-luxury shadow-none" placeholder="Ví dụ: 550,000" />
+                        <span asp-validation-for="Price" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="CategoryId" class="form-label small fw-bold text-secondary text-uppercase" style="letter-spacing: 0.5px;">Phân loại danh mục</label>
+                        <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select form-select-luxury shadow-none">
+                            <option value="">-- Lựa chọn danh mục hoa --</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger small mt-1 d-block"></span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label small fw-bold text-secondary text-uppercase" style="letter-spacing: 0.5px;">Mô tả chi tiết mẫu thiết kế</label>
+                    <textarea asp-for="Description" class="form-control form-control-luxury shadow-none" rows="4" placeholder="Nhập câu chuyện thiết kế bó hoa, số lượng bông, ý nghĩa hoặc thông điệp gửi gắm..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-secondary text-uppercase" style="letter-spacing: 0.5px;">Hình ảnh sản phẩm đại diện (Chấp nhận file ảnh)</label>
+                    <input type="file" name="imageUrl" class="form-control form-control-luxury shadow-none" required />
+                </div>
+
+                <div class="d-flex gap-3 pt-4 border-top mt-5 justify-content-end">
+                    <a asp-area="Admin" asp-controller="ProductManager" asp-action="Index" class="btn btn-cancel-luxury text-center"> Hủy bỏ </a>
+                    <button type="submit" class="btn btn-save-product shadow-sm"> Đăng sản phẩm </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

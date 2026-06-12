@@ -22,7 +22,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
             _userManager = userManager;
         }
 
-        // 📊 1. GIAO DIỆN BIỂU ĐỒ TỔNG QUAN
+        // 1. GIAO DIỆN BIỂU ĐỒ TỔNG QUAN
         public async Task<IActionResult> Index()
         {
             var revenue = await _context.Orders
@@ -40,7 +40,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
             return View();
         }
 
-        // 👥 2. THÊM MỚI HÀM NÀY: GIAO DIỆN DANH SÁCH NGƯỜI DÙNG (/Admin/Dashboard/UserList)
+        //  2. THÊM MỚI HÀM NÀY: GIAO DIỆN DANH SÁCH NGƯỜI DÙNG (/Admin/Dashboard/UserList)
         public async Task<IActionResult> UserList()
         {
             // Lấy danh sách toàn bộ người dùng từ Identity chuyển ra ngoài giao diện
@@ -48,7 +48,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
             return View(users); // Sẽ tìm file Areas/Admin/Views/Dashboard/UserList.cshtml
         }
 
-        // 🔒 3. HÀM XỬ LÝ KHÓA TÀI KHOẢN (POST)
+        //  3. HÀM XỬ LÝ KHÓA TÀI KHOẢN (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LockAccount(string userId, int days = 30)
@@ -70,11 +70,11 @@ namespace WebBanHoa.Areas.Admin.Controllers
 
             TempData["SuccessMessage"] = $"Đã khóa tài khoản {user.Email} thành công trong {days} ngày. 🔒";
 
-            // 🟢 ĐÃ SỬA: Điều hướng quay trở lại đúng trang danh sách UserList của Dashboard
+         
             return RedirectToAction(nameof(UserList));
         }
 
-        // 🔓 4. HÀM XỬ LÝ MỞ KHÓA TÀI KHOẢN (POST)
+        //  4. HÀM XỬ LÝ MỞ KHÓA TÀI KHOẢN (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UnlockAccount(string userId)
@@ -88,7 +88,6 @@ namespace WebBanHoa.Areas.Admin.Controllers
 
             TempData["SuccessMessage"] = $"Đã mở khóa tài khoản {user.Email} thành công. 🔓";
 
-            // 🟢 ĐÃ SỬA: Điều hướng quay trở lại đúng trang danh sách UserList của Dashboard
             return RedirectToAction(nameof(UserList));
         }
     }

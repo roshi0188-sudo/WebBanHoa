@@ -1,9 +1,16 @@
 ﻿@model IEnumerable<WebBanHoa.Models.ViewModels.CartItem>
 @{
     ViewData["Title"] = "Giỏ hàng của bạn";
+
+    // Tính toán tổng tiền hàng gốc ngay tại C# để truyền an toàn xuống JS, tránh lỗi cú pháp Razor
+    double totalCartRaw = Model != null ? (double)Model.Sum(x => x.Price * x.Quantity) : 0;
 }
 
 <style>
+    body {
+        background-color: #FCF9FA;
+    }
+
     /* Hộp chọn Checkbox Custom phong cách Premium */
     .cart-checkbox {
         width: 20px;
@@ -51,22 +58,49 @@
         font-weight: 700;
         color: #2D3748;
     }
+
+    /* Định dạng bảng tóm tắt đơn hàng ghim cố định */
+    .summary-card-luxury {
+        background: white;
+        border: 1px solid #F3EAEF;
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(163, 72, 99, 0.01);
+        position: sticky;
+        top: 30px;
+    }
+
+    /* Card gợi ý bán chéo (Cross-selling) */
+    .cross-sell-product-card {
+        background: white;
+        border-radius: 18px;
+        border: 1px solid #F5E6EC;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+        .cross-sell-product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(163, 72, 99, 0.05);
+            border-color: #E8CAD4;
+        }
 </style>
 
 <div class="container mt-5 py-4">
-    <h3 class="fw-bold mb-4" style="color: #1f1a1e;">
+    <h3 class="fw-bold mb-4" style="color: #2D141A; font-family: 'Playfair Display', Georgia, serif;">
         <i class="bi bi-bag-heart me-2" style="color: #A34863;"></i>Giỏ hàng mẫu hoa
     </h3>
 
     @if (Model != null && Model.Any())
     {
         <div class="row g-4">
+
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm p-3 bg-white rounded-4">
+                <div class="card border-0 shadow-sm p-3 bg-white rounded-4 mb-5">
                     <div class="table-responsive">
                         <table class="table align-middle m-0">
                             <thead>
-                                <tr class="text-secondary small text-uppercase">
+                                <tr class="text-secondary small text-uppercase" style="border-bottom: 2px solid #FAF4F6;">
                                     <th style="width: 40px;" class="text-center">
                                         <input type="checkbox" id="selectAllCart" class="cart-checkbox" checked />
                                     </th>
@@ -80,7 +114,7 @@
                             <tbody>
                                 @foreach (var item in Model)
                                 {
-                                    <tr class="cart-row" data-product-id="@item.ProductId" data-price="@item.Price">
+                                    <tr class="cart-row" id="cart-row-@item.ProductId" data-product-id="@item.ProductId" data-price="@item.Price">
                                         <td class="text-center">
                                             <input type="checkbox" class="cart-checkbox item-select" checked data-product-id="@item.ProductId" />
                                         </td>
@@ -105,9 +139,9 @@
                                             @item.TotalPrice.ToString("#,##0") đ
                                         </td>
                                         <td>
-                                            <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-productId="@item.ProductId" class="text-danger">
+                                            <button type="button" onclick="removeItemAjax(@item.ProductId)" class="btn btn-sm text-danger border-0 bg-transparent">
                                                 <i class="bi bi-trash3-fill"></i>
-                                            </a>
+                                            </button>
                                         </td>
                                     </tr>
                                 }
@@ -115,25 +149,83 @@
                         </table>
                     </div>
                 </div>
+
+                <div class="mt-5">
+                    <h5 class="fw-bold mb-3" style="color: #2D141A; font-family: 'Playfair Display', serif;">
+                        <i class="bi bi-stars text-warning me-2"></i>Có thể bạn cũng thích
+                    </h5>
+                    <div class="row row-cols-1 row-cols-md-3 g-3">
+                        @if (ViewBag.SuggestedProducts != null)
+                        {
+                            foreach (var p in ViewBag.SuggestedProducts as List<WebBanHoa.Models.Product>)
+                            {
+                                <div class="col">
+                                    <div class="card h-100 cross-sell-product-card p-2 shadow-sm">
+                                        <img src="@(string.IsNullOrEmpty(p.ImageUrl) ? "/images/default_flower.jpg" : p.ImageUrl)"
+                                             class="card-img-top rounded-3" style="height: 160px; object-fit: cover;" alt="@p.Name">
+                                        <div class="card-body p-2 text-center d-flex flex-column justify-content-between">
+                                            <div>
+                                                <h6 class="fw-bold text-truncate text-dark mb-1" style="font-size: 14px;">@p.Name</h6>
+                                                <p class="small fw-semibold mb-3" style="color: #A34863;">@p.Price.ToString("#,##0") đ</p>
+                                            </div>
+                                            <form asp-action="AddToCart" method="post">
+                                                <input type="hidden" name="productId" value="@p.Id" />
+                                                <button type="submit" class="btn btn-sm text-white w-100 rounded-pill py-1.5" style="background-color: #A34863; font-size: 12px; font-weight:600;">
+                                                    <i class="bi bi-plus-circle me-1"></i> Thêm nhanh
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
             </div>
 
             <div class="col-lg-4">
-                <div class="card border-0 shadow-sm p-4 bg-white rounded-4 text-center">
-                    <h5 class="fw-bold mb-3 text-secondary">Tóm tắt đơn hàng</h5>
-                    <div class="d-flex justify-content-between mb-2 small text-muted">
-                        <span>Số mẫu hoa đã chọn:</span>
-                        <span id="selectedCount">0</span>
+                <div class="card summary-card-luxury border-0 shadow-sm">
+                    <h5 class="fw-bold mb-4 text-dark" style="border-bottom: 1px solid #F3EAEF; padding-bottom: 12px;">Tóm tắt đơn hàng</h5>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-secondary">Mã voucher</label>
+                        <div class="input-group">
+                            <input type="text" id="couponCode" class="form-control rounded-start-pill small" placeholder="Nhập mã LAM2026..." style="border-color: #E8CAD4; font-size:13px;">
+                            <button type="button" class="btn text-white px-3 rounded-end-pill fw-semibold" style="background-color: #A34863; font-size:13px;" onclick="applyVoucherAjax()">Áp dụng</button>
+                        </div>
+                        <small id="couponAlert" class="d-block mt-1 small fw-bold"></small>
                     </div>
-                    <div class="d-flex justify-content-between mb-4 fs-5 fw-bold">
-                        <span>Tổng tiền thanh toán:</span>
-                        <span id="cartGrandTotal" style="color: #A34863;">0 đ</span>
+
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Tổng tiền sản phẩm:</span>
+                        <span class="fw-bold text-dark" id="summaryTotal">0 đ</span>
                     </div>
-                    <button type="button" onclick="proceedToCheckout()" class="btn text-white w-100 py-2.5 rounded-pill fw-bold shadow-sm"
-                            style="background: linear-gradient(135deg, #DE8F9F, #A34863); border:none;">
-                        Tiến hành đặt hoa
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Phí vận chuyển:</span>
+                        <span class="fw-bold text-success" id="summaryShipping">+ 30,000 đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 small text-danger">
+                        <span>Giảm giá (Voucher):</span>
+                        <span class="fw-bold" id="summaryDiscount">- 0 đ</span>
+                    </div>
+                    <hr style="border-top: 1px solid #F3EAEF;">
+                    <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
+                        <span>Mẫu hoa tích chọn:</span>
+                        <span id="selectedCount" class="fw-bold text-dark">0</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="fw-bold text-dark" style="font-size:15px;">Tổng tiền thanh toán:</span>
+                        <span class="fs-4 fw-bold" id="cartGrandTotal" style="color: #A34863;">0 đ</span>
+                    </div>
+
+                    <button type="button" onclick="proceedToCheckout()" class="btn text-white w-100 py-2.5 rounded-pill fw-bold text-uppercase shadow-sm"
+                            style="background: linear-gradient(135deg, #DE8F9F, #A34863); border:none; letter-spacing: 0.5px; font-size:13px;">
+                        Đặt hoa <i class="bi bi-arrow-right ms-1"></i>
                     </button>
                 </div>
             </div>
+
         </div>
     }
     else
@@ -151,6 +243,11 @@
 
 @section Scripts {
     <script>
+        // Đồng bộ trạng thái tiền tệ chiết khấu toàn cục an toàn
+        let voucherDiscountAmount = @(ViewBag.DiscountAmount != null ? ViewBag.DiscountAmount : 0);
+        let activeVoucherCode = "";
+        let totalCartAmountFromCsharp = @totalCartRaw; // Nhận biến tính sẵn từ C# cực kỳ an toàn, sạch lỗi cú pháp
+
         document.addEventListener("DOMContentLoaded", function () {
             calculateCartTotal();
 
@@ -165,7 +262,7 @@
                 });
             }
 
-            // Xử lý sự kiện khi thay đổi trạng thái chọn của từng box lẻ
+            // Xử lý khi bấm chọn các box lẻ
             document.querySelectorAll('.item-select').forEach(checkbox => {
                 checkbox.addEventListener('change', function () {
                     calculateCartTotal();
@@ -173,9 +270,9 @@
             });
         });
 
-        // 1. HÀM JAVASCRIPT: TỰ TÍNH TOÁN LẠI TIỀN TRỰC TIẾP TRÊN INTERFACE (REALTIME)
+        // 1. HÀM JAVASCRIPT REAL-TIME TÍNH TOÁN BẢNG CHI PHÍ TỰ ĐỘNG KHÔNG TẢI LẠI TRANG
         function calculateCartTotal() {
-            let totalAmount = 0;
+            let totalProductAmount = 0;
             let selectedCount = 0;
 
             document.querySelectorAll('.cart-row').forEach(row => {
@@ -186,61 +283,128 @@
                     const qtyInput = document.getElementById('qty-input-' + id);
                     const qty = parseInt(qtyInput.value) || 1;
 
-                    totalAmount += price * qty;
+                    totalProductAmount += price * qty;
                     selectedCount++;
                 }
             });
 
-            // Ghi nhận số lượng và định dạng lại chuỗi hiển thị tiền VND sang trọng
-            const countElem = document.getElementById('selectedCount');
-            const totalElem = document.getElementById('cartGrandTotal');
-            if(countElem) countElem.innerText = selectedCount;
-            if(totalElem) totalElem.innerText = totalAmount.toLocaleString('vi-VN') + " đ";
+            // TÍNH TOÁN LẠI ĐỘNG TIỀN VOUCHER NẾU SỬ DỤNG MÃ GIẢM THEO PHẦN TRĂM (LAM2026)
+            if (activeVoucherCode === "LAM2026") {
+                voucherDiscountAmount = totalProductAmount * 0.2;
+            }
+
+            // Nếu không chọn món nào, phí ship tính = 0, ngược lại mặc định 30.000đ
+            let shippingFee = selectedCount > 0 ? 30000 : 0;
+            let finalPayment = Math.max(0, totalProductAmount + shippingFee - voucherDiscountAmount);
+
+            // Cập nhật text đồng bộ lên bảng Tóm tắt đơn hàng thương mại
+            if (document.getElementById('selectedCount')) document.getElementById('selectedCount').innerText = selectedCount;
+            if (document.getElementById('summaryTotal')) document.getElementById('summaryTotal').innerText = totalProductAmount.toLocaleString('vi-VN') + " đ";
+            if (document.getElementById('summaryShipping')) document.getElementById('summaryShipping').innerText = (shippingFee > 0 ? "+ " : "") + shippingFee.toLocaleString('vi-VN') + " đ";
+            if (document.getElementById('summaryDiscount')) document.getElementById('summaryDiscount').innerText = "- " + voucherDiscountAmount.toLocaleString('vi-VN') + " đ";
+            if (document.getElementById('cartGrandTotal')) document.getElementById('cartGrandTotal').innerText = finalPayment.toLocaleString('vi-VN') + " đ";
         }
 
-        // 🟢 2. XỬ LÝ AJAX NGẦM: TĂNG GIẢM SỐ LƯỢNG KHÔNG TẢI LẠI TRANG
+        // 2. XỬ LÝ AJAX NGẦM: TĂNG GIẢM SỐ LƯỢNG SẢN PHẨM REAL-TIME
         function updateQuantityAjax(productId, changeAmount) {
             const qtyInput = document.getElementById('qty-input-' + productId);
             let currentQty = parseInt(qtyInput.value) || 1;
             let newQty = currentQty + changeAmount;
 
-            if (newQty < 1) return; // Không cho phép giảm xuống dưới 1
+            if (newQty < 1) {
+                removeItemAjax(productId);
+                return;
+            }
 
-            // Thu thập dữ liệu gửi lên Backend CartController
             const formData = new FormData();
             formData.append('productId', productId);
-            formData.append('quantity', changeAmount); // Truyền giá trị sai lệch (+1 hoặc -1)
+            formData.append('change', changeAmount);
 
-            fetch('/Cart/AddToCart', {
+            fetch('/Cart/UpdateQuantity', {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest' // Khai báo cuộc gọi AJAX ngầm
-                }
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
-            .then(response => {
-                if (response.ok) {
-                    // Cập nhật số lượng mới lên ô Input hiển thị
-                    qtyInput.value = newQty;
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        qtyInput.value = newQty;
 
-                    // Tính lại tổng tiền riêng của bó hoa này trên dòng
-                    const row = qtyInput.closest('.cart-row');
-                    const price = parseFloat(row.getAttribute('data-price')) || 0;
-                    const itemTotalElem = document.getElementById('total-price-' + productId);
-                    if(itemTotalElem) {
-                        itemTotalElem.innerText = (price * newQty).toLocaleString('vi-VN') + " đ";
+                        const row = qtyInput.closest('.cart-row');
+                        const price = parseFloat(row.getAttribute('data-price')) || 0;
+                        const itemTotalElem = document.getElementById('total-price-' + productId);
+                        if (itemTotalElem) {
+                            itemTotalElem.innerText = (price * newQty).toLocaleString('vi-VN') + " đ";
+                        }
+
+                        calculateCartTotal();
                     }
-
-                    // Tính lại tổng tiền lớn và đồng bộ số nhảy trên Icon túi hàng Layout
-                    calculateCartTotal();
-                } else {
-                    alert("Cập nhật số lượng thất bại. Vui lòng thử lại!");
-                }
-            })
-            .catch(error => console.error('Lỗi luồng tăng giảm:', error));
+                })
+                .catch(error => console.error('Lỗi tăng giảm số lượng:', error));
         }
 
-        // 🟢 3. XỬ LÝ CHECKOUT: CHỈ ĐẨY SẢN PHẨM ĐƯỢC CHỌN SANG TRANG THANH TOÁN
+        // 3. XỬ LÝ AJAX NGẦM: XÓA HOA KHỎI GIỎ HÀNG KHÔNG TẢI LẠI TRANG
+        function removeItemAjax(productId) {
+            if (confirm("Bạn có chắc chắn muốn gỡ mẫu hoa nghệ thuật này khỏi giỏ hàng? 🌸")) {
+                const formData = new FormData();
+                formData.append('productId', productId);
+
+                fetch('/Cart/RemoveItemJson', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            const rowElem = document.getElementById('cart-row-' + productId);
+                            if (rowElem) rowElem.remove();
+
+                            if (document.querySelectorAll('.cart-row').length === 0) {
+                                window.location.reload();
+                            } else {
+                                calculateCartTotal();
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Lỗi gỡ sản phẩm:', error));
+            }
+        }
+
+        //  ÁP DỤNG VOUCHER KHUYẾN MÃI
+        function applyVoucherAjax() {
+            let code = document.getElementById("couponCode").value.trim();
+            let alertBox = document.getElementById("couponAlert");
+
+            if (!code) {
+                alertBox.className = "d-block mt-1 small fw-bold text-danger";
+                alertBox.innerText = "Vui lòng nhập mã giảm giá!";
+                return;
+            }
+
+            if (code === "LAM2026") {
+                activeVoucherCode = "LAM2026";
+                alertBox.className = "d-block mt-1 small fw-bold text-success";
+                alertBox.innerText = "🎉 Áp dụng thành công mã LAM2026! Đã giảm 20% tổng giá trị sản phẩm được chọn.";
+                calculateCartTotal();
+            }
+            else if (code.toUpperCase() === "FLORALLAM") {
+                activeVoucherCode = "FLORALLAM";
+                alertBox.className = "d-block mt-1 small fw-bold text-success";
+                alertBox.innerText = "🎉 Áp dụng thành công mã FLORALLAM! Đã giảm 50,000 đ.";
+                voucherDiscountAmount = 50000;
+                calculateCartTotal();
+            }
+            else {
+                activeVoucherCode = "";
+                alertBox.className = "d-block mt-1 small fw-bold text-danger";
+                alertBox.innerText = "Mã giảm giá không hợp lệ hoặc đã hết hạn sử dụng!";
+                voucherDiscountAmount = 0;
+                calculateCartTotal();
+            }
+        }
+
+        // 5. ĐẨY DUY NHẤT CÁC ID HOA ĐƯỢC CHỌN SANG TRANG THANH TOÁN QUY TRÌNH MỚI
         function proceedToCheckout() {
             const selectedIds = [];
             document.querySelectorAll('.item-select:checked').forEach(cb => {
@@ -248,13 +412,11 @@
             });
 
             if (selectedIds.length === 0) {
-                alert("Vui lòng tích chọn ít nhất một mẫu hoa để tiến hành đặt hàng! 🌸");
+                alert("Vui lòng tích chọn ít nhất một mẫu hoa tươi trong giỏ hàng để tiến hành đặt đơn! 🌸");
                 return;
             }
 
-            // Gợi ý nghiệp vụ nâng cao: Nếu bạn muốn lọc hóa đơn chỉ mua riêng các ID được tích chọn,
-            // có thể gửi kèm chuỗi query chuỗi IDs qua URL sang trang Checkout:
-            window.location.href = '/Cart/Checkout?selectedProducts=' + selectedIds.join(',');
+            window.location.href = '/Cart/Checkout?selectedProducts=' + selectedIds.join(',') + '&discountApplied=' + voucherDiscountAmount;
         }
     </script>
 }

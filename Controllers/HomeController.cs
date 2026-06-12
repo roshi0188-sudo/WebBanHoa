@@ -21,7 +21,7 @@ namespace WebBanHoa.Controllers
             return View(products);
         }
 
-        // TRANG XEM CHI TI?T BÓ HOA (Khách vãng lai c?ng ph?i xem ???c ?? b?m Mua)
+        
         public async Task<IActionResult> Display(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
@@ -31,10 +31,10 @@ namespace WebBanHoa.Controllers
                 return NotFound();
             }
 
-            return View(product); // Tìm file: Views/Home/Display.cshtml (??u file nh?n: @model WebBanHoa.Models.Product)
+            return View(product); 
         }
 
-        // Các trang ph?, chính sách b?o m?t
+     
         public IActionResult Privacy()
         {
             return View();

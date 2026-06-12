@@ -1,0 +1,301 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Dashboard Phân tích doanh thu - Floral LAM";
+}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    body {
+        background-color: #FCF9FA;
+    }
+
+    .dashboard-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        color: #2D141A;
+        letter-spacing: 0.5px;
+    }
+
+    /* Định dạng các thẻ chỉ số KPI */
+    .kpi-card {
+        border: none;
+        border-radius: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(163, 72, 99, 0.08) !important;
+        }
+
+    /* Khối biểu đồ và danh sách sản phẩm */
+    .analytics-block {
+        background: white;
+        border-radius: 24px;
+        border: 1px solid #F5E6EC;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(163, 72, 99, 0.02);
+    }
+
+    /* Bảng sản phẩm bán chạy */
+    .rank-badge {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 13px;
+    }
+
+    .rank-1 {
+        background-color: #FFF3CD;
+        color: #856404;
+    }
+    /* Vàng */
+    .rank-2 {
+        background-color: #E2E3E5;
+        color: #383D41;
+    }
+    /* Bạc */
+    .rank-3 {
+        background-color: #F8D7DA;
+        color: #721C24;
+    }
+    /* Đồng */
+    .rank-other {
+        background-color: #F8F9FA;
+        color: #6C757D;
+    }
+</style>
+
+<div class="container-fluid py-4 px-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="fw-bold m-0 dashboard-title">Dashboard Phân Tích Doanh Thu</h3>
+            <p class="text-muted small m-0">Phân tích chuyên sâu chỉ số hiệu suất kinh doanh (KPI) và xu hướng tăng trưởng của Floral LAM</p>
+        </div>
+        <a asp-area="Admin" asp-controller="OrderManager" asp-action="Index" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold">
+            <i class="bi bi-arrow-left"></i> Quay lại danh sách đơn
+        </a>
+    </div>
+
+    <div class="row g-3 mb-5">
+        <div class="col-xl-3 col-sm-6">
+            <div class="card kpi-card p-4 shadow-sm text-white h-100" style="background: linear-gradient(135deg, #1A0B0E, #A34863);">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="small opacity-75 text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Tổng doanh thu thực</span>
+                        <h3 class="fw-bold my-2" style="font-family: 'Playfair Display', serif;">
+                            @(ViewBag.TotalRevenue != null ? ((decimal)ViewBag.TotalRevenue).ToString("#,##0") : "0") đ
+                        </h3>
+                    </div>
+                    <span class="fs-4 opacity-75"><i class="bi bi-cash-coin"></i></span>
+                </div>
+                <small class="opacity-75 mt-2 d-block"><i class="bi bi-arrow-up-right me-1"></i> Không tính các hóa đơn đã hủy</small>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card kpi-card p-4 shadow-sm bg-white border border-light h-100">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="small text-muted text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Tổng đơn hàng</span>
+                        <h3 class="fw-bold my-2 text-dark">@(ViewBag.TotalOrders ?? 0) Đơn</h3>
+                    </div>
+                    <span class="fs-4 text-secondary"><i class="bi bi-bag-check-fill"></i></span>
+                </div>
+                <small class="text-success fw-semibold mt-2 d-block"><i class="bi bi-graph-up me-1"></i> Số lượng giao dịch ổn định</small>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card kpi-card p-4 shadow-sm bg-white border border-light h-100">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="small text-muted text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Giá trị đơn trung bình (AOV)</span>
+                        <h3 class="fw-bold my-2" style="color: #A34863;">
+                            @(ViewBag.AOV != null ? ((decimal)ViewBag.AOV).ToString("#,##0") : "0") đ
+                        </h3>
+                    </div>
+                    <span class="fs-4 text-secondary"><i class="bi bi-calculator-fill"></i></span>
+                </div>
+                <small class="text-muted mt-2 d-block">Sức mua bình quân trên một giỏ hoa</small>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card kpi-card p-4 shadow-sm bg-white border border-light h-100">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="small text-muted text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Tỷ lệ chuyển đổi hệ thống</span>
+                        <h3 class="fw-bold my-2 text-primary">@(ViewBag.ConversionRate ?? 0) %</h3>
+                    </div>
+                    <span class="fs-4 text-primary"><i class="bi bi-person-check-fill"></i></span>
+                </div>
+                <small class="text-muted mt-2 d-block">Tỷ lệ mua hàng / Tổng lượt truy cập</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Biểu đồ doanh thu theo tháng (Cột + Line) -->
+        <div class="col-lg-6">
+            <div class="card analytics-block h-100">
+                <h5 class="fw-bold text-dark mb-4" style="font-family: 'Playfair Display', serif;">
+                    <i class="bi bi-bar-chart-line-fill text-danger me-2"></i>Doanh thu theo tháng
+                </h5>
+                <div style="position: relative; height:300px; width:100%;">
+                    <canvas id="revenueTrendChart"></canvas>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 🟢 MỚI: Biểu đồ doanh thu 7 ngày qua -->
+        <div class="col-lg-6">
+            <div class="card analytics-block h-100">
+                <h5 class="fw-bold text-dark mb-4" style="font-family: 'Playfair Display', serif;">
+                    <i class="bi bi-calendar-week-fill text-primary me-2"></i>Doanh thu theo ngày
+                </h5>
+                <div style="position: relative; height:300px; width:100%;">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card analytics-block h-100">
+                <h5 class="fw-bold text-dark mb-4" style="font-family: 'Playfair Display', serif;">
+                    <i class="bi bi-trophy-fill text-warning me-2"></i>Top mẫu hoa bán chạy nhất
+                </h5>
+                <div class="d-flex flex-column gap-3">
+                    @if (ViewBag.TopProducts != null)
+                    {
+                        int rank = 1;
+                        foreach (var item in ViewBag.TopProducts)
+                        {
+                            string rankClass = rank switch
+                            {
+                                1 => "rank-1",
+                                2 => "rank-2",
+                                3 => "rank-3",
+                                _ => "rank-other"
+                            };
+
+                            <div class="d-flex align-items-center justify-content-between border-bottom pb-3" style="border-color: #FAF4F6 !important;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="rank-badge @rankClass">@rank</span>
+                                    <div>
+                                        <span class="fw-bold text-dark d-block" style="font-size:14px;">🌸 @item.ProductName</span>
+                                        <small class="text-muted">Số lượng bán ra: <strong class="text-dark">@item.TotalQuantity</strong> tác phẩm</small>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="fw-bold text-secondary small">@item.TotalSales.ToString("#,##0") đ</span>
+                                </div>
+                            </div>
+                            rank++;
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-muted small">Chưa có dữ liệu thống kê sản phẩm.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // --- 1. BIỂU ĐỒ DOANH THU THEO THÁNG ---
+            const ctx = document.getElementById('revenueTrendChart').getContext('2d');
+            const labelsData = @Json.Serialize(ViewBag.ChartLabels);
+            const revenueData = @Json.Serialize(ViewBag.ChartData);
+            const gradientBar = ctx.createLinearGradient(0, 0, 0, 400);
+            gradientBar.addColorStop(0, 'rgba(163, 72, 99, 1)');
+            gradientBar.addColorStop(1, 'rgba(163, 72, 99, 0.15)');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labelsData && labelsData.length ? labelsData : ["Chưa có dữ liệu"],
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'Xu hướng tăng trưởng',
+                            data: revenueData && revenueData.length ? revenueData : [0],
+                            borderColor: '#D4AF37',
+                            borderWidth: 3,
+                            tension: 0.35,
+                            order: 1
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Doanh thu thực tế (đ)',
+                            data: revenueData && revenueData.length ? revenueData : [0],
+                            backgroundColor: gradientBar,
+                            borderColor: 'rgba(163, 72, 99, 1)',
+                            borderWidth: 1,
+                            borderRadius: 10,
+                            barPercentage: 0.5,
+                            order: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: { backgroundColor: 'rgba(26, 11, 14, 0.95)' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#F3EAEF' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // --- 2. BIỂU ĐỒ DOANH THU 7 NGÀY QUA (WEEKLY CHART) ---
+            const weekCtx = document.getElementById('weeklyChart').getContext('2d');
+            const weeklyLabels = @Json.Serialize(ViewBag.WeekLabels);
+            const weeklyData = @Json.Serialize(ViewBag.WeekData);
+
+            new Chart(weekCtx, {
+                type: 'line',
+                data: {
+                    labels: weeklyLabels && weeklyLabels.length ? weeklyLabels : ["Không có dữ liệu"],
+                    datasets: [{
+                        label: 'Doanh thu trong tuần (đ)',
+                        data: weeklyData && weeklyData.length ? weeklyData : [0],
+                        borderColor: '#0058be',
+                        backgroundColor: 'rgba(0, 88, 190, 0.05)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#0058be'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: value => value.toLocaleString('vi-VN') + ' đ' }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}
+}

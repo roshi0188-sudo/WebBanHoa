@@ -4,8 +4,20 @@
     ViewData["Title"] = "Quản lý duyệt đơn hoa";
 }
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
 <style>
-    /* Tổng thể khu vực Admin Order */
+    body {
+        background-color: #FCF9FA;
+    }
+
+    .page-title {
+        font-family: 'Montserrat', Georgia, serif;
+        color: #2D141A;
+        letter-spacing: 0.5px;
+    }
+
+    /* Card tổng thể bao bọc danh sách */
     .admin-order-card {
         background: white;
         border-radius: 20px;
@@ -110,13 +122,31 @@
         font-weight: 600;
         transition: all 0.2s ease;
     }
+
+    /* Khung điều hướng bộ lọc thông minh lọc nhanh */
+    .filter-btn-group .btn-filter {
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 20px;
+        padding: 6px 16px;
+        transition: all 0.2s ease;
+    }
 </style>
 
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
-            <h3 class="fw-bold m-0" style="color: #2D141A; font-family: 'Playfair Display', Georgia, serif;">Quản Lý Đơn Đặt Hoa</h3>
-            <small class="text-muted">Phê duyệt, theo dõi luồng vận chuyển và hoàn thành các đơn hàng hoa nghệ thuật</small>
+            <h3 class="fw-bold m-0 page-title">Quản Lý Đơn Đặt Hoa</h3>
+            <small class="text-muted">Phê duyệt, theo dõi luồng vận chuyển và hoàn thành các đơn hàng hoa tươi nghệ thuật</small>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-area="Admin" asp-controller="OrderManager" asp-action="ExportToCsv" class="btn btn-success btn-admin-action shadow-sm text-decoration-none text-white">
+                <i class="bi bi-file-earmark-spreadsheet me-1"></i> Xuất dữ liệu CSV
+            </a>
+            <a asp-area="Admin" asp-controller="OrderManager" asp-action="RevenueDashboard" class="btn btn-primary btn-admin-action shadow-sm text-decoration-none text-white" style="background-color: #A34863; border-color: #A34863;">
+                <i class="bi bi-graph-up-arrow me-1"></i> Dashboard doanh thu
+            </a>
         </div>
     </div>
 
@@ -135,6 +165,22 @@
         </div>
     }
 
+    <div class="card p-3 mb-4 shadow-sm border-0 bg-white rounded-4 filter-btn-group">
+        <form method="get" asp-area="Admin" asp-controller="OrderManager" asp-action="Index" class="d-flex flex-wrap gap-2 align-items-center">
+            <span class="text-secondary small fw-bold me-2"><i class="bi bi-funnel-fill"></i> Bộ lọc trạng thái:</span>
+
+            <a asp-action="Index" asp-route-statusFilter="" class="btn btn-sm btn-filter @(string.IsNullOrEmpty(ViewBag.CurrentFilter) ? "btn-dark text-white" : "btn-light border text-secondary")">Tất cả</a>
+
+            <a asp-action="Index" asp-route-statusFilter="Chờ xử lý" class="btn btn-sm btn-filter @(ViewBag.CurrentFilter == "Chờ xử lý" ? "btn-warning text-white" : "btn-light border text-secondary")">⏳ Chờ xử lý</a>
+
+            <a asp-action="Index" asp-route-statusFilter="Đang giao" class="btn btn-sm btn-filter @(ViewBag.CurrentFilter == "Đang giao" ? "btn-info text-white" : "btn-light border text-secondary")">🚚 Đang giao</a>
+
+            <a asp-action="Index" asp-route-statusFilter="Đã hoàn thành" class="btn btn-sm btn-filter @(ViewBag.CurrentFilter == "Đã hoàn thành" ? "btn-success text-white" : "btn-light border text-secondary")">✅ Đã hoàn thành</a>
+
+            <a asp-action="Index" asp-route-statusFilter="Đã hủy" class="btn btn-sm btn-filter @(ViewBag.CurrentFilter == "Đã hủy" ? "btn-danger text-white" : "btn-light border text-secondary")">❌ Đã hủy</a>
+        </form>
+    </div>
+
     <div class="card admin-order-card shadow-sm">
         @if (Model != null && Model.Any())
         {
@@ -142,9 +188,9 @@
                 <table class="table table-admin-order w-100 m-0">
                     <thead>
                         <tr>
-                            <th style="width: 12%;">Mã Đơn</th>
-                            <th style="width: 15%;">Ngày Đặt</th>
-                            <th style="width: 25%;">Thông Tin Khách Hàng</th>
+                            <th style="width: 10%;">Mã Đơn</th>
+                            <th style="width: 14%;">Ngày Đặt</th>
+                            <th style="width: 28%;">Thông Tin Khách Hàng</th>
                             <th style="width: 25%;">Sản Phẩm</th>
                             <th style="width: 13%;">Tổng Tiền</th>
                             <th style="width: 10%;">Trạng Thái</th>
@@ -157,12 +203,12 @@
                             string pillClass = "pill-pending";
                             string statusIcon = "bi-clock-history";
 
-                            if (order.OrderStatus == "Đang giao")
+                            if (order.OrderStatus == "Đang giao" || order.OrderStatus == "Đang vận chuyển")
                             {
                                 pillClass = "pill-shipping";
                                 statusIcon = "bi-truck";
                             }
-                            else if (order.OrderStatus == "Đã hoàn thành")
+                            else if (order.OrderStatus == "Đã hoàn thành" || order.OrderStatus == "Đã giao")
                             {
                                 pillClass = "pill-completed";
                                 statusIcon = "bi-check2-circle";
@@ -177,8 +223,13 @@
                                 <td class="fw-bold" style="color: #A34863;">#LAM-@order.Id</td>
                                 <td class="text-muted small">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
                                 <td>
-                                    <div class="fw-bold text-dark"><i class="bi bi-telephone me-1 text-muted"></i> @order.PhoneNumber</div>
-                                    <small class="text-muted d-block text-truncate mt-1" style="max-width: 220px;" title="@order.ShippingAddress">
+                                    <div class="fw-bold text-dark mb-1">
+                                        <i class="bi bi-person-fill text-muted me-1"></i> @(order.User?.FullName ?? "Khách hàng vãng lai")
+                                    </div>
+                                    <div class="text-secondary small fw-semibold">
+                                        <i class="bi bi-telephone text-muted me-1"></i> @order.PhoneNumber
+                                    </div>
+                                    <small class="text-muted d-block text-truncate mt-1" style="max-width: 240px;" title="@order.ShippingAddress">
                                         <i class="bi bi-geo-alt text-muted"></i> @order.ShippingAddress
                                     </small>
                                 </td>
@@ -204,21 +255,24 @@
                                         @if (order.OrderStatus == "Chờ xử lý")
                                         {
                                             <form asp-area="Admin" asp-controller="OrderManager" asp-action="ApproveOrder" asp-route-orderId="@order.Id" method="post" class="d-inline">
-                                                <button type="submit" class="btn btn-sm btn-success btn-admin-action shadow-sm">
-                                                    <i class="bi bi-shield-check me-1"></i> Duyệt đơn
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-admin-action shadow-sm text-white" style="background-color: #A34863; border-color: #A34863;">
+                                                    Duyệt đơn
                                                 </button>
                                             </form>
 
                                             <form asp-area="Admin" asp-controller="OrderManager" asp-action="CancelOrder" asp-route-orderId="@order.Id" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn đặt hoa này không?');" class="d-inline">
+                                                @Html.AntiForgeryToken()
                                                 <button type="submit" class="btn btn-sm btn-outline-danger btn-admin-action">
-                                                    Hủy
+                                                    Hủy đơn
                                                 </button>
                                             </form>
                                         }
                                         else if (order.OrderStatus == "Đang giao")
                                         {
                                             <form asp-area="Admin" asp-controller="OrderManager" asp-action="CompleteOrder" asp-route-orderId="@order.Id" method="post" class="d-inline">
-                                                <button type="submit" class="btn btn-sm btn-primary btn-admin-action shadow-sm" style="background-color: #A34863; border-color: #A34863;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-primary btn-admin-action shadow-sm text-white" style="background-color: #A34863; border-color: #A34863;">
                                                     <i class="bi bi-patch-check-fill me-1"></i> Hoàn thành
                                                 </button>
                                             </form>
@@ -239,7 +293,7 @@
         {
             <div class="text-center py-5">
                 <i class="bi bi-inbox display-3 text-muted mb-3 d-block" style="color: #E8CAD4 !important;"></i>
-                <h5 class="fw-semibold text-secondary">Hệ thống chưa ghi nhận đơn đặt hoa nào.</h5>
+                <h5 class="fw-semibold text-secondary">Hệ thống chưa ghi nhận đơn đặt hoa nào phù hợp bộ lọc này.</h5>
             </div>
         }
     </div>

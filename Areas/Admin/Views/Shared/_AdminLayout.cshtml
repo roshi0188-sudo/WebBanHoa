@@ -136,31 +136,43 @@
             </div>
 
             <ul class="nav-menu">
+                <!-- 1. DASHBOARD CHUNG -->
                 <li class="nav-menu-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")">
                     <a class="nav-menu-link" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
                         <i class="bi bi-grid-1x2-fill"></i> Dashboard
                     </a>
                 </li>
 
+                <!-- 2. QUẢN LÝ SẢN PHẨM -->
                 <li class="nav-menu-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "ProductManager" ? "active" : "")">
                     <a class="nav-menu-link" asp-area="Admin" asp-controller="ProductManager" asp-action="Index">
                         <i class="bi bi-flower1"></i> Quản lý sản phẩm
                     </a>
                 </li>
 
+                <!-- 3. DANH MỤC HOA -->
                 <li class="nav-menu-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Category" ? "active" : "")">
                     <a class="nav-menu-link" asp-area="Admin" asp-controller="Category" asp-action="Index">
                         <i class="bi bi-tags-fill"></i> Danh mục hoa
                     </a>
                 </li>
 
-                <li class="nav-menu-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "OrderManager" ? "active" : "")">
+                <!-- 4. QUẢN LÝ ĐƠN HÀNG (ĐÃ SỬA: Thêm điều kiện check Action Index) -->
+                <li class="nav-menu-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "OrderManager" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")">
                     <a class="nav-menu-link" asp-area="Admin" asp-controller="OrderManager" asp-action="Index">
                         <i class="bi bi-clipboard-check-fill"></i> Quản lý đơn hàng
                     </a>
                 </li>
 
-                <li class="nav-menu-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "UserList" ? "active" : "")">
+                <!-- 5. DASHBOARD DOANH THU -->
+                <li class="nav-menu-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "OrderManager" && ViewContext.RouteData.Values["Action"]?.ToString() == "RevenueDashboard" ? "active" : "")">
+                    <a class="nav-menu-link" asp-area="Admin" asp-controller="OrderManager" asp-action="RevenueDashboard">
+                        <i class="bi bi-graph-up-arrow"></i> Dashboard doanh thu
+                    </a>
+                </li>
+
+                <!-- 6. QUẢN LÝ NGƯỜI DÙNG -->
+                <li class="nav-menu-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Dashboard" && ViewContext.RouteData.Values["Action"]?.ToString() == "UserList" ? "active" : "")">
                     <a class="nav-menu-link" asp-area="Admin" asp-controller="Dashboard" asp-action="UserList">
                         <i class="bi bi-people-fill"></i> Quản lý người dùng
                     </a>

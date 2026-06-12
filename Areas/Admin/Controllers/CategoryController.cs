@@ -7,31 +7,31 @@ using WebBanHoa.Repositories;
 namespace WebBanHoa.Areas.Admin.Controllers
 {
     [Area("Admin")] 
-    [Authorize(Roles = "Admin")] // Khóa bảo mật nghiêm ngặt bằng Role thay vì [Authorize] chung chung
+    [Authorize(Roles = "Admin")] 
     public class CategoryController : Controller
     {
         private readonly ICategoryRepository _categoryRepository;
 
-        // Tiêm ICategoryRepository vào thông qua Constructor
+        
         public CategoryController(ICategoryRepository categoryRepository)
         {
             _categoryRepository = categoryRepository;
         }
 
-        // 1. HIỂN THỊ DANH SÁCH DANH MỤC (INDEX)
+        // HIỂN THỊ DANH SÁCH DANH MỤC (INDEX)
         public async Task<IActionResult> Index()
         {
             var categories = await _categoryRepository.GetAllAsync();
             return View(categories);
         }
 
-        // 2. THÊM DANH MỤC - GIAO DIỆN (GET) -> Đổi từ Add thành Create để khớp với View
+        //  THÊM DANH MỤC - GIAO DIỆN (GET) 
         public IActionResult Add()
         {
             return View();
         }
 
-        // 3. THÊM DANH MỤC - XỬ LÝ DỮ LIỆU (POST) -> Đổi từ Add thành Create
+        //  THÊM DANH MỤC - XỬ LÝ DỮ LIỆU (POST) 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(Category category)
@@ -44,7 +44,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
             return View(category);
         }
 
-        // 4. CẬP NHẬT DANH MỤC - GIAO DIỆN (GET) -> Đổi từ Update thành Edit cho đúng chuẩn
+        // CẬP NHẬT DANH MỤC - GIAO DIỆN (GET) 
         public async Task<IActionResult> Update(int id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);
@@ -55,7 +55,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
             return View(category);
         }
 
-        // 5. CẬP NHẬT DANH MỤC - XỬ LÝ DỮ LIỆU (POST) -> Đổi từ Update thành Edit
+        // CẬP NHẬT DANH MỤC - XỬ LÝ DỮ LIỆU (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(int id, Category category)
@@ -73,7 +73,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
             return View(category);
         }
 
-        // 6. XÓA DANH MỤC - XÁC NHẬN (GET)
+        //XÓA DANH MỤC - XÁC NHẬN (GET)
         public async Task<IActionResult> Delete(int id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);
@@ -84,7 +84,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
             return View(category);
         }
 
-        // 7. XÓA DANH MỤC - THỰC THI (POST)
+        // XÓA DANH MỤC - THỰC THI (POST)
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

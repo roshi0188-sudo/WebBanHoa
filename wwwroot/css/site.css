@@ -1,3 +1,11 @@
+* {
+    font-family: 'Montserrat' !important;
+}
+
+/* Riêng các tiêu ?? thì dùng Playfair */
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+    font-family: 'Playfair Display', serif !important;
+}
 html {
   font-size: 14px;
 }
@@ -76,7 +84,6 @@ footer {
    LUMINA FLORA LUXURY CLEAN STYLES (FLORAL LAM HOMEPAGE)
    ========================================================================== */
 
-/* C?u hình các kh?i bo góc h? h?u c? m??t mà gi?ng b?n m?u */
 .rounded-5 {
     border-radius: 2rem !important;
 }
@@ -85,13 +92,12 @@ footer {
     border-radius: 1.2rem !important;
 }
 
-/* Kho?ng cách ch? giãn cách chu?n catalogue Lookbook cao c?p */
+
 .small-tracking {
     letter-spacing: 0.12em;
     font-size: 12px;
 }
 
-/* C? ??nh ph?n mô t? s?n ph?m t?i ?a 2 dòng ?? các card ??u t?m t?p */
 .text-truncate-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -100,7 +106,6 @@ footer {
     text-overflow: ellipsis;
 }
 
-/* Ch? Th??ng Hi?u chuy?n d?i màu Gradient quý phái (Xanh - H?ng) */
 .gradient-text {
     background: linear-gradient(135deg, #0058be 0%, #fd56a7 100%);
     -webkit-background-clip: text;
@@ -108,7 +113,7 @@ footer {
     display: inline-block;
 }
 
-/* Nút b?m Hero chuy?n màu có bóng ?? phát quang m??t mà */
+
 .gradient-button {
     background: linear-gradient(135deg, #0058be 0%, #fd56a7 100%);
     border: none;
@@ -121,7 +126,7 @@ footer {
         color: white !important;
     }
 
-/* Nút "Chi Ti?t" s?n ph?m tinh t? vi?n h?ng m?nh, ch? t??ng ph?n cao */
+
 .btn-outline-premium {
     color: #b4136d;
     border: 1px solid #ffb0cd;
@@ -137,7 +142,6 @@ footer {
         box-shadow: 0 6px 15px rgba(0, 88, 190, 0.15);
     }
 
-/* L?p ph? m? nh? b? tr? cho ph?n ?nh Hero */
 .bg-gradient-to-t-soft {
     position: absolute;
     bottom: 0;
@@ -147,7 +151,7 @@ footer {
     background: linear-gradient(to top, rgba(255,247,250,0.2), transparent);
 }
 
-/* C?u trúc th? Card cao c?p (Tách bi?t kh?i thông tin n?m d??i ?nh) */
+
 .premium-card {
     border: 1px solid #f0e5eb !important;
     background-color: #ffffff;
@@ -159,7 +163,6 @@ footer {
         box-shadow: 0 20px 40px rgba(180, 19, 109, 0.07) !important;
     }
 
-/* Phóng to ?nh hoa m??t mà khi di chu?t vào vùng card */
 .transition-transform-700 {
     transition: transform 0.7s cubic-bezier(0.15, 0.85, 0.45, 1);
 }
@@ -168,7 +171,6 @@ footer {
     transform: scale(1.05);
 }
 
-/* ??nh c?u hình và hi?u ?ng chuy?n ??ng cho cánh hoa r?i t? do */
 .floating-petal {
     position: absolute;
     pointer-events: none;
@@ -197,7 +199,7 @@ footer {
     }
 }
 
-/* T??ng tác ??i màu liên k?t ? Footer */
+
 footer a {
     transition: color 0.2s ease;
 }
@@ -208,5 +210,5 @@ footer a {
 
 .product-card img {
     object-fit: cover;
-    object-position: center; /* ??m b?o tr?ng tâm c?a bó hoa luôn n?m gi?a */
+    object-position: center; 
 }

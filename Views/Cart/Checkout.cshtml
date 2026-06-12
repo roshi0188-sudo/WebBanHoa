@@ -5,7 +5,7 @@
 }
 
 <style>
-    /* Tổng thể Luxury Tối giản */
+    /* Tổng thể Luxury Tối giản & Premium UX */
     .checkout-title {
         font-family: 'Playfair Display', serif;
         color: #2D3748;
@@ -28,18 +28,40 @@
         padding-bottom: 12px;
     }
 
-    /* Tinh chỉnh Input Fields */
+    /* 🎨 UI KHẮC PHỤC BIẾN DẠNG: Đồng bộ hoàn toàn form nhập liệu */
     .checkout-form-control {
         background-color: #FAFAFA;
         border: 1px solid #E2E8F0;
         transition: all 0.3s ease;
+        font-size: 14px;
     }
 
-        .checkout-form-control:focus {
-            background-color: white;
-            border-color: #DE8F9F;
-            box-shadow: 0 0 0 3px rgba(222, 143, 159, 0.15);
+    .checkout-form-select {
+        background-color: #FAFAFA;
+        border: 1px solid #E2E8F0;
+        transition: all 0.3s ease;
+        height: 43px !important; /* Độ cao tương đương ô nhập số điện thoại */
+        border-radius: 20px !important; /* Ép bo tròn mềm mại cho select */
+        padding-left: 15px !important;
+        font-size: 13px !important;
+        color: #4A5568 !important;
+        cursor: pointer;
+    }
+
+        .checkout-form-control:focus, .checkout-form-select:focus {
+            background-color: white !important;
+            border-color: #DE8F9F !important;
+            box-shadow: 0 0 0 3px rgba(222, 143, 159, 0.15) !important;
+            outline: none;
         }
+
+    /* Tối ưu ô ghi địa chỉ chi tiết */
+    textarea.checkout-form-control {
+        border-radius: 16px !important;
+        padding: 15px !important;
+        font-size: 13px !important;
+        resize: none;
+    }
 
     /* Danh sách tóm tắt sản phẩm đặt */
     .checkout-item-row {
@@ -50,6 +72,34 @@
         .checkout-item-row:last-child {
             border-bottom: none;
         }
+
+    /* Khung phương thức thanh toán dạng hộp bấm chọn */
+    .payment-method-box {
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        padding: 14px 18px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .payment-method-box:hover {
+            border-color: #DE8F9F;
+            background-color: #FFF8F9;
+        }
+
+        .payment-method-box input[type="radio"] {
+            accent-color: #A34863;
+            width: 18px;
+            height: 18px;
+        }
+
+            .payment-method-box input[type="radio"]:checked + label {
+                color: #A34863;
+                font-weight: 600;
+            }
 
     /* Các nút hành động */
     .btn-submit-order {
@@ -78,61 +128,127 @@
         }
 </style>
 
-<div class="container mt-5 py-4" style="max-width: 950px;">
+<div class="container mt-5 py-4" style="max-width: 1000px;">
     <div class="text-center mb-5">
         <h3 class="fw-bold checkout-title">Xác Nhận Đơn Hàng</h3>
-        <p class="text-muted small">Vui lòng kiểm tra kỹ thông tin giao nhận và danh sách hoa tươi trước khi xác nhận đặt đơn.</p>
+        <p class="text-muted small">Vui lòng điền thông tin giao nhận và lựa chọn phương thức thanh toán phù hợp.</p>
     </div>
 
-    <form asp-controller="Cart" asp-action="Checkout" method="post">
+    <form asp-controller="Cart" asp-action="ProcessCheckout" method="post">
         @Html.AntiForgeryToken()
 
-        <!-- 🟢 SỬA DÒNG NÀY: Dùng thuộc tính asp-route để tự động gán thẳng giá trị vào URL nhận của phương thức POST -->
-        <input type="hidden" name="selectedProducts" value="@(Context.Request.Query["selectedProducts"].ToString() ?? ViewContext.RouteData.Values["selectedProducts"]?.ToString())" />
+        <input type="hidden" name="selectedProducts" value="@(Context.Request.Query["selectedProducts"].ToString() ?? ViewContext.RouteData.Values["selectedProducts"]?.ToString() ?? ViewBag.SelectedProductsString)" />
 
-        <!-- Đồng thời hiển thị thông báo lỗi chi tiết ra màn hình để biết hệ thống đang thiếu dữ liệu gì -->
-        <div asp-validation-summary="All" class="text-danger small mb-3 fw-bold"></div>
+        <input type="hidden" id="ProvinceText" name="ProvinceText" />
+        <input type="hidden" id="DistrictText" name="DistrictText" />
+        <input type="hidden" id="WardText" name="WardText" />
+
+        <div asp-validation-summary="All" class="text-danger small mb-4 fw-bold"></div>
 
         <div class="row g-4">
-            <div class="col-md-6">
-                <div class="card checkout-card h-100">
-                    <h5 class="checkout-section-title mb-4">
-                        <i class="bi bi-geo-alt me-2" style="color: #A34863;"></i>Thông tin giao hoa
-                    </h5>
 
-                    <div class="mb-4">
-                        <label asp-for="PhoneNumber" class="form-label small fw-bold text-secondary">Số điện thoại người nhận</label>
-                        <input asp-for="PhoneNumber" class="form-control checkout-form-control rounded-pill px-3 py-2" placeholder="Nhập số điện thoại liên hệ..." />
-                        <span asp-validation-for="PhoneNumber" class="text-danger small mt-1 d-block"></span>
+            <div class="col-lg-6">
+                <div class="d-flex flex-column gap-4">
+
+                    <div class="card checkout-card shadow-sm">
+                        <h5 class="checkout-section-title mb-4">
+                            <i class="bi bi-geo-alt me-2" style="color: #A34863;"></i>Thông tin nhận hoa
+                        </h5>
+
+                        <div class="mb-3">
+                            <div class="mb-3">
+                                <label for="ReceiverName" class="form-label small fw-bold text-secondary">Tên người nhận</label>
+                                <input type="text" id="ReceiverName" name="ReceiverName" class="form-control checkout-form-control rounded-pill px-3 py-2" placeholder="Nhập tên người nhận..." required />
+                                <span class="text-danger small mt-1 d-block"></span>
+                            </div>
+                            <label asp-for="PhoneNumber" class="form-label small fw-bold text-secondary">Số điện thoại người nhận</label>
+                            <input asp-for="PhoneNumber" class="form-control checkout-form-control rounded-pill px-3 py-2" placeholder="Nhập số điện thoại giao hàng..." />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                       
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-secondary">Tỉnh / Thành</label>
+                                <select id="Province" class="form-select checkout-form-select" required>
+                                    <option value="">-- Chọn Tỉnh/TP --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-secondary">Quận / Huyện</label>
+                                <select id="District" class="form-select checkout-form-select" required disabled>
+                                    <option value="">-- Chọn Quận/Huyện --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-secondary">Phường / Xã</label>
+                                <select id="Ward" class="form-select checkout-form-select" required disabled>
+                                    <option value="">-- Chọn Phường/Xã --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label asp-for="ShippingAddress" class="form-label small fw-bold text-secondary">Địa chỉ số nhà, tên đường chi tiết</label>
+                            <textarea asp-for="ShippingAddress" class="form-control checkout-form-control" rows="3" placeholder="Số nhà, ngõ ngách, tên đường cụ thể..."></textarea>
+                            <span asp-validation-for="ShippingAddress" class="text-danger small mt-1 d-block"></span>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="ShippingAddress" class="form-label small fw-bold text-secondary">Địa chỉ giao hoa chi tiết</label>
-                        <textarea asp-for="ShippingAddress" class="form-control checkout-form-control rounded-4 px-3 py-3" rows="5" placeholder="Ghi cụ thể số nhà, tên đường, phường/xã, quận/huyện..."></textarea>
-                        <span asp-validation-for="ShippingAddress" class="text-danger small mt-1 d-block"></span>
+                    <div class="card checkout-card shadow-sm">
+                        <h5 class="checkout-section-title mb-4">
+                            <i class="bi bi-credit-card me-2" style="color: #A34863;"></i>Phương thức thanh toán
+                        </h5>
+                        <div class="d-flex flex-column gap-2.5">
+                            <div class="payment-method-box">
+                                <input type="radio" id="payCOD" name="PaymentMethod" value="COD">
+                                <label for="payCOD" class="m-0 w-100 cursor-pointer small text-dark">
+                                    <i class="bi bi-cash-coin text-warning me-2"></i> Thanh toán khi nhận hàng (COD)
+                                </label>
+                            </div>
+                            <div class="payment-method-box">
+                                <input type="radio" id="payBank" name="PaymentMethod" value="BankTransfer" checked>
+                                <label for="payBank" class="m-0 w-100 cursor-pointer small text-dark">
+                                    <i class="bi bi-qr-code-scan text-primary me-2"></i> Chuyển khoản qua ngân hàng (Mã QR)
+                                </label>
+                            </div>
+                            <div class="payment-method-box">
+                                <input type="radio" id="payWallet" name="PaymentMethod" value="EWallet">
+                                <label for="payWallet" class="m-0 w-100 cursor-pointer small text-dark">
+                                    <i class="bi bi-wallet2 text-danger me-2"></i> Thanh toán bằng Ví điện tử (Momo / VNPAY)
+                                </label>
+                            </div>
+                            <div class="payment-method-box">
+                                <input type="radio" id="payCard" name="PaymentMethod" value="CreditCard">
+                                <label for="payCard" class="m-0 w-100 cursor-pointer small text-dark">
+                                    <i class="bi bi-credit-card text-success me-2"></i> Thẻ ghi nợ Quốc tế (Visa / Mastercard)
+                                </label>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
 
             <div class="col-md-6">
-                <div class="card checkout-card h-100 d-flex flex-column justify-content-between">
+                <div class="card checkout-card h-100 d-flex flex-column justify-content-between shadow-sm">
                     <div>
                         <h5 class="checkout-section-title mb-3">
-                            <i class="bi bi-journal-text me-2" style="color: #A34863;"></i>Tóm tắt mẫu hoa đặt mua
+                            <i class="bi bi-journal-text me-2" style="color: #A34863;"></i>Danh sách hoa tươi đặt mua
                         </h5>
 
-                        <div class="overflow-y-auto px-1" style="max-height: 240px;">
+                        <div class="overflow-y-auto px-1" style="max-height: 200px;">
                             @if (cartItems != null && cartItems.Any())
                             {
                                 foreach (var item in cartItems)
                                 {
                                     <div class="d-flex align-items-center justify-content-between checkout-item-row">
                                         <div>
-                                            <span class="fw-bold text-dark d-block" style="font-size: 14px;">@item.ProductName</span>
-                                            <small class="text-muted">Số lượng: @item.Quantity</small>
+                                            <span class="fw-bold text-dark d-block" style="font-size: 14px;">🌸 @item.ProductName</span>
+                                            <small class="text-muted">Số lượng: x@(item.Quantity)</small>
                                         </div>
                                         <div class="fw-semibold text-end text-dark" style="font-size: 14px;">
-                                            @item.TotalPrice.ToString("#,##0") đ
+                                            @((item.Price * item.Quantity).ToString("#,##0")) đ
                                         </div>
                                     </div>
                                 }
@@ -141,17 +257,37 @@
                     </div>
 
                     <div class="mt-4 pt-3 border-top">
+                        <input type="hidden" name="DiscountAmount" value="@(ViewBag.Discount ?? 0)" />
+                        <input type="hidden" name="TotalAmount" value="@(ViewBag.FinalPayment ?? 0)" />
+
+                        <div class="d-flex justify-content-between small mb-2">
+                            <span class="text-muted">Tổng tiền hàng:</span>
+                            <span class="text-dark fw-semibold">@(ViewBag.TotalPrice != null ? ((decimal)ViewBag.TotalPrice).ToString("#,##0") : "0") đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-2">
+                            <span class="text-muted">Phí vận chuyển mặc định:</span>
+                            <span class="text-success fw-semibold">+ @(ViewBag.ShippingFee != null ? ((decimal)ViewBag.ShippingFee).ToString("#,##0") : "0") đ</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between small mb-3 text-danger">
+                            <span>Mã giảm giá (Voucher):</span>
+                            <span class="fw-bold" id="checkoutDiscountDisplay">- @(ViewBag.Discount != null ? ((decimal)ViewBag.Discount).ToString("#,##0") : "0") đ</span>
+                        </div>
+
+                        <hr style="border-top: 1px solid #E2E8F0;">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <span class="fw-bold text-secondary" style="font-size: 15px;">Tổng tiền:</span>
-                            <span class="fw-bold" style="color: #A34863; font-size: 22px;">@Model.TotalAmount.ToString("#,##0") đ</span>
+                            <span class="fw-bold text-secondary" style="font-size: 15px;">Tổng cộng số tiền thanh toán:</span>
+                            <span class="fw-bold" style="color: #A34863; font-size: 22px;" id="checkoutFinalPaymentDisplay">
+                                @(ViewBag.FinalPayment != null ? ((decimal)ViewBag.FinalPayment).ToString("#,##0") : "0") đ
+                            </span>
                         </div>
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-submit-order w-100 py-2.5 rounded-pill fw-bold shadow-sm">
-                                Xác nhận đặt đơn hoa
+                                <i class="bi bi-lock-fill me-1"></i> Hoàn tất đơn đặt
                             </button>
                             <a asp-action="Index" class="btn btn-back-cart rounded-pill w-100 py-2.5 fw-semibold text-center text-decoration-none" style="font-size: 14px;">
-                                Quay lại
+                                Quay lại giỏ hàng
                             </a>
                         </div>
                     </div>
@@ -161,3 +297,108 @@
 
     </form>
 </div>
+
+<!-- SCRIPT ĐỊA CHÍNH QUỐC GIA ĐỊA CHỈ THẬT 100% - CHẠY NỘI BỘ KHÔNG SỢ CHẶN MẠNG -->
+<script>
+    (function () {
+        // Trỏ đường dẫn trực tiếp tới file JSON thật trong thư mục wwwroot của bạn
+        const localJsonUrl = "/js/data.json";
+        let fullCountryData = [];
+
+        function startOfflineLocationServices() {
+            const provinceDrop = document.getElementById("Province");
+            const districtDrop = document.getElementById("District");
+            const wardDrop = document.getElementById("Ward");
+
+            if (!provinceDrop) return;
+
+            // 1. Tải file JSON địa chính thật ngay từ nội bộ dự án
+            fetch(localJsonUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error("Không tìm thấy file json");
+                    return response.json();
+                })
+                .then(data => {
+                    fullCountryData = data;
+                    provinceDrop.innerHTML = '<option value="">-- Chọn Tỉnh/TP --</option>';
+
+                    // Nạp toàn bộ các Tỉnh/Thành thật vào dropdown
+                    fullCountryData.forEach(p => {
+                        provinceDrop.innerHTML += `<option value="${p.Id}">${p.Name}</option>`;
+                    });
+                })
+                .catch(error => {
+                    console.error("Lỗi nạp file JSON địa chính:", error);
+                    provinceDrop.innerHTML = '<option value="">-- Thiếu file data.json trong wwwroot --</option>';
+                });
+
+            // 2. Khi đổi Tỉnh -> Lọc và hiện Quận/Huyện thật
+            provinceDrop.onchange = function () {
+                const pId = this.value;
+                const pText = this.options[this.selectedIndex].text;
+                document.getElementById("ProvinceText").value = pId ? pText : "";
+
+                districtDrop.innerHTML = '<option value="">-- Chọn Quận/Huyện --</option>';
+                wardDrop.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+                wardDrop.disabled = true;
+
+                if (pId) {
+                    const selectedProvince = fullCountryData.find(p => p.Id === pId);
+                    if (selectedProvince && selectedProvince.Districts) {
+                        selectedProvince.Districts.forEach(d => {
+                            districtDrop.innerHTML += `<option value="${d.Id}">${d.Name}</option>`;
+                        });
+
+                        // Ép mở khóa ô Quận/Huyện ngay lập tức
+                        districtDrop.removeAttribute("disabled");
+                        districtDrop.disabled = false;
+                    }
+                } else {
+                    districtDrop.disabled = true;
+                }
+            };
+
+            // 3. Khi đổi Quận/Huyện -> Lọc và hiện Phường/Xã thật
+            districtDrop.onchange = function () {
+                const dId = this.value;
+                const dText = this.options[this.selectedIndex].text;
+                document.getElementById("DistrictText").value = dId ? dText : "";
+
+                wardDrop.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+                wardDrop.disabled = true;
+
+                if (dId) {
+                    const pId = provinceDrop.value;
+                    const selectedProvince = fullCountryData.find(p => p.Id === pId);
+                    if (selectedProvince && selectedProvince.Districts) {
+                        const selectedDistrict = selectedProvince.Districts.find(d => d.Id === dId);
+                        if (selectedDistrict && selectedDistrict.Wards) {
+                            selectedDistrict.Wards.forEach(w => {
+                                wardDrop.innerHTML += `<option value="${w.Id}">${w.Name}</option>`;
+                            });
+
+                            // Ép mở khóa ô Phường/Xã ngay lập tức
+                            wardDrop.removeAttribute("disabled");
+                            wardDrop.disabled = false;
+                        }
+                    }
+                } else {
+                    wardDrop.disabled = true;
+                }
+            };
+
+            // 4. Khi chọn Phường/Xã -> Lưu văn bản chữ
+            wardDrop.onchange = function () {
+                const wText = this.options[this.selectedIndex].text;
+                document.getElementById("WardText").value = this.value ? wText : "";
+            };
+        }
+
+        // Chạy luồng an toàn chống xung đột layout
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", startOfflineLocationServices);
+        } else {
+            startOfflineLocationServices();
+        }
+    })();
+</script>

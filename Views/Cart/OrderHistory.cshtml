@@ -5,43 +5,90 @@
     ViewData["Title"] = "Lịch sử đặt hoa - Floral LAM";
 }
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
 <style>
-    /* Card tổng thể phong cách Boutique */
-    .history-card {
-        background: white;
-        border-radius: 24px;
+    body {
+        background-color: #FCF9FA;
+    }
+
+    .page-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        color: #2D141A;
+        letter-spacing: 0.5px;
+    }
+
+    /* Card tổng thể bao bọc danh sách */
+    .history-container {
+        background: transparent;
         border: none;
-        box-shadow: 0 10px 30px rgba(163, 72, 99, 0.02);
-        padding: 35px;
     }
 
-    /* Định dạng bảng đơn hàng sang trọng */
-    .table-luxury {
-        vertical-align: middle;
-    }
-
-        .table-luxury thead th {
-            background-color: #FAF6F8;
-            color: #4A5568;
-            font-weight: 600;
-            text-uppercase: true;
-            font-size: 12px;
-            letter-spacing: 0.5px;
-            padding: 16px;
-            border: none;
-        }
-
-        .table-luxury tbody td {
-            padding: 20px 16px;
-            border-bottom: 1px solid #F3EAEF;
-            color: #2D3748;
-            font-size: 14px;
-        }
-
-    /* Bo tròn Badge trạng thái */
-    .status-badge {
-        padding: 6px 14px;
+    /* Thiết kế từng dòng đơn hàng thành một chiếc Card Luxury */
+    .order-master-card {
+        background: white;
         border-radius: 20px;
+        border: 1px solid #F5E6EC;
+        box-shadow: 0 10px 25px rgba(163, 72, 99, 0.02);
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+        .order-master-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(163, 72, 99, 0.06);
+            border-color: #E8CAD4;
+        }
+
+    /* Thanh tiêu đề nhỏ đầu mỗi Card */
+    .order-card-header {
+        background-color: #FAF4F6;
+        border-bottom: 1px solid #F5E6EC;
+        padding: 12px 24px;
+    }
+
+    /* Khối chứa danh sách hoa */
+    .flower-item-row {
+        padding: 20px 24px;
+    }
+
+    /* Giao diện từng tag mẫu hoa */
+    .order-item-mini {
+        font-size: 14px;
+        color: #3D4A5D;
+        background-color: #FFF8F9;
+        border: 1px solid #FCECEF;
+        padding: 8px 16px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+    }
+
+    /* Số lượng hoa đóng khung tròn hồng pastel xịn mịn */
+    .quantity-badge {
+        background-color: #A34863;
+        color: white;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 8px;
+        border-radius: 20px;
+        min-width: 28px;
+        text-align: center;
+    }
+
+    /* Định dạng giá tiền to, rõ ràng, tinh tế */
+    .price-text {
+        font-size: 18px;
+        color: #A34863;
+        font-weight: 700;
+    }
+
+    /* Badge Trạng thái viên thuốc bo tròn mềm mại */
+    .status-badge {
+        padding: 6px 16px;
+        border-radius: 30px;
         font-size: 12px;
         font-weight: 600;
         display: inline-flex;
@@ -50,112 +97,129 @@
     }
 
     .status-pending {
-        background-color: #FEFCBF;
+        background-color: #FFFDF0;
         color: #B7791F;
+        border: 1px solid #FCEFC2;
     }
-    /* Chờ xử lý */
-    .status-shipping {
-        background-color: #EBF8FF;
-        color: #2B6CB0;
-    }
-    /* Đang giao */
-    .status-completed {
-        background-color: #E6FFFA;
-        color: #319795;
-    }
-    /* Đã hoàn thành */
-    .status-canceled {
-        background-color: #FED7D7;
-        color: #E53E3E;
-    }
-    /* Đã hủy */
 
-    /* Định dạng chi tiết hoa nhỏ bên trong đơn */
-    .order-item-mini {
-        font-size: 13px;
-        color: #718096;
-        background-color: #F8F9FA;
-        padding: 4px 10px;
-        border-radius: 8px;
-        display: inline-block;
-        margin-right: 6px;
-        margin-bottom: 6px;
+    .status-shipping {
+        background-color: #F0F7FF;
+        color: #2B6CB0;
+        border: 1px solid #CCE3F8;
+    }
+
+    .status-completed {
+        background-color: #EBFDF9;
+        color: #234E52;
+        border: 1px solid #C6F6D5;
+    }
+
+    .status-canceled {
+        background-color: #FFF5F5;
+        color: #C53030;
+        border: 1px solid #FED7D7;
     }
 </style>
 
 <div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-lg-11">
+        <div class="col-xl-10">
 
-            <div class="mb-4">
-                <h3 class="fw-bold text-dark m-0" style="font-family: 'Playfair Display', serif;">Lịch Sử Đặt Hoa</h3>
-                <small class="text-muted">Theo dõi và quản lý danh sách các bó hoa nghệ thuật bạn đã đặt tại Floral LAM</small>
+            <div class="text-center mb-5">
+                <h2 class="fw-bold page-title m-0">Lịch Sử Đặt Hoa</h2>
+                <div class="d-flex justify-content-center my-2">
+                    <span style="height: 2px; width: 60px; background: linear-gradient(90deg, transparent, #A34863, transparent);"></span>
+                </div>
+                <p class="text-muted small">Nơi lưu giữ những khoảnh khắc yêu thương bạn đã gửi gắm cùng Floral LAM</p>
             </div>
 
-            <div class="card history-card">
+            <div class="card history-container">
                 @if (Model != null && Model.Any())
                 {
-                    <div class="table-responsive">
-                        <table class="table table-luxury w-100 m-0">
-                            <thead>
-                                <tr>
-                                    <th style="width: 12%">Mã đơn</th>
-                                    <th style="width: 18%">Ngày đặt</th>
-                                    <th style="width: 35%">Chi tiết mẫu hoa đặt</th>
-                                    <th style="width: 15%">Tổng tiền</th>
-                                    <th style="width: 20%">Trạng thái</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var order in Model)
-                                {
-                                    // Gán màu sắc sinh động động theo trạng thái thực tế
-                                    string badgeClass = "status-pending";
-                                    if (order.OrderStatus == "Đang giao") { badgeClass = "status-shipping"; }
-                                    else if (order.OrderStatus == "Đã hoàn thành" || order.OrderStatus == "Đã giao") { badgeClass = "status-completed"; }
-                                    else if (order.OrderStatus == "Đã hủy") { badgeClass = "status-canceled"; }
+                    <div class="d-flex flex-column gap-4">
+                        @foreach (var order in Model)
+                        {
+                            // Thiết lập màu sắc trạng thái
+                            string badgeClass = "status-pending";
+                            string statusIcon = "bi-clock-history";
 
-                                    <tr>
-                                        <td class="fw-bold" style="color: #A34863;">#LAM-@order.Id</td>
-                                        <td class="text-muted">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
-                                        <td>
-                                            @if (order.OrderDetails != null && order.OrderDetails.Any())
-                                            {
-                                                foreach (var detail in order.OrderDetails)
+                            if (order.OrderStatus == "Đang giao")
+                            {
+                                badgeClass = "status-shipping";
+                                statusIcon = "bi-truck";
+                            }
+                            else if (order.OrderStatus == "Đã hoàn thành" || order.OrderStatus == "Đã giao")
+                            {
+                                badgeClass = "status-completed";
+                                statusIcon = "bi-check2-circle";
+                            }
+                            else if (order.OrderStatus == "Đã hủy")
+                            {
+                                badgeClass = "status-canceled";
+                                statusIcon = "bi-x-circle";
+                            }
+
+                            <div class="order-master-card shadow-sm">
+
+                                <div class="order-card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="fw-bold" style="color: #A34863; font-size: 15px;">
+                                            <i class="bi bi-receipt me-1"></i> Mã đơn: #LAM-@order.Id
+                                        </span>
+                                        <span class="text-muted small">
+                                            <i class="bi bi-calendar3 me-1"></i> @order.OrderDate.ToString("dd/MM/yyyy HH:mm")
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span class="status-badge @badgeClass">
+                                            <i class="bi @statusIcon"></i> @order.OrderStatus
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="flower-item-row">
+                                    <div class="row align-items-center g-3">
+
+                                        <div class="col-md-8">
+                                            <div class="d-flex flex-wrap gap-2">
+                                                @if (order.OrderDetails != null && order.OrderDetails.Any())
                                                 {
-                                                    <div class="order-item-mini">
-                                                        <span>🌸 @(detail.Product?.Name ?? "Mẫu hoa hệ thống")</span>
-                                                        <strong class="text-dark">x@detail.Quantity</strong>
-                                                    </div>
+                                                    foreach (var detail in order.OrderDetails)
+                                                    {
+                                                        <div class="order-item-mini">
+                                                            <span>🌸 @(detail.Product?.Name ?? "Mẫu hoa hệ thống")</span>
+                                                            <span class="quantity-badge">x@(detail.Quantity)</span>
+                                                        </div>
+                                                    }
                                                 }
-                                            }
-                                            else
-                                            {
-                                                <small class="text-muted">Không có thông tin sản phẩm</small>
-                                            }
-                                        </td>
-                                        <td class="fw-bold text-dark">@order.TotalAmount.ToString("#,##0") đ</td>
-                                        <td>
-                                            <span class="status-badge @badgeClass">
-                                                <i class="bi bi-circle-fill" style="font-size: 5px;"></i> @order.OrderStatus
-                                            </span>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                                                else
+                                                {
+                                                    <span class="text-muted small italic">Không tìm thấy dữ liệu mẫu hoa</span>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 text-md-end text-start border-start-md">
+                                            <span class="text-muted small d-block d-md-block d-inline">Tổng thanh toán:</span>
+                                            <span class="price-text ms-2 ms-md-0">@order.TotalAmount.ToString("#,##0") đ</span>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        }
                     </div>
                 }
                 else
                 {
-                    <!-- GIAO DIỆN TRỐNG KHI USER CHƯA TỪNG ĐẶT HOA -->
-                    <div class="text-center py-5">
-                        <i class="bi bi-bag-x display-3 text-muted mb-3 d-block"></i>
-                        <h5 class="fw-bold text-secondary">Bạn chưa có đơn đặt hoa nào</h5>
-                        <p class="text-muted small mb-4">Hãy ghé thăm trang chủ bộ sưu tập để chọn những bó hoa tươi thắm nhất nhé.</p>
-                        <a asp-controller="Home" asp-action="Index" class="btn text-white rounded-pill px-4 fw-semibold text-uppercase small"
-                           style="background: linear-gradient(135deg, #DE8F9F, #A34863); border: none; font-size: 12px;">
-                            Khám phá kho hoa ngay
+                    <div class="text-center py-5 bg-white rounded-4 border border-dashed shadow-sm">
+                        <i class="bi bi-bag-x display-1 text-muted mb-3 d-block" style="color: #E8CAD4 !important;"></i>
+                        <h5 class="fw-bold text-dark mb-2" style="font-family: 'Playfair Display', serif;">Bạn chưa có đơn đặt hoa nào</h5>
+                        <p class="text-muted small mb-4 px-3">Hãy ghé thăm trang chủ bộ sưu tập để chọn những bó hoa tươi thắm nghệ thuật nhất nhé.</p>
+                        <a asp-controller="Home" asp-action="Index" class="btn text-white rounded-pill px-4 py-2 fw-semibold text-uppercase small"
+                           style="background: linear-gradient(135deg, #DE8F9F, #A34863); border: none; font-size: 12px; letter-spacing: 0.5px;">
+                            Khám phá kho hoa ngay <i class="bi bi-arrow-right ms-1"></i>
                         </a>
                     </div>
                 }

@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebBanHoa.Models;
 using WebBanHoa.Repositories;
+using Microsoft.AspNetCore.Identity.UI.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +42,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IProductRepository, EFProductRepository>();
 builder.Services.AddScoped<ICategoryRepository, EFCategoryRepository>();
-
+//ĐĂNG KÝ DỊCH VỤ GỬI EMAIL XÁC THỰC
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 var app = builder.Build();
 

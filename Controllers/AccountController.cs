@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -13,11 +14,12 @@ namespace WebBanHoa.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-
-        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
+        private readonly IEmailSender _emailSender;
+        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, IEmailSender emailSender)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _emailSender = emailSender;
         }
 
         // Profile 
@@ -119,19 +121,20 @@ namespace WebBanHoa.Controllers
 
                 if (result.Succeeded)
                 {
-                    TempData["SuccessMessage"] = $"Chào mừng {user.FullName ?? user.UserName} đã quay trở lại! ";
-
-                    // Điều hướng người dùng về trang đích trước đó hoặc trang chủ
-                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    if (!user.EmailConfirmed)
                     {
-                        return Redirect(returnUrl);
+                        await _signInManager.SignOutAsync(); // Đăng xuất phiên vừa mồi
+                        ModelState.AddModelError("", "Tài khoản của bạn chưa được xác thực qua Email. Vui lòng kiểm tra hộp thư.");
+                        return View();
                     }
+
+                    TempData["SuccessMessage"] = $"Chào mừng {user.FullName} đã quay trở lại! 🌸";
                     return RedirectToAction("Index", "Home");
                 }
 
                 if (result.IsLockedOut)
                 {
-                    ModelState.AddModelError("", "Tài khoản tạm thời bị khóa do nhập sai nhiều lần.");
+                    ModelState.AddModelError("", "Tài khoản của bạn đã bị Admin khóa do vi phạm chính sách của Floral LAM. Vui lòng liên hệ hỗ trợ.");
                     return View();
                 }
             }
@@ -149,6 +152,7 @@ namespace WebBanHoa.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
@@ -159,23 +163,42 @@ namespace WebBanHoa.Controllers
                     UserName = model.Email,
                     Email = model.Email,
                     FullName = model.FullName,
-                    JoinDate = DateTime.Now
+                    JoinDate = DateTime.Now,
                 };
-                var result = await _userManager.CreateAsync(user, model.Password);
 
+                var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    // Mặc định gán quyền "User" cho khách hàng mới đăng ký
                     await _userManager.AddToRoleAsync(user, "User");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+
+                    // Tạo Token kích hoạt tài khoản
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                    // Tạo đường dẫn URL kích hoạt gửi kèm trong Email
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account",
+                        new { userId = user.Id, token = token }, protocol: HttpContext.Request.Scheme);
+
+                    // Gửi Email nội dung Luxury chúc mừng
+                    string emailSubject = "Kích hoạt tài khoản thành viên Floral LAM 🌸";
+                    string emailBody = $"<h3>Chào mừng {model.FullName} đến với Floral LAM!</h3>" +
+                                       $"<p>Vui lòng click vào đường liên kết bên dưới để xác thực tài khoản của bạn:</p>" +
+                                       $"<a href='{callbackUrl}' style='padding:10px 20px; background:#834c58; color:white; text-decoration:none; border-radius:20px;'>Xác thực ngay tài khoản</a>";
+
+                    await _emailSender.SendEmailAsync(model.Email, emailSubject, emailBody);
+
+                    // HỖ TRỢ ĐI DEMO: Đẩy link ra màn hình trung gian để Hội đồng chấm bài xem trực tiếp
+                    TempData["ActivationLink"] = callbackUrl;
+                    TempData["RegisteredEmail"] = model.Email;
+
+                    return RedirectToAction("RegisterConfirmation");
                 }
 
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError("", error.Description);
                 }
             }
-
             return View(model);
         }
 
@@ -345,6 +368,40 @@ namespace WebBanHoa.Controllers
             }
 
             return RedirectToAction("Profile");
+        }
+
+        // 3. Trang thông báo đăng ký thành công chờ xác thực (GET)
+        [AllowAnonymous]
+        public IActionResult RegisterConfirmation()
+        {
+            return View();
+        }
+
+        // 4. Hàm xử lý khớp mã Token kích hoạt tài khoản từ Email gửi về (GET)
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (userId == null || token == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Thực hiện hàm đối sánh khớp Token kích hoạt trong hệ thống Identity
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Tài khoản của bạn đã được kích hoạt thành công! Vui lòng đăng nhập. 🌸";
+                return RedirectToAction("Login");
+            }
+
+            TempData["DangerMessage"] = "Mã xác thực tài khoản đã hết hạn hoặc không hợp lệ.";
+            return RedirectToAction("Login");
         }
     }
 }

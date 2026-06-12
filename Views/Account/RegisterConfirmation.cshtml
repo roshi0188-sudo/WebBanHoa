@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Xác nhận đăng ký - Floral LAM";
+}
+
+<div class="container my-5 py-4" style="max-width: 600px;">
+    <div class="card border-0 shadow-sm p-4 p-md-5 bg-white rounded-4 text-center">
+        <div class="mb-3 text-warning fs-1">
+            <i class="bi bi-envelope-open-heart" style="color: #DE8F9F;"></i>
+        </div>
+        <h4 class="fw-bold text-dark mb-3" style="font-family: 'Playfair Display', serif;">Đăng Ký Thành Công!</h4>
+        <p class="text-muted small mb-4">
+            Hệ thống đã gửi một bức thư kích hoạt đến địa chỉ: <strong class="text-dark">@TempData["RegisteredEmail"]</strong>. Vui lòng xác thực để đăng nhập.
+        </p>
+
+        @if (TempData["ActivationLink"] != null)
+        {
+            <div class="p-4 rounded-4 text-start border border-dashed mb-4 bg-light" style="border-color: #CBD5E1 !important;">
+                <label class="small fw-bold text-secondary text-uppercase d-block mb-2">
+                    <i class="bi bi-bug-fill text-danger"></i> Đường dẫn xác thực tài khoản:
+                </label>
+                <p class="small text-break text-muted bg-white p-2.5 rounded-3 border select-all" style="font-family: monospace;">@TempData["ActivationLink"]</p>
+                <a href="@TempData["ActivationLink"]" class="btn btn-sm text-white rounded-pill px-4 mt-1 fw-semibold w-100" style="background-color: #834c58; border: none;">
+                    Click vào đây để kích hoạt tài khoản ngay <i class="bi bi-check2-circle"></i>
+                </a>
+            </div>
+        }
+
+        <p class="text-muted m-0" style="font-size: 13px;">Sau khi bấm nút kích hoạt, tài khoản của bạn sẽ được mở khóa trên SQL Server bảng <code>AspNetUsers</code> (cột <code>EmailConfirmed = 1</code>).</p>
+    </div>
+</div>

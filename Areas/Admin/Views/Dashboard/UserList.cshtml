@@ -1,0 +1,122 @@
+﻿@model IEnumerable<WebBanHoa.Models.ApplicationUser>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý thành viên - Floral LAM";
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark" style="font-family: 'Playfair Display', serif;">Quản Lý Thành Viên</h3>
+            <p class="text-muted small m-0">Xem danh sách, khóa hoặc kích hoạt quyền truy cập của khách hàng.</p>
+        </div>
+        <div class="badge bg-dark px-3 py-2 rounded-pill fs-6 shadow-sm">
+            Tổng số: @Model.Count() thành viên
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3" role="alert">
+            <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["DangerMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i> @TempData["DangerMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light text-secondary text-uppercase small font-monospace fw-bold">
+                    <tr>
+                        <th class="ps-4">Thành viên</th>
+                        <th>Email</th>
+                        <th>Ngày tham gia</th>
+                        <th class="text-center">Xác thực Email</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-end pe-4">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        // Kiểm tra xem tài khoản hiện tại có đang bị khóa hay không
+                        bool isLocked = user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.UtcNow;
+
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="@(string.IsNullOrEmpty(user.Avatar) ? "/images/avatar-default.jpg" : user.Avatar)"
+                                         class="rounded-circle object-fit-cover border border-2"
+                                         style="width: 40px; height: 40px; border-color: #DE8F9F !important;"
+                                         alt="Avatar">
+                                    <div>
+                                        <div class="fw-bold text-dark">@user.FullName</div>
+                                        <span class="badge bg-light text-secondary border small">ID: @user.Id.Substring(0, 8)...</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="fw-semibold text-secondary">@user.Email</td>
+                            <td class="text-muted small">@user.JoinDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-center">
+                                @if (user.EmailConfirmed)
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5">Đã xác thực</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5">Chờ kích hoạt</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (isLocked)
+                                {
+                                    <span class="badge bg-danger text-white rounded-pill px-3 py-1.5 fw-medium shadow-sm">
+                                        <i class="fas fa-user-lock me-1"></i> Đang bị khóa
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success text-white rounded-pill px-3 py-1.5 fw-medium shadow-sm">
+                                        <i class="fas fa-user-check me-1"></i> Hoạt động
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-end pe-4">
+                                @if (isLocked)
+                                {
+                                    <form asp-area="Admin" asp-controller="User" asp-action="UnlockAccount" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold shadow-sm"
+                                                onclick="return confirm('Bạn có chắc chắn muốn mở khóa cho tài khoản @user.Email không?')">
+                                            <i class="fas fa-unlock me-1"></i> Mở khóa
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-area="Admin" asp-controller="User" asp-action="LockAccount" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold shadow-sm"
+                                                onclick="return confirm('Xác nhận khóa tài khoản @user.Email? Người dùng này sẽ không thể đăng nhập.')">
+                                            <i class="fas fa-ban me-1"></i> Khóa tài khoản
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,7 +1,7 @@
 @model WebBanHoa.Models.ViewModels.LoginViewModel
 
 @{
-    ViewData["Title"] = "Đăng nhập";
+    ViewData["Title"] = "Đăng nhập - Floral LAM";
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -20,25 +20,28 @@
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
     }
 
-    .btn-orange {
-        background-color: #FF34B3;
+    /* 🌸 ĐỒNG BỘ MÀU BURGUNDY LUXURY ĐỘC QUYỀN */
+    .btn-luxury-pink {
+        background: linear-gradient(135deg, #DE8F9F, #834c58);
         color: white;
         border: none;
-        transition: background-color 0.2s;
+        transition: all 0.3s ease;
     }
 
-        .btn-orange:hover {
-            background-color: #e0289b;
+        .btn-luxury-pink:hover {
+            opacity: 0.95;
             color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(131, 76, 88, 0.2);
         }
 
-    .text-orange {
-        color: #FF34B3 !important;
+    .text-luxury-pink {
+        color: #834c58 !important;
     }
 
     .form-control:focus {
-        border-color: #FF34B3;
-        box-shadow: 0 0 0 0.25rem rgba(255, 52, 179, 0.25);
+        border-color: #DE8F9F;
+        box-shadow: 0 0 0 0.25rem rgba(131, 76, 88, 0.1);
     }
 </style>
 
@@ -48,22 +51,22 @@
             <div class="login-card p-5">
                 <div class="text-center mb-4">
                     <span class="display-5">🌸</span>
-                    <h3 class="fw-bold text-dark">Floral Lam</h3>
+                    <h3 class="fw-bold text-dark" style="font-family: 'Playfair Display', serif;">Floral LAM</h3>
                     <p class="text-muted small">Chào mừng bạn quay trở lại shop hoa của LAM</p>
                 </div>
 
                 <form asp-controller="Account" asp-action="Login" method="post">
                     @Html.AntiForgeryToken()
 
-                    <input type="hidden" name="returnUrl" value="@(string.IsNullOrEmpty(Context.Request.Query["returnUrl"]) ? Model.ReturnUrl : Context.Request.Query["returnUrl"])" />
+                    <input type="hidden" asp-for="ReturnUrl" />
 
-                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3 fw-medium"></div>
 
                     <div class="mb-3">
                         <label asp-for="Email" class="form-label small fw-semibold text-secondary">Địa chỉ Email</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-envelope"></i></span>
-                            <input asp-for="Email" class="form-control border-start-0 bg-light shadow-none" placeholder="Nhập địa chỉ email..." />
+                            <input asp-for="Email" class="form-control border-start-0 bg-light shadow-none" placeholder="Nhập địa chỉ email..." required />
                         </div>
                         <span asp-validation-for="Email" class="text-danger small"></span>
                     </div>
@@ -72,32 +75,35 @@
                         <label asp-for="Password" class="form-label small fw-semibold text-secondary">Mật khẩu</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-lock"></i></span>
-                            <input asp-for="Password" type="password" class="form-control border-start-0 bg-light shadow-none" placeholder="Nhập mật khẩu..." />
+                            <input asp-for="Password" type="password" class="form-control border-start-0 bg-light shadow-none" placeholder="Nhập mật khẩu..." required />
                         </div>
                         <span asp-validation-for="Password" class="text-danger small"></span>
                     </div>
 
-                    <div class="mb-4 d-flex justify-content-between align-items-center">
-                        <div class="mb-4 d-flex align-items-center">
-                            <div class="form-check text-start">
+                    <div class="row align-items-center mb-4">
+                        <div class="col-6">
+                            <div class="form-check text-start m-0">
                                 <input type="checkbox" name="rememberMe" id="rememberMeInput" value="true" class="form-check-input" style="cursor: pointer;" />
-                                <input type="hidden" name="rememberMe" value="false" /> <label class="form-check-label small fw-semibold text-secondary user-select-none" for="rememberMeInput" style="cursor: pointer; padding-left: 4px;">
-                                    Ghi nhớ đăng nhập
+                                <input type="hidden" name="rememberMe" value="false" />
+                                <label class="form-check-label small fw-semibold text-secondary user-select-none" for="rememberMeInput" style="cursor: pointer; padding-left: 4px; font-size: 13px;">
+                                    Ghi nhớ
                                 </label>
                             </div>
                         </div>
-                        <div class="text-end mb-3">
-                            <a asp-controller="Account" asp-action="ForgotPassword" class="text-decoration-none small fw-medium" style="color: #A34863;">
+                        <div class="col-6 text-end">
+                            <a asp-controller="Account" asp-action="ForgotPassword" class="text-decoration-none small fw-semibold" style="color: #834c58; font-size: 13px;">
                                 Quên mật khẩu?
                             </a>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-orange w-100 py-2 rounded-3 fw-bold shadow-sm">Đăng nhập</button>
+                    <button type="submit" class="btn btn-luxury-pink w-100 py-2.5 rounded-pill fw-bold shadow-sm">
+                        Đăng nhập hệ thống
+                    </button>
                 </form>
 
                 <div class="text-center mt-4">
-                    <p class="small text-muted mb-0">Chưa có tài khoản? <a asp-action="Register" class="text-decoration-none text-orange fw-medium">Đăng ký ngay</a></p>
+                    <p class="small text-muted mb-0">Chưa có tài khoản? <a asp-action="Register" class="text-decoration-none text-luxury-pink fw-semibold">Đăng ký ngay</a></p>
                 </div>
             </div>
         </div>

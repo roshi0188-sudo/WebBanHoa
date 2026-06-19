@@ -6,108 +6,411 @@
     var currentCategory = ViewBag.CurrentCategory as int?;
     var currentSearch = ViewBag.CurrentSearch as string;
 
-    // 🟢 HẠNG MỤC LỌC: CHỈ HIỂN THỊ ĐÚNG 3 SẢN PHẨM BÁN CHẠY NHẤT HIỆN TẠI THEO YÊU CẦU
-    var topSellingProducts = Model != null ? Model.Take(3).ToList() : new List<WebBanHoa.Models.Product>();
+    // Lấy đúng 3 mẫu hoa từ Model để dàn trang theo thiết kế mới
+    var featuredProducts = Model != null ? Model.Take(3).ToList() : new List<WebBanHoa.Models.Product>();
 }
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
 
 <style>
-    /* Sửa lỗi và tối ưu hóa nút bấm Premium */
-    .btn-outline-premium {
-        border: 1px solid #A34863;
-        color: #A34863;
+    *, h1, h2, h3, h4, h5, h6, .btn, p, span, small {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
+    body {
+        background-color: #ffffff;
+    }
+
+    .hero-container {
+        background: radial-gradient(circle at 80% 50%, #F5EAEF 0%, #FDFBFC 100%);
+        min-height: 600px;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-title {
+        font-size: 52px;
+        font-weight: 800;
+        line-height: 1.2;
+        color: #111111;
+        letter-spacing: -1.5px;
+    }
+
+    .btn-luxury-dark {
+        background-color: #E6B941;
+        color: #111111 !important;
+        font-weight: 700;
+        padding: 14px 32px;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+        text-decoration: none;
+    }
+
+        .btn-luxury-dark:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(230, 185, 65, 0.25);
+        }
+
+    .btn-luxury-outline {
+        background: transparent;
+        color: #111111 !important;
+        border: 1.5px solid #EAE1E4;
+        font-weight: 700;
+        padding: 14px 32px;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+        text-decoration: none;
+    }
+
+        .btn-luxury-outline:hover {
+            border-color: #111111;
+            background-color: #111111;
+            color: white !important;
+        }
+
+    .occasion-circle-wrapper {
+        text-align: center;
+        text-decoration: none !important;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+
+        .occasion-circle-wrapper:hover {
+            transform: translateY(-5px);
+        }
+
+    .occasion-img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        margin-bottom: 12px;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+    }
+
+    .occasion-circle-wrapper:hover .occasion-img {
+        border-color: #DE8F9F;
+        box-shadow: 0 12px 30px rgba(163, 72, 99, 0.12);
+    }
+
+    .occasion-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #4A5568;
+        letter-spacing: 0.3px;
+    }
+
+    .collection-banner-box {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .collection-overlay-content {
+        position: absolute;
+        bottom: 30px;
+        left: 30px;
+        z-index: 10;
+        color: white;
+    }
+
+    .bestseller-card {
+        border: none;
         background: transparent;
         transition: all 0.3s ease;
     }
 
-        .btn-outline-premium:hover {
-            background-color: #A34863;
+    .bestseller-img-container {
+        border-radius: 20px;
+        overflow: hidden;
+        aspect-ratio: 3/4;
+        background-color: #F7F7F7;
+        position: relative;
+    }
+
+    .bestseller-img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .bestseller-card:hover .bestseller-img {
+        transform: scale(1.04);
+    }
+
+    .product-badge-premium {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: #E6B941;
+        color: #111111;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 20px;
+        text-uppercase: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-add-to-cart-luxury {
+        border: 1px solid #F5E6EC;
+        background-color: white;
+        color: #A34863;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 11px 0;
+        border-radius: 12px;
+        width: 100%;
+        transition: all 0.25s;
+        text-decoration: none;
+        display: block;
+    }
+
+        .btn-add-to-cart-luxury:hover {
+            border-color: #A34863;
             color: white;
+            background-color: #A34863;
         }
 
-    .product-price-label {
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 700;
-        color: #A34863;
-        font-size: 16px;
+    .service-benefit-box {
+        background-color: #FFF5F7;
+        border-radius: 16px;
+        padding: 25px;
+        height: 100%;
+        transition: transform 0.3s;
     }
+
+        .service-benefit-box:hover {
+            transform: translateY(-3px);
+        }
+
+    .footer-newsletter-zone {
+        background-color: #6B4E5B; 
+        border-radius: 24px;
+        padding: 60px;
+        color: white;
+    }
+
+    .newsletter-input {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: white;
+        padding: 14px 24px;
+        border-radius: 30px;
+        font-size: 14px;
+    }
+
+        .newsletter-input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        .newsletter-input:focus {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: none;
+            color: white;
+        }
 </style>
 
-<!-- HERO SECTION -->
-<div class="position-relative overflow-hidden hero-section mb-5 d-flex align-items-center rounded-5 shadow-sm" style="background-color: #fff7fa; min-height: 600px;">
-    <div class="absolute-inset-0 z-0" id="petals-container"></div>
-
-    <div class="container position-relative z-10 py-5">
+<div class="hero-container position-relative overflow-hidden w-100 mb-5">
+    <div class="container py-5">
         <div class="row align-items-center g-5">
-            <div class="col-lg-6 text-start" data-aos="fade-up">
-                <span class="text-uppercase fw-bold text-secondary tracking-widest d-block mb-3" style="font-family: 'Montserrat', sans-serif; color: #b4136d !important; font-size: 13px; letter-spacing: 0.15em;">
-                    Nghệ Thuật Hoa Tươi Đương Đại
-                </span>
-                <h1 class="display-3 fw-bold text-dark mb-4" style="font-family: 'Playfair Display', serif; color: #0058be !important; letter-spacing: -0.01em;">
-                    Floral <span class="gradient-text">LAM</span>
+            <div class="col-lg-6">
+                <h1 class="hero-title mb-4">
+                    Gửi Gắm Yêu Thương<br />Qua Từng Bó Hoa
                 </h1>
-                <p class="lead text-secondary mb-5" style="font-family: 'Montserrat', sans-serif; letter-spacing: 0.03em; line-height: 1.8; color: #424754 !important; font-size: 17px;">
-                    Trao hoa, trao yêu thương. Khám phá những tác phẩm hoa tươi được thiết kế độc đáo, giúp bạn gửi gắm trọn vẹn những thông điệp ý nghĩa nhất đến người thân yêu.
+                <p class="text-secondary mb-5 fs-6 lh-relaxed" style="max-width: 480px; font-weight: 500;">
+                    Trải nghiệm những mẫu thiết kế hoa tươi tinh tế cùng các bộ sưu tập độc quyền theo mùa, được thực hiện thủ công cho những khoảnh khắc vô giá của bạn.
                 </p>
-                <div class="d-flex gap-3 align-items-center">
-                    <a href="#bo-suu-tap" class="btn gradient-button text-white rounded-pill px-4 py-3 fw-bold text-uppercase small-tracking shadow-sm">
-                        Khám Phá Ngay
-                    </a>
-                    <a href="#" class="btn btn-link text-decoration-none fw-bold text-uppercase small-tracking" style="color: #0058be; font-size: 13px;">
-                        Liên Hệ Đặt Lịch
-                    </a>
+                <div class="d-flex gap-3">
+                    <a href="#bestsellers-zone" class="btn btn-luxury-dark text-uppercase">Mua Ngay</a>
+                    <a href="#collections-zone" class="btn btn-luxury-outline text-uppercase">Khám Phá Bộ Sưu Tập</a>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="position-relative hero-img-wrapper rounded-5 overflow-hidden border border-4 border-white shadow-lg mx-auto" style="max-width: 520px; height: 520px;">
-                    <img alt="Floral LAM Artistry Layout" class="w-100 h-100 object-fit-cover" src="~/images/anh.jpg" />
-                    <div class="position-absolute inset-0 bg-gradient-to-t-soft"></div>
-                </div>
+            <div class="col-lg-6 text-center">
+                <img src="/images/banner.jpg" class="img-fluid" style="max-height: 480px;" alt="Floral Art" onerror="this.src='https://placehold.co/600x480?text=Premium+Bouquet'">
             </div>
         </div>
     </div>
 </div>
 
-<!-- BLOCK SẢN PHẨM BÁN CHẠY -->
-<div class="container px-4" id="bo-suu-tap">
-    <div class="text-start mb-5 pt-4">
-        <h2 class="fw-bold text-dark mb-2" style="font-family: 'Playfair Display', serif; font-size: 42px; color: #1f1a1e; letter-spacing: -0.01em;">
-            Mẫu Hoa Bán Chạy Nhất
-        </h2>
-        <p class="text-muted text-uppercase tracking-wide" style="font-family: 'Montserrat', sans-serif; font-size: 13px; color: #727785 !important; letter-spacing: 0.08em;">
-            Top 3 tác phẩm nghệ thuật hoa tươi được yêu thích nhất tại hệ thống hiện tại
-        </p>
+<style>
+    /* CSS Khung lưới đồng bộ tuyệt đối */
+    .custom-collection-grid {
+        display: flex;
+        gap: 24px;
+        height: 520px; /* Chốt cứng chiều cao tổng để ảnh không bao giờ bị ép dẹp */
+    }
+
+    .collection-left-panel {
+        flex: 1;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .collection-right-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .collection-right-top {
+        flex: 1;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .collection-right-bottom {
+        flex: 1;
+        display: flex;
+        gap: 24px;
+    }
+
+    .collection-right-bottom-item {
+        flex: 1;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Thuộc tính ép ảnh luôn cắt cúp đẹp, không méo */
+    .collection-img-cover {
+        width: 100%;
+        height: 100%;
+        object-fit: cover !important;
+        display: block;
+        transition: transform 0.5s ease;
+    }
+
+    /* Hiệu ứng zoom nhẹ khi trỏ chuột */
+    .collection-left-panel:hover .collection-img-cover,
+    .collection-right-top:hover .collection-img-cover,
+    .collection-right-bottom-item:hover .collection-img-cover {
+        transform: scale(1.05);
+    }
+
+    .collection-text-overlay {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        padding: 30px;
+        z-index: 2;
+    }
+
+    .overlay-bottom {
+        bottom: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+    }
+
+    .overlay-top {
+        top: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+    }
+
+    /* Responsive cho điện thoại (tự động xếp dọc) */
+    @@media (max-width: 768px) {
+        .custom-collection-grid {
+            flex-direction: column;
+            height: auto;
+        }
+
+        .collection-left-panel {
+            height: 400px;
+        }
+
+        .collection-right-top, .collection-right-bottom-item {
+            height: 220px;
+        }
+    }
+</style>
+
+<div class="container my-5 py-4" id="collections-zone">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <small class="text-uppercase tracking-wider text-muted fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Thiết Kế Độc Quyền</small>
+            <h3 class="fw-bold m-0 mt-1 text-dark" style="letter-spacing: -0.5px;">Bộ Sưu Tập Theo Mùa</h3>
+        </div>
+       
     </div>
 
-    <!-- HIỂN THỊ ĐÚNG CẤU TRÚC 3 SẢN PHẨM -->
-    <div class="row g-4 justify-content-start mb-5">
-        @if (topSellingProducts.Any())
+    <div class="custom-collection-grid">
+
+        <div class="collection-left-panel shadow-sm">
+            <img src="~/images/mau1.jpg" class="collection-img-cover" alt="Rực rỡ" />
+            <div class="collection-text-overlay overlay-bottom">
+                <h4 class="fw-bold text-white mb-1">Rực rỡ</h4>
+                <p class="small text-white-50 mb-0">Sắc màu pastel tươi mới và khởi đầu rực rỡ</p>
+            </div>
+        </div>
+
+        <div class="collection-right-panel">
+
+            <div class="collection-right-top shadow-sm">
+                <img src="~/images/mau2.jpg" class="collection-img-cover" alt="Dịu dàng" />
+                <div class="collection-text-overlay overlay-top">
+                    <h4 class="fw-bold text-white m-0">Dịu dàng</h4>
+                </div>
+            </div>
+
+            <div class="collection-right-bottom">
+                <div class="collection-right-bottom-item shadow-sm">
+                    <img src="~/images/mau3.jpg" class="collection-img-cover" alt="Tối giản" />
+                </div>
+                <div class="collection-right-bottom-item shadow-sm">
+                    <img src="~/images/mau4.jpg" class="collection-img-cover" alt="Học trò" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="container my-5 py-4" id="bestsellers-zone">
+    <div class="text-center mb-5">
+        <h3 class="fw-bold text-dark mb-2" style="letter-spacing: -0.5px; font-size: 28px;">Sản Phẩm Hoa Tươi Nổi Bật</h3>
+        <p class="text-muted small">Những giỏ hoa nghệ thuật ngẫu nhiên nhận được sự yêu thích nhất từ khách hàng của Floral LAM.</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        @if (featuredProducts.Any())
         {
-            foreach (var item in topSellingProducts)
+            foreach (var item in featuredProducts)
             {
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card border-0 premium-card rounded-5 overflow-hidden shadow-sm bg-white h-100 d-flex flex-column group">
-                        <div class="overflow-hidden position-relative" style="height: 420px; background-color: #f6ebf1;">
-                            <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/default_flower.jpg" : item.ImageUrl)"
-                                 class="w-100 h-100 object-fit-cover transition-transform-700"
-                                 alt="@item.Name" />
-                        </div>
-
-                        <!-- 🟢 SỬA LỖI LỆCH NÚT: Định dạng cấu trúc căn giữa, dàn đều các nút và giá tiền cân đối -->
-                        <div class="card-body p-4 d-flex flex-column align-items-center justify-content-between bg-white text-center">
-                            <div class="mb-3">
-                                <h5 class="fw-bold text-dark text-truncate mb-2" style="max-width: 250px;">@item.Name</h5>
-                                <span class="product-price-label">@item.Price.ToString("#,##0") đ</span>
-                            </div>
-                            <div class="pt-2 w-100 d-flex justify-content-center">
-                                <a asp-controller="Home" asp-action="Display" asp-route-id="@item.Id"
-                                   class="btn btn-outline-premium rounded-pill px-5 py-2 fw-semibold text-uppercase transition-all small" style="font-size: 12px; letter-spacing: 0.5px;">
-                                    Chi tiết tác phẩm
+                    <div class="card h-100 bestseller-card d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="bestseller-img-container mb-3">
+                                <span class="product-badge-premium">Mẫu Bán Chạy</span>
+                                <a asp-controller="Home" asp-action="Display" asp-route-id="@item.Id">
+                                    <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/default_flower.jpg" : item.ImageUrl)"
+                                         class="w-100 h-100 object-fit-cover bestseller-img" alt="@item.Name" />
                                 </a>
                             </div>
+                            <div class="d-flex justify-content-between align-items-start px-1">
+                                <h6 class="fw-bold text-dark text-truncate m-0" style="max-width: 240px; font-size: 16px;">@item.Name</h6>
+                                <span class="text-muted small fw-semibold flex-shrink-0"><i class="bi bi-star-fill text-warning me-1"></i>4.9</span>
+                            </div>
+                            <div class="px-1 mt-1 mb-3">
+                                <span class="text-secondary fw-bold" style="color: #A34863; font-size: 15px;">@item.Price.ToString("#,##0") đ</span>
+                            </div>
+                        </div>
+                        <div class="px-1">
+                            <a asp-controller="Home" asp-action="Display" asp-route-id="@item.Id" class="btn btn-add-to-cart-luxury text-center text-uppercase">
+                                Xem chi tiết
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -115,102 +418,70 @@
         }
         else
         {
-            <div class="col-12 text-center py-5 text-muted">Hệ thống đang cập nhật danh sách tác phẩm.</div>
+            <div class="col-12 text-center py-5 text-muted">Hệ thống đang đồng bộ danh sách sản phẩm nghệ thuật.</div>
         }
     </div>
-
-    <!-- 🟢 KHU VỰC VOUCHER VÀ TÍNH NĂNG SAO CHÉP ĐỂ SỬ DỤNG KHI MUA HÀNG -->
-    <div class="container mb-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <div class="p-3 border border-2 border-dashed rounded-4 d-flex align-items-center justify-content-between bg-light">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-tag-fill fs-3 text-primary me-3" style="color: #A34863 !important;"></i>
-                        <div>
-                            <h6 class="fw-bold mb-0">GIẢM 20% ĐƠN ĐẦU TIÊN</h6>
-                            <small class="text-muted">Mã: <strong id="voucherCode">LAM2026</strong></small>
-                        </div>
+</div>
+<div class="container my-5">
+    <div class="row g-3 justify-content-center">
+        <!-- Voucher 1 -->
+        <div class="col-md-6 col-lg-5">
+            <div class="p-3 border border-2 border-dashed rounded-4 d-flex align-items-center justify-content-between" style="background-color: #FFF5F7; border-color: #DE8F9F !important;">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-tag-fill fs-3 me-3" style="color: #A34863;"></i>
+                    <div>
+                        <h6 class="fw-bold mb-0" style="font-size: 14px; color: #2D141A;">GIẢM 20% ĐƠN ĐẦU TIÊN</h6>
+                        <small class="text-muted">Mã: <strong id="voucherCode1" style="color: #A34863;">LAM2026</strong></small>
                     </div>
-                    <button class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="copyVoucherToClipboard()">Sao chép</button>
                 </div>
+                <button class="btn btn-outline-dark btn-sm rounded-pill px-3" style="font-size: 12px; font-weight: 600;" onclick="copyVoucherToClipboard('voucherCode1')">Sao chép</button>
             </div>
         </div>
-    </div>
 
-    <!-- DỊCH VỤ CAM KẾT -->
-    <div class="row g-4 text-center my-5 pt-4 pb-5">
-        <div class="col-md-4">
-            <div class="p-4 bg-white border border-light-subtle shadow-sm rounded-4 h-100 text-start d-flex align-items-center gap-3">
-                <div class="rounded-circle p-3 fs-4 d-inline-flex text-white flex-shrink-0" style="background-color: #0058be; width: 52px; height: 52px; align-items: center; justify-content: center;">
-                    <i class="bi bi-truck"></i>
+        <!-- Voucher 2 -->
+        <div class="col-md-6 col-lg-5">
+            <div class="p-3 border border-2 border-dashed rounded-4 d-flex align-items-center justify-content-between" style="background-color: #FFF5F7; border-color: #DE8F9F !important;">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-gift-fill fs-3 me-3" style="color: #A34863;"></i>
+                    <div>
+                        <h6 class="fw-bold mb-0" style="font-size: 14px; color: #2D141A;">ƯU ĐÃI ĐỘC QUYỀN KHÁCH MỚI</h6>
+                        <small class="text-muted">Mã: <strong id="voucherCode2" style="color: #A34863;">LAMFLORAL</strong></small>
+                    </div>
                 </div>
-                <div>
-                    <h6 class="fw-bold mb-1" style="color: #0058be; font-family: 'Montserrat', sans-serif;">Giao Hỏa Tốc Hàng Giờ</h6>
-                    <p class="text-muted small mb-0" style="font-size: 13px;">Đảm bảo hoa luôn trong trạng thái hoàn hảo nhất.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="p-4 bg-white border border-light-subtle shadow-sm rounded-4 h-100 text-start d-flex align-items-center gap-3">
-                <div class="rounded-circle p-3 fs-4 d-inline-flex text-white flex-shrink-0" style="background-color: #0058be; width: 52px; height: 52px; align-items: center; justify-content: center;">
-                    <i class="bi bi-camera"></i>
-                </div>
-                <div>
-                    <h6 class="fw-bold mb-1" style="color: #0058be; font-family: 'Montserrat', sans-serif;">Gửi Ảnh Thực Tế</h6>
-                    <p class="text-muted small mb-0" style="font-size: 13px;">Chụp và gửi ảnh thành phẩm trước khi giao hàng.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="p-4 bg-white border border-light-subtle shadow-sm rounded-4 h-100 text-start d-flex align-items-center gap-3">
-                <div class="rounded-circle p-3 fs-4 d-inline-flex text-white flex-shrink-0" style="background-color: #0058be; width: 52px; height: 52px; align-items: center; justify-content: center;">
-                    <i class="bi bi-patch-check"></i>
-                </div>
-                <div>
-                    <h6 class="fw-bold mb-1" style="color: #0058be; font-family: 'Montserrat', sans-serif;">Bảo Hành Độ Tươi</h6>
-                    <p class="text-muted small mb-0" style="font-size: 13px;">Hoa được tuyển chọn kỹ lưỡng, tươi lâu tối đa.</p>
-                </div>
+                <button class="btn btn-outline-dark btn-sm rounded-pill px-3" style="font-size: 12px; font-weight: 600;" onclick="copyVoucherToClipboard('voucherCode1')">Sao chép</button>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const petalColors = ['#fdf2f8', '#ffb0cd', '#ffffff'];
-        const container = document.getElementById('petals-container');
-        if (!container) return;
-
-        for (let i = 0; i < 12; i++) {
-            const petal = document.createElement('div');
-            petal.className = 'floating-petal';
-
-            const size = Math.random() * 15 + 10;
-            const left = Math.random() * 100;
-            const top = Math.random() * 40;
-            const delay = Math.random() * 6;
-            const duration = Math.random() * 10 + 12;
-
-            petal.style.width = `${size}px`;
-            petal.style.height = `${size * 0.75}px`;
-            petal.style.left = `${left}%`;
-            petal.style.top = `${top}%`;
-            petal.style.backgroundColor = petalColors[Math.floor(Math.random() * petalColors.length)];
-            petal.style.borderRadius = '50% 0% 50% 50%';
-            petal.style.animationDelay = `${delay}s`;
-            petal.style.animationDuration = `${duration}s`;
-
-            container.appendChild(petal);
-        }
-    });
-
-    // HÀM SAO CHÉP MÃ VOUCHER NHANH CHÓNG
-    function copyVoucherToClipboard() {
-        const voucherText = document.getElementById("voucherCode").innerText;
-        navigator.clipboard.writeText(voucherText).then(() => {
-            alert("Đã sao chép mã giảm giá: " + voucherText + " 🌸 Hãy áp dụng mã này tại trang giỏ hàng/thanh toán nhé!");
-        }).catch(err => {
-            console.error("Lỗi sao chép mã voucher:", err);
-        });
-    }
-</script>
+<div class="container my-5 py-4">
+    <div class="row g-4">
+        <div class="col-6 col-lg-3">
+            <div class="service-benefit-box text-center text-sm-start">
+                <i class="bi bi-truck fs-3 text-dark d-block mb-2" style="color: #A34863;"></i>
+                <h6 class="fw-bold text-dark mb-1" style="font-size: 14px;">Giao Hoa 2 Giờ</h6>
+                <p class="text-muted m-0" style="font-size: 12px; line-height: 1.5;">Giao hỏa tốc nội thành, bảo đảm trạng thái hoa hoàn hảo nhất.</p>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="service-benefit-box text-center text-sm-start">
+                <i class="bi bi-flower1 fs-3 text-dark d-block mb-2" style="color: #A34863;"></i>
+                <h6 class="fw-bold text-dark mb-1" style="font-size: 14px;">Hoa Tươi Mỗi Ngày</h6>
+                <p class="text-muted m-0" style="font-size: 12px; line-height: 1.5;">Hoa nhập mới từ nông trại hữu cơ Đà Lạt vào mỗi sáng sớm.</p>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="service-benefit-box text-center text-sm-start">
+                <i class="bi bi-camera fs-3 text-dark d-block mb-2" style="color: #A34863;"></i>
+                <h6 class="fw-bold text-dark mb-1" style="font-size: 14px;">Gửi Ảnh Thực Tế</h6>
+                <p class="text-muted m-0" style="font-size: 12px; line-height: 1.5;">Chụp thành phẩm thực tế tại cửa hàng gửi khách duyệt trước khi đi giao.</p>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="service-benefit-box text-center text-sm-start">
+                <i class="bi bi-shield-lock fs-3 text-dark d-block mb-2" style="color: #A34863;"></i>
+                <h6 class="fw-bold text-dark mb-1" style="font-size: 14px;">Thanh Toán An Toàn</h6>
+                <p class="text-muted m-0" style="font-size: 12px; line-height: 1.5;">Mã mã hóa bảo mật tuyệt đối cho mọi giao dịch điện tử ngân hàng.</p>
+            </div>
+        </div>
+    </div>
+</div>

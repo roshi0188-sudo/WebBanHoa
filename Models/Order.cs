@@ -14,7 +14,10 @@ namespace WebBanHoa.Models
         public DateTime OrderDate { get; set; } = DateTime.Now;
         public decimal TotalAmount { get; set; }
         public string OrderStatus { get; set; } = "Chờ xử lý"; // Chờ xử lý, Đã duyệt, Đang giao, Hoàn thành
-
+        public string? CardImage { get; set; }
+        [Required(ErrorMessage = "Vui lòng nhập tên người nhận hoa")]
+        public string ReceiverName { get; set; }
+        public string? CardContent { get; set; }
         [Required(ErrorMessage = "Vui lòng nhập địa chỉ giao hàng")]
         public string ShippingAddress { get; set; }
 

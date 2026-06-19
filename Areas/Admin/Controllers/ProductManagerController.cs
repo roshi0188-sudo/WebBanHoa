@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,27 +18,36 @@ namespace WebBanHoa.Areas.Admin.Controllers
     {
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
-
-        public ProductManagerController(IProductRepository productRepository, ICategoryRepository categoryRepository)
+        private readonly ApplicationDbContext _context;
+        public ProductManagerController(IProductRepository productRepository, ICategoryRepository categoryRepository, ApplicationDbContext context)
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
+            _context = context;
         }
 
-        // 1. HIỂN THỊ GRID CARD LUXURY TRONG ADMIN
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? categoryId)
         {
             var products = await _productRepository.GetAllAsync();
-            return View(products); 
+
+            var query = products.AsQueryable();
+            if (categoryId.HasValue)
+            {
+                query = query.Where(p => p.CategoryId == categoryId.Value);
+            }
+
+            ViewBag.Categories = await _context.Categories.ToListAsync();
+            ViewBag.CurrentCategory = categoryId; 
+
+            return View(query.ToList());
         }
-      
-        // 2. THÊM MỚI SẢN PHẨM (GET) - Đồng bộ tên Create ra bên ngoài View
+
         [ActionName("Create")]
         public async Task<IActionResult> Add()
         {
             var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
-            return View("Add"); // 🔴 Ép tìm đúng file Add.cshtml của bạn trên ổ đĩa
+            return View("Add"); 
         }
 
         // THÊM MỚI SẢN PHẨM (POST)
@@ -75,7 +85,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
 
             var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name", product.CategoryId);
-            return View("Add", product); // 🔴 Load lại file Add.cshtml kèm dữ liệu cũ nếu lỗi form
+            return View("Add", product); 
         }
 
         // 3. CẬP NHẬT SẢN PHẨM (GET) - Đồng bộ tên Edit ra bên ngoài View
@@ -87,7 +97,7 @@ namespace WebBanHoa.Areas.Admin.Controllers
 
             var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name", product.CategoryId);
-            return View("Update", product); // 🔴 Ép tìm đúng file Update.cshtml của bạn trên ổ đĩa
+            return View("Update", product); 
         }
 
         // CẬP NHẬT SẢN PHẨM (POST)

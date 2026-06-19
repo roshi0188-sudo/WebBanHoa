@@ -6,97 +6,154 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Floral LAM</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
+
+    <!-- 🟢 ĐỒNG BỘ 1 FONT DUY NHẤT: NHÚNG PLUS JAKARTA SANS TỪ GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
-        :root {
-            --primary-pink: #d63384;
-        }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #FCF9FA;
-        }
-
-        .wrapper-layout {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        .main-content {
-            flex: 1 0 auto;
-        }
-
-        /* Navbar Tinh Tế */
-        .navbar {
-            border-bottom: 1px solid rgba(0,0,0,0.05) !important;
-            background: rgba(255,255,255,0.95) !important;
-            backdrop-filter: blur(10px);
-        }
-
-        .navbar-brand {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            color: var(--primary-pink) !important;
-            letter-spacing: -0.5px;
-        }
-
-        .nav-link {
-            color: #4A5568 !important;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-            .nav-link:hover {
-                color: var(--primary-pink) !important;
+            /* 🟢 ĐỒNG BỘ HỆ THỐNG MÀU LUXURY BOUTIQUE */
+            :root {
+                --primary-luxury: #A34863;
+                --secondary-pastel: #DE8F9F;
+                --dark-slate: #2D3748;
+                --border-soft: #F3EAEF;
             }
 
-        /* Footer Dark Luxury */
-        .footer-dark {
-            background-color: #1A1A1A;
-            color: #888;
-            padding: 60px 0 30px;
-            font-size: 14px;
-        }
-
-            .footer-dark h5 {
-                color: #fff;
-                font-family: 'Playfair Display', serif;
-                margin-bottom: 20px;
-                letter-spacing: 1px;
+            /* Ép buộc tất cả mọi thứ kế thừa font chữ Plus Jakarta Sans */
+            *, body, h1, h2, h3, h4, h5, h6, button, input, select, textarea, .nav-link, .navbar-brand {
+                font-family: 'Plus Jakarta Sans', sans-serif !important;
+                box-sizing: border-box;
             }
 
-            .footer-dark ul li {
-                margin-bottom: 10px;
-                transition: 0.3s;
+            body {
+                background-color: #FBF9FB;
+                color: var(--dark-slate);
+                margin: 0;
+                padding: 0;
+                -webkit-font-smoothing: antialiased;
             }
 
-                .footer-dark ul li:hover {
-                    color: #fff;
-                    transform: translateX(5px);
+            .wrapper-layout {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
+
+            .main-content {
+                flex: 1 0 auto;
+            }
+
+            /* Navbar Glassmorphism hiện đại */
+            .navbar {
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+                background: rgba(255, 255, 255, 0.95) !important;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 2px 15px rgba(163, 72, 99, 0.02);
+            }
+
+            .navbar-brand {
+                font-size: 1.4rem;
+                font-weight: 800 !important;
+                color: var(--primary-luxury) !important;
+                letter-spacing: -0.5px;
+            }
+
+            .nav-link {
+                color: #5A6A85 !important;
+                font-size: 13.5px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                position: relative;
+                transition: color 0.25s ease;
+            }
+
+                .nav-link:hover {
+                    color: var(--primary-luxury) !important;
                 }
 
-        /* Cart Badge */
-        .cart-icon-wrapper {
-            position: relative;
-            color: #2D3748;
-        }
+            /* Hiệu ứng gạch chân mượt mà khi hover thanh điều hướng */
+            .navbar-nav .nav-item .nav-link::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: -2px;
+                left: 0;
+                background-color: var(--primary-luxury);
+                transition: width 0.25s ease;
+            }
 
-        .cart-badge-luxury {
-            position: absolute;
-            top: -8px;
-            right: -10px;
-            background-color: var(--primary-pink);
-            color: white;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 10px;
-        }
+            .navbar-nav .nav-item .nav-link:hover::after {
+                width: 100%;
+            }
+
+            /* Giỏ hàng cao cấp */
+            .cart-icon-wrapper {
+                position: relative;
+                color: var(--dark-slate) !important;
+                display: inline-flex;
+                align-items: center;
+                transition: all 0.25s ease;
+            }
+
+                .cart-icon-wrapper:hover {
+                    color: var(--primary-luxury) !important;
+                    transform: scale(1.05);
+                }
+
+                .cart-icon-wrapper::after {
+                    display: none !important; /* Tắt hiệu ứng gạch chân riêng cho icon giỏ hàng */
+                }
+
+            .cart-badge-luxury {
+                position: absolute;
+                top: -6px;
+                right: -10px;
+                background-color: var(--primary-luxury);
+                color: white;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 20px;
+                line-height: 1;
+                box-shadow: 0 3px 8px rgba(163, 72, 99, 0.3);
+            }
+
+            /* Footer Dark Premium */
+            .footer-dark {
+                background-color: #1A0B0E; /* Tông màu tối thiên hồng tro đậm quý phái */
+                color: #A0AEC0;
+                padding: 60px 0 30px;
+                font-size: 14px;
+                border-top: 1px solid rgba(163, 72, 99, 0.1);
+            }
+
+                .footer-dark h5 {
+                    color: #FFFFFF;
+                    font-weight: 700;
+                    margin-bottom: 22px;
+                    letter-spacing: 0.5px;
+                }
+
+                .footer-dark ul li {
+                    margin-bottom: 12px;
+                    transition: all 0.25s ease;
+                }
+
+                    .footer-dark ul li a {
+                        color: #A0AEC0;
+                        text-decoration: none;
+                        transition: all 0.25s ease;
+                    }
+
+                    .footer-dark ul li:hover a, .footer-dark ul li:hover {
+                        color: #FFFFFF;
+                        transform: translateX(4px);
+                    }
     </style>
 </head>
 <body class="h-100">
@@ -109,20 +166,31 @@
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
                         <span class="navbar-toggler-icon"></span>
                     </button>
+
                     <div class="collapse navbar-collapse" id="navContent">
                         <ul class="navbar-nav ms-auto align-items-center gap-lg-4">
-                            <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Product" asp-action="Index">Sản phẩm</a>
+                            </li>
 
                             @if (User.Identity?.IsAuthenticated ?? false)
                             {
                                 @if (User.IsInRole("Admin"))
                                 {
-                                    <li class="nav-item"><a class="nav-link text-danger fw-bold" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Quản trị</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-danger fw-bold" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                                            <i class="bi bi-shield-lock-fill me-1"></i> Quản trị
+                                        </a>
+                                    </li>
                                 }
                                 @if (User.IsInRole("User"))
                                 {
-                                    <li class="nav-item"><a class="nav-link" asp-controller="Product" asp-action="Index">Sản phẩm</a></li>
-                                    <li class="nav-item"><a class="nav-link" asp-controller="Cart" asp-action="OrderHistory">Đơn hàng</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Cart" asp-action="OrderHistory">Đơn hàng</a>
+                                    </li>
 
                                     <li class="nav-item">
                                         @{
@@ -130,7 +198,7 @@
                                             var cartCount = !string.IsNullOrEmpty(sessionData) ?
                                             System.Text.Json.JsonSerializer.Deserialize<List<WebBanHoa.Models.ViewModels.CartItem>>(sessionData)?.Sum(x => x.Quantity) ?? 0 : 0;
                                         }
-                                        <a asp-controller="Cart" asp-action="Index" class="nav-link cart-icon-wrapper">
+                                        <a asp-area="" asp-controller="Cart" asp-action="Index" class="nav-link cart-icon-wrapper">
                                             <i class="bi bi-bag-heart fs-5"></i>
                                             @if (cartCount > 0)
                                             {
@@ -141,6 +209,7 @@
                                 }
                             }
                         </ul>
+                        <!-- Nhúng khối đăng nhập/đăng ký/avatar -->
                         <div class="ms-lg-3"><partial name="_LoginPartial" /></div>
                     </div>
                 </div>
@@ -148,27 +217,154 @@
         </header>
 
         <main role="main" class="main-content py-5">
-            <div class="container">@RenderBody()</div>
+            <div class="container">
+                @RenderBody()
+            </div>
         </main>
 
-        <footer class="footer-dark">
+        <style>
+                    /* 🌟 CSS ĐỘC QUYỀN CHO FOOTER PREMIUM */
+                    .footer-premium {
+                        background-color: #1A0F12; /* Màu đen ánh mận cực kỳ sang trọng */
+                        color: #F8F9FA;
+                        padding: 70px 0 30px;
+                        font-family: 'Plus Jakarta Sans', sans-serif;
+                    }
+
+                    .footer-title {
+                        color: #E6B941; /* Vàng kim Luxury */
+                        font-weight: 700;
+                        font-size: 14px;
+                        letter-spacing: 1.5px;
+                        margin-bottom: 24px;
+                        text-transform: uppercase;
+                    }
+
+                    .footer-text {
+                        color: #A0AEC0;
+                        font-size: 14.5px;
+                        line-height: 1.8;
+                    }
+
+                    .footer-link {
+                        color: #A0AEC0;
+                        text-decoration: none;
+                        transition: all 0.3s ease;
+                        display: inline-flex;
+                        align-items: center;
+                        margin-bottom: 14px;
+                        font-size: 14.5px;
+                    }
+
+                        .footer-link:hover {
+                            color: #E6B941;
+                            transform: translateX(6px); /* Hiệu ứng trượt ngang sang chảnh */
+                        }
+
+                    /* Vòng tròn Icon Mạng Xã Hội */
+                    .social-icon-btn {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        background-color: rgba(255, 255, 255, 0.05);
+                        color: #F8F9FA;
+                        text-decoration: none;
+                        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+                        margin-right: 12px;
+                        font-size: 16px;
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                    }
+
+                        .social-icon-btn:hover {
+                            background-color: #E6B941;
+                            border-color: #E6B941;
+                            color: #111111;
+                            transform: translateY(-4px); /* Nhảy nhẹ lên khi Hover */
+                            box-shadow: 0 10px 20px rgba(230, 185, 65, 0.2);
+                        }
+
+                    .footer-divider {
+                        border-top: 1px solid rgba(255, 255, 255, 0.08);
+                        margin: 50px 0 25px;
+                    }
+
+                    .footer-bottom-link {
+                        color: #718096;
+                        text-decoration: none;
+                        transition: color 0.2s;
+                    }
+
+                        .footer-bottom-link:hover {
+                            color: #E6B941;
+                        }
+        </style>
+
+        <footer class="footer-premium mt-5">
             <div class="container">
-                <div class="row g-4">
-                    <div class="col-md-4">
-                        <h5>FLORAL LAM</h5>
-                        <p>Trao gửi yêu thương qua những đóa hoa nghệ thuật đương đại.</p>
+                <div class="row g-5">
+
+                    <!-- CỘT 1: THƯƠNG HIỆU & MẠNG XÃ HỘI -->
+                    <div class="col-lg-4 col-md-6">
+                        <h5 class="mb-4" style="font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">
+                            Floral <span style="color: #E6B941;">LAM</span>
+                        </h5>
+                        <p class="footer-text pe-lg-4 mb-4">
+                            Trao gửi yêu thương qua những tác phẩm hoa nghệ thuật đương đại. Đánh thức mọi giác quan bằng vẻ đẹp rực rỡ và tinh tế của thiên nhiên.
+                        </p>
+                        <!-- Icon Mạng Xã Hội -->
+                        <div class="d-flex">
+                            <a href="#" class="social-icon-btn" title="Facebook"><i class="bi bi-facebook"></i></a>
+                            <a href="#" class="social-icon-btn" title="Instagram"><i class="bi bi-instagram"></i></a>
+                            <a href="#" class="social-icon-btn" title="Twitter/X"><i class="bi bi-twitter-x"></i></a>
+                            <a href="#" class="social-icon-btn" title="Tiktok"><i class="bi bi-tiktok"></i></a>
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <h5>DỊCH VỤ</h5>
-                        <ul class="list-unstyled">
-                            <li><i class="bi bi-truck me-2"></i>Giao hỏa tốc</li>
-                            <li><i class="bi bi-shield-check me-2"></i>Bảo hành độ tươi</li>
-                        </ul>
+
+                    <!-- CỘT 2: DỊCH VỤ PREMIUM -->
+                    <div class="col-lg-4 col-md-6">
+                        <h5 class="footer-title">Dịch Vụ Premium</h5>
+                        <div class="d-flex flex-column mt-2">
+                            <a href="#" class="footer-link"><i class="bi bi-truck me-3 fs-5"></i> Giao hỏa tốc nội thành 2H</a>
+                            <a href="#" class="footer-link"><i class="bi bi-shield-check me-3 fs-5"></i> Cam kết độ tươi chuẩn mẫu</a>
+                            <a href="#" class="footer-link"><i class="bi bi-palette me-3 fs-5"></i> Thiết kế hoa theo yêu cầu</a>
+                            <a href="#" class="footer-link"><i class="bi bi-credit-card-2-front me-3 fs-5"></i> Thanh toán bảo mật 100%</a>
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <h5>KẾT NỐI</h5>
-                        <p><i class="bi bi-geo-alt-fill me-2"></i> 123 An Nhơn, TP.HCM</p>
-                        <p><i class="bi bi-telephone-fill me-2"></i> 0123 456 789</p>
+
+                    <!-- CỘT 3: THÔNG TIN KẾT NỐI -->
+                    <div class="col-lg-4 col-md-6">
+                        <h5 class="footer-title">Kết Nối Với Chúng Tôi</h5>
+                        <div class="footer-text d-flex flex-column gap-3 mt-3">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-geo-alt-fill fs-5 me-3" style="color: #E6B941; margin-top: 2px;"></i>
+                                <span>123 An Nhơn, Phường 17<br />Quận Gò Vấp, TP. Hồ Chí Minh</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-telephone-fill fs-5 me-3" style="color: #E6B941;"></i>
+                                <span>0123 456 789 (Hotline 24/7)</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-envelope-fill fs-5 me-3" style="color: #E6B941;"></i>
+                                <span>florallam.boutique@gmail.com</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DÒNG KẺ NGANG -->
+                <div class="footer-divider"></div>
+
+                <!-- BẢN QUYỀN VÀ CHÍNH SÁCH -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center" style="font-size: 13px; color: #718096;">
+                    <div class="mb-3 mb-md-0 fw-medium">
+                        © 2026 Floral LAM. À nhon a xê ô. HiHi
+                    </div>
+                    <div class="d-flex gap-4 fw-medium">
+                        <a href="#" class="footer-bottom-link">Chính sách bảo mật</a>
+                        <a href="#" class="footer-bottom-link">Điều khoản dịch vụ</a>
                     </div>
                 </div>
             </div>

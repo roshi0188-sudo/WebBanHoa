@@ -25,10 +25,10 @@ namespace WebBanHoa.Areas.Admin.Controllers
         // 1. GIAO DIỆN BIỂU ĐỒ TỔNG QUAN
         public async Task<IActionResult> Index()
         {
-            var revenue = await _context.Orders
-                .Where(o => o.OrderStatus == "Đã hoàn thành")
+            var totalRevenue = await _context.Orders
+                .Where(o => o.OrderStatus == "Đã hoàn thành" || o.OrderStatus == "Đã giao")
                 .SumAsync(o => o.TotalAmount);
-            ViewBag.TotalRevenue = revenue.ToString("#,##0");
+            ViewBag.TotalRevenue = totalRevenue;
 
             ViewBag.PendingOrders = await _context.Orders
                 .CountAsync(o => o.OrderStatus == "Chờ xử lý");
@@ -40,12 +40,11 @@ namespace WebBanHoa.Areas.Admin.Controllers
             return View();
         }
 
-        //  2. THÊM MỚI HÀM NÀY: GIAO DIỆN DANH SÁCH NGƯỜI DÙNG (/Admin/Dashboard/UserList)
         public async Task<IActionResult> UserList()
         {
             // Lấy danh sách toàn bộ người dùng từ Identity chuyển ra ngoài giao diện
             var users = await _userManager.Users.ToListAsync();
-            return View(users); // Sẽ tìm file Areas/Admin/Views/Dashboard/UserList.cshtml
+            return View(users); 
         }
 
         //  3. HÀM XỬ LÝ KHÓA TÀI KHOẢN (POST)
@@ -62,16 +61,18 @@ namespace WebBanHoa.Areas.Admin.Controllers
             if (currentUser?.Id == userId)
             {
                 TempData["DangerMessage"] = "Bạn không thể tự khóa tài khoản Admin của chính mình!";
-                return RedirectToAction(nameof(UserList));
+              
+                return RedirectToAction(nameof(Index));
             }
 
             await _userManager.SetLockoutEnabledAsync(user, true);
             await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddDays(days));
 
-            TempData["SuccessMessage"] = $"Đã khóa tài khoản {user.Email} thành công trong {days} ngày. 🔒";
+            // Đồng bộ cập nhật trạng thái hệ thống để chặn phiên đăng nhập cũ lập tức
+            await _userManager.UpdateSecurityStampAsync(user);
 
-         
-            return RedirectToAction(nameof(UserList));
+            TempData["SuccessMessage"] = $"Đã khóa tài khoản {user.Email} thành công trong {days} ngày.";
+            return RedirectToAction(nameof(Index));
         }
 
         //  4. HÀM XỬ LÝ MỞ KHÓA TÀI KHOẢN (POST)
@@ -85,10 +86,10 @@ namespace WebBanHoa.Areas.Admin.Controllers
             if (user == null) return NotFound();
 
             await _userManager.SetLockoutEndDateAsync(user, null);
+            await _userManager.UpdateSecurityStampAsync(user);
 
-            TempData["SuccessMessage"] = $"Đã mở khóa tài khoản {user.Email} thành công. 🔓";
-
-            return RedirectToAction(nameof(UserList));
+            TempData["SuccessMessage"] = $"Đã mở khóa tài khoản {user.Email} thành công.";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

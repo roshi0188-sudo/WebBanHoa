@@ -1,78 +1,84 @@
 ﻿@model WebBanHoa.Models.Product
 
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml"; 
-    ViewData["Title"] = Model.Name + " - Chi tiết hoa tươi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.Name + " - Cảm Tác Hoa Tươi";
 }
 
 <style>
-    /* Card tổng thể phong cách Boutique Premium */
+    /* 🟢 ĐỒNG BỘ FONT PLUS JAKARTA SANS */
+    *, h2, h3, h6, .product-price-luxury, .btn, .back-link-top, p, span, small {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
+    /* Card tổng thể phong cách Minimalist Luxury */
     .details-card {
         background: white;
-        border-radius: 24px;
+        border-radius: 32px;
         border: none;
-        box-shadow: 0 10px 30px rgba(163, 72, 99, 0.03);
-        padding: 45px;
+        box-shadow: 0 15px 45px rgba(163, 72, 99, 0.02);
+        padding: 50px;
     }
 
     /* Khung chứa ảnh đại diện cao cấp */
     .main-image-wrapper {
-        border-radius: 20px;
+        border-radius: 24px;
         overflow: hidden;
-        aspect-ratio: 4/5;
-        box-shadow: 0 12px 32px rgba(163, 72, 99, 0.06);
-        background-color: #F8F9FA;
+        aspect-ratio: 3/4;
+        box-shadow: 0 16px 40px rgba(163, 72, 99, 0.04);
+        background-color: #FFF5F7;
         transition: transform 0.4s ease;
     }
 
-    /* Album ảnh nhỏ đi kèm */
+    /* Album ảnh nhỏ tinh tế */
     .sub-image-item {
-        width: 75px;
-        height: 75px;
-        border-radius: 12px;
+        width: 80px;
+        height: 80px;
+        border-radius: 14px;
         object-fit: cover;
         cursor: pointer;
         border: 2px solid transparent;
         transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        background-color: #FFF5F7;
     }
 
-    .sub-image-item:hover, .sub-image-item.active {
-        border-color: #DE8F9F;
-        transform: scale(1.05);
-        box-shadow: 0 4px 10px rgba(222, 143, 159, 0.2);
+        .sub-image-item:hover, .sub-image-item.active {
+            border-color: #A34863;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(163, 72, 99, 0.1);
+        }
+
+    /* Định dạng tiêu đề & danh mục */
+    .product-title-luxury {
+        font-size: 36px;
+        font-weight: 800;
+        color: #2D141A;
+        letter-spacing: -0.5px;
+        line-height: 1.3;
+    }
+
+    .category-tag-luxury {
+        color: #DE8F9F !important;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
     }
 
     /* Định dạng giá tiền Premium */
     .product-price-luxury {
-        font-size: 32px;
+        font-size: 34px;
         font-weight: 700;
         color: #A34863;
-        font-family: 'Plus Jakarta Sans', sans-serif;
         letter-spacing: -0.5px;
     }
 
-    /* Nhãn Badge trạng thái */
-    .badge-luxury {
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .badge-in-stock { background-color: #E6FFFA; color: #319795; }
-    .badge-low-stock { background-color: #FEFCBF; color: #B7791F; }
-    .badge-out-stock { background-color: #FED7D7; color: #E53E3E; }
-
     /* Bộ tăng giảm số lượng Boutique */
     .quantity-input-group {
-        border: 1px solid #E2E8F0;
-        border-radius: 20px;
-        background-color: #F8F9FA;
-        padding: 4px;
-        max-width: 140px;
+        border: 1px solid #F3EAEF;
+        border-radius: 30px;
+        background-color: #FFF5F7;
+        padding: 6px;
+        max-width: 150px;
     }
 
     .btn-quantity-step {
@@ -81,77 +87,111 @@
         border-radius: 50% !important;
         border: none;
         background: white;
-        color: #4A5568;
-        font-weight: bold;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-        transition: 0.2s;
+        color: #A34863;
+        font-weight: 700;
+        box-shadow: 0 3px 6px rgba(163, 72, 99, 0.05);
+        transition: all 0.2s ease;
     }
 
-    .btn-quantity-step:hover {
-        background-color: #DE8F9F;
-        color: white;
-    }
+        .btn-quantity-step:hover {
+            background-color: #A34863;
+            color: white;
+        }
 
-    /* Khối thông tin dịch vụ Premium của Floral LAM */
+    /* Khối thông tin dịch vụ Premium */
     .boutique-care-box {
-        background: linear-gradient(135deg, #FAF8FA 0%, #FFF5F7 100%);
-        border-radius: 16px;
-        padding: 20px;
+        background: #FBF9FB;
+        border-radius: 20px;
+        padding: 24px;
         border: 1px solid #F3EAEF;
     }
 
-    /* Thiết kế các nút mua hàng độc quyền */
+    /* Thiết kế hệ thống nút tương tác */
     .btn-cart-luxury {
         background: white;
         color: #A34863;
-        border: 2px solid #DE8F9F;
-        border-radius: 24px;
-        padding: 14px 32px;
-        font-weight: 600;
-        transition: 0.3s;
-    }
-
-    .btn-cart-luxury:hover {
-        background-color: #FFF5F7;
-        transform: translateY(-1px);
-    }
-
-    .btn-buy-now-luxury {
-        background: linear-gradient(135deg, #DE8F9F, #A34863);
-        color: white;
-        border: none;
-        border-radius: 24px;
-        padding: 14px 32px;
-        font-weight: 600;
-        transition: 0.3s;
-        box-shadow: 0 4px 14px rgba(163, 72, 99, 0.15);
-    }
-
-    .btn-buy-now-luxury:hover {
-        opacity: 0.95;
-        transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(163, 72, 99, 0.25);
-    }
-
-    .back-link-top {
-        color: #718096;
-        font-weight: 500;
+        border: 2px solid #A34863;
+        border-radius: 30px;
+        padding: 14px 35px;
+        font-weight: 700;
         font-size: 14px;
+        letter-spacing: 0.5px;
         transition: all 0.3s ease;
     }
 
-    .back-link-top:hover {
-        color: #A34863 !important;
-        transform: translateX(-4px);
+        .btn-cart-luxury:hover {
+            background-color: #FFF5F7;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(163, 72, 99, 0.05);
+        }
+
+    .btn-buy-now-luxury {
+        background: #A34863;
+        color: white !important;
+        border: none;
+        border-radius: 30px;
+        padding: 14px 45px;
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(163, 72, 99, 0.15);
+    }
+
+        .btn-buy-now-luxury:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(163, 72, 99, 0.25);
+        }
+
+    .back-link-top {
+        color: #718096;
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: 0.05em;
+        transition: all 0.3s ease;
+    }
+
+        .back-link-top:hover {
+            color: #A34863 !important;
+            transform: translateX(-4px);
+        }
+
+    /* 🟢 CSS ĐỊNH DẠNG KHU VỰC CHỌN THIỆP MỚI */
+    .card-image-option input[type="radio"]:checked + .card-img-box {
+        border-color: #A34863 !important;
+        background-color: #FFF5F7 !important;
+        box-shadow: 0 4px 12px rgba(163, 72, 99, 0.15);
+    }
+
+        .card-image-option input[type="radio"]:checked + .card-img-box span {
+            color: #A34863 !important;
+            font-weight: 700;
+        }
+
+    .card-img-box {
+        border: 2px solid #E2E8F0 !important;
+        transition: all 0.25s ease;
+    }
+
+        .card-img-box:hover {
+            border-color: #DE8F9F !important;
+            transform: translateY(-2px);
+        }
+
+    .scrollbar-hidden::-webkit-scrollbar {
+        display: none;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
     }
 </style>
 
-<div class="container mb-4 mt-3">
-    <div class="d-flex align-items-center gap-3">
-        <a asp-area="" asp-controller="Home" asp-action="Index" class="back-link-top text-decoration-none d-inline-flex align-items-center gap-2">
-            <i class="bi bi-chevron-left"></i> Quay lại trang chủ bộ sưu tập
-        </a>
-    </div>
+<div class="container mb-4 mt-4">
+    <a asp-area="" asp-controller="Product" asp-action="Index" class="back-link-top text-decoration-none text-uppercase d-inline-flex align-items-center gap-2">
+        <i class="bi bi-arrow-left"></i> Trở về danh sách sản phẩm
+    </a>
 </div>
 
 <div class="container row justify-content-center mx-auto mb-5">
@@ -159,18 +199,18 @@
         <div class="details-card">
             <div class="row g-5">
 
-                <!-- KHU VỰC ALBUM ẢNH HOA -->
+                <!-- Hình ảnh sản phẩm -->
                 <div class="col-md-5">
                     <div class="main-image-wrapper mb-3">
                         <img id="mainProductImage" src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/banner.jpg" : Model.ImageUrl)"
                              class="w-100 h-100 object-fit-cover"
-                             style="transition: opacity 0.2s ease;"
-                             onerror="this.src='https://placehold.co/400x500'">
+                             style="transition: opacity 0.25s ease;"
+                             onerror="this.src='https://placehold.co/600x800'">
                     </div>
 
                     @if (Model.ImageUrls != null && Model.ImageUrls.Any())
                     {
-                        <div class="d-flex gap-2 overflow-x-auto pb-2">
+                        <div class="d-flex gap-2 overflow-x-auto pb-2 pt-1">
                             <img src="@Model.ImageUrl" class="sub-image-item active" onclick="changePreviewImage(this)">
                             @foreach (var imgPath in Model.ImageUrls)
                             {
@@ -180,82 +220,136 @@
                     }
                 </div>
 
-                <!-- KHU VỰC THÔNG TIN VÀ FORM ĐẶT HÀNG -->
-                <div class="col-md-7 d-flex flex-column justify-content-between">
-                    <!-- Khởi tạo form gửi dữ liệu lên CartController -->
-                    <form asp-controller="Cart" asp-action="AddToCart" method="post" id="orderForm">
+                <!-- Thông tin và biểu mẫu đặt hàng -->
+                <div class="col-lg-7 d-flex flex-column justify-content-between">
+                    <form asp-controller="Cart" asp-action="AddToCart" method="post" id="orderForm" class="h-100 d-flex flex-column justify-content-between">
                         <input type="hidden" name="productId" value="@Model.Id" />
 
                         <div>
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <span class="text-uppercase tracking-wider fw-bold text-muted small" style="letter-spacing: 0.5px;">
-                                    <i class="bi bi-tag-fill me-1" style="color: #DE8F9F;"></i> @(Model.Category?.Name ?? "Hoa Nghệ Thuật")
-                                </span>
-
-                                @{
-                                    string statusClass = "badge-in-stock";
-                                    string statusText = "Hoa tươi có sẵn";
-                                    if (Model.Id % 3 == 0) { statusClass = "badge-out-stock"; statusText = "Hết hoa tạm thời"; }
-                                    else if (Model.Id % 5 == 0) { statusClass = "badge-low-stock"; statusText = "Mẫu hoa giới hạn"; }
-                                }
-                                <span class="badge-luxury @statusClass">
-                                    <i class="bi bi-circle-fill" style="font-size: 6px;"></i> @statusText
+                            <div class="mb-2">
+                                <span class="text-uppercase category-tag-luxury">
+                                    🌸 @(Model.Category?.Name ?? "Hoa Nghệ Thuật Cao Cấp")
                                 </span>
                             </div>
 
-                            <h2 class="fw-bold mb-2" style="color: #2D3748; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 32px;">@Model.Name</h2>
+                            <h2 class="product-title-luxury mb-3">@Model.Name</h2>
 
                             <div class="my-4">
-                                <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Giá bán niêm yết</small>
                                 <span class="product-price-luxury">@Model.Price.ToString("#,##0") đ</span>
                             </div>
 
-                            <hr class="text-muted opacity-25 my-4">
-
-                            <!-- BỘ CHỌN SỐ LƯỢNG BOUTIQUE -->
-                            <div class="d-flex align-items-center gap-4 mb-4">
-                                <span class="fw-bold text-secondary text-uppercase" style="font-size: 12px; letter-spacing: 0.5px;">Số lượng đơn:</span>
-                                <div class="input-group quantity-input-group align-items-center justify-content-between">
-                                    <button type="button" class="btn btn-quantity-step" onclick="adjustQty(-1)">-</button>
-                                    <input type="number" id="quantityDisplay" name="quantity" class="form-control text-center border-0 bg-transparent fw-bold p-0" value="1" min="1" readonly style="box-shadow: none; color: #2D3748; width: 40px;" />
-                                    <button type="button" class="btn btn-quantity-step" onclick="adjustQty(1)">+</button>
-                                </div>
-                            </div>
+                            <hr style="border-color: var(--border-soft); opacity: 0.6;" class="my-4">
 
                             <div class="mb-4">
-                                <h6 class="fw-bold text-secondary text-uppercase mb-2" style="font-size: 12px; letter-spacing: 0.5px;">Ý nghĩa & Thiết kế bó hoa</h6>
-                                <p class="text-dark lh-relaxed" style="font-size: 15px; color: #4A5568 !important; white-space: pre-line;">
+                                <h6 class="text-uppercase tracking-wider fw-bold text-muted mb-2" style="font-size: 11px; letter-spacing: 1px;">Cảm hứng thiết kế</h6>
+                                <p class="lh-relaxed text-secondary" style="font-size: 15px; color: #4A5568 !important; white-space: pre-line;">
                                     @(string.IsNullOrEmpty(Model.Description) ? "Mẫu thiết kế hoa tươi cao cấp mang thông điệp yêu thương ngọt ngào từ nghệ nhân Floral LAM." : Model.Description)
                                 </p>
                             </div>
 
-                            <!-- CAM KẾT ĐẶC QUYỀN KHÁCH HÀNG -->
-                            <div class="boutique-care-box d-flex align-items-start gap-3 mt-4">
-                                <span class="fs-4">✨</span>
-                                <div>
-                                    <h6 class="fw-bold m-0" style="color: #A34863; font-size: 13px;">Đặc quyền dịch vụ tại Floral LAM</h6>
-                                    <p class="text-muted m-0 mt-1" style="font-size: 12px; line-height: 1.5;">
-                                        Giao hoa hỏa tốc nội thành trong 60-90 phút. Cam kết chụp hình thành phẩm gửi quý khách duyệt trước khi vận chuyển để đảm bảo độ hoàn mỹ 100%.
-                                    </p>
+                            <div class="d-flex align-items-center gap-4 my-4">
+                                <span class="text-uppercase tracking-wider fw-bold text-muted" style="font-size: 11px; letter-spacing: 1px;">Số lượng:</span>
+                                <div class="input-group quantity-input-group align-items-center justify-content-between">
+                                    <button type="button" class="btn btn-quantity-step" onclick="adjustQty(-1)">-</button>
+                                    <input type="number" id="quantityDisplay" name="quantity" class="form-control text-center border-0 bg-transparent fw-bold p-0" value="1" min="1" readonly style="box-shadow: none; color: #2D141A; width: 40px; font-size: 15px;" />
+                                    <button type="button" class="btn btn-quantity-step" onclick="adjustQty(1)">+</button>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-4 mb-4" style="background-color: #FFF5F7; border: 1px dashed #DE8F9F; overflow: hidden;">
+                                <div class="form-check d-flex align-items-center gap-2 mb-3">
+                                    <input class="form-check-input cursor-pointer" type="checkbox" id="enableGreetingCard" name="HasCard" value="true" style="width: 18px; height: 18px; accent-color: #A34863;" onchange="toggleCardSection()">
+                                    <label class="form-check-label fw-bold text-dark cursor-pointer m-0" for="enableGreetingCard" style="font-size: 14px;">
+                                        🎁 Gửi tặng kèm thiệp chúc mừng (Miễn phí)
+                                    </label>
+                                </div>
+
+                                <div id="cardSelectionZone" class="d-none">
+                                    <p class="text-muted small mb-3">Bấm chọn trực tiếp vào mẫu thiết kế thiệp bạn thích dưới đây:</p>
+
+                                    <!-- Áp dụng flex-wrap và giảm nhẹ width xuống 100px để không bao giờ bị tràn box -->
+                                    <div class="d-flex flex-wrap justify-content-start gap-3 pb-3 pt-1">
+
+                                        <!-- Mẫu 01 -->
+                                        <label class="card-image-option cursor-pointer m-0">
+                                            <input type="radio" name="CardImage" value="/images/cards/thiephoa_1.jpg" checked class="d-none">
+                                            <div class="card-img-box p-1 rounded-3 bg-white border text-center" style="width: 100px;">
+                                                <img src="/images/cards/thiephoa_1.jpg" class="rounded-2 object-fit-cover w-100" style="height: 90px;" onerror="this.src='https://placehold.co/90x90?text=Mau+1'">
+                                                <span class="d-block mt-1 text-muted fw-semibold" style="font-size: 11px;">Mẫu 01</span>
+                                            </div>
+                                        </label>
+
+                                        <!-- Mẫu 02 -->
+                                        <label class="card-image-option cursor-pointer m-0">
+                                            <input type="radio" name="CardImage" value="/images/cards/thiephoa_2.jpg" class="d-none">
+                                            <div class="card-img-box p-1 rounded-3 bg-white border text-center" style="width: 100px;">
+                                                <img src="/images/cards/thiephoa_2.jpg" class="rounded-2 object-fit-cover w-100" style="height: 90px;" onerror="this.src='https://placehold.co/90x90?text=Mau+2'">
+                                                <span class="d-block mt-1 text-muted fw-semibold" style="font-size: 11px;">Mẫu 02</span>
+                                            </div>
+                                        </label>
+
+                                        <!-- Mẫu 03 -->
+                                        <label class="card-image-option cursor-pointer m-0">
+                                            <input type="radio" name="CardImage" value="/images/cards/thiephoa_3.jpg" class="d-none">
+                                            <div class="card-img-box p-1 rounded-3 bg-white border text-center" style="width: 100px;">
+                                                <img src="/images/cards/thiephoa_3.jpg" class="rounded-2 object-fit-cover w-100" style="height: 90px;" onerror="this.src='https://placehold.co/90x90?text=Mau+3'">
+                                                <span class="d-block mt-1 text-muted fw-semibold" style="font-size: 11px;">Mẫu 03</span>
+                                            </div>
+                                        </label>
+
+                                        <!-- Mẫu 04 -->
+                                        <label class="card-image-option cursor-pointer m-0">
+                                            <input type="radio" name="CardImage" value="/images/cards/thiephoa_4.jpg" class="d-none">
+                                            <div class="card-img-box p-1 rounded-3 bg-white border text-center" style="width: 100px;">
+                                                <img src="/images/cards/thiephoa_4.jpg" class="rounded-2 object-fit-cover w-100" style="height: 90px;" onerror="this.src='https://placehold.co/90x90?text=Mau+4'">
+                                                <span class="d-block mt-1 text-muted fw-semibold" style="font-size: 11px;">Mẫu 04</span>
+                                            </div>
+                                        </label>
+
+                                        <!-- Mẫu 05 -->
+                                        <label class="card-image-option cursor-pointer m-0">
+                                            <input type="radio" name="CardImage" value="/images/cards/thiephoa_5.jpg" class="d-none">
+                                            <div class="card-img-box p-1 rounded-3 bg-white border text-center" style="width: 100px;">
+                                                <img src="/images/cards/thiephoa_5.jpg" class="rounded-2 object-fit-cover w-100" style="height: 90px;" onerror="this.src='https://placehold.co/90x90?text=Mau+5'">
+                                                <span class="d-block mt-1 text-muted fw-semibold" style="font-size: 11px;">Mẫu 05</span>
+                                            </div>
+                                        </label>
+
+                                    </div>
+
+                                    <div class="mt-2">
+                                        <label class="small fw-bold text-secondary text-uppercase mb-2" style="font-size: 11px; letter-spacing: 0.5px;">Nội dung viết tay lên thiệp:</label>
+                                        <textarea class="form-control border-0 p-3 rounded-3" name="CardContent" id="cardContentInput" rows="3" placeholder="Nhập lời nhắn gửi ý nghĩa của bạn tại đây..." maxlength="150" style="font-size: 14px; background-color: white; resize: none; box-shadow: none; color: #2D141A;"></textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- CỤM NÚT TƯƠNG TÁC GIỎ HÀNG VÀ MUA NGAY -->
-                        <div class="d-flex gap-3 pt-4 border-top mt-5 justify-content-end">
-                            <!-- 🟢 ĐÃ SỬA: Đổi type="submit" thành type="button" và thêm id="btnAddToCartAjax" -->
-                            <button type="button" id="btnAddToCartAjax" class="btn btn-cart-luxury d-inline-flex align-items-center gap-2">
-                                <i class="bi bi-bag-plus"></i> Thêm vào giỏ hàng
-                            </button>
+                        <div>
+                            <!-- Cam kết dịch vụ Boutique -->
+                            <div class="boutique-care-box d-flex align-items-center gap-3 mt-2">
+                                <div class="text-luxury fs-4"><i class="bi bi-patch-check-fill"></i></div>
+                                <div>
+                                    <h6 class="fw-bold m-0" style="color: #2D141A; font-size: 13px;">Đặc quyền thiết kế tại Floral LAM</h6>
+                                    <p class="text-muted m-0 mt-1" style="font-size: 12px; line-height: 1.6;">
+                                        Giao hỏa tốc nội thành trong 60-90 phút. Cam kết chụp và gửi ảnh thành phẩm thực tế để quý khách duyệt trước khi vận chuyển.
+                                    </p>
+                                </div>
+                            </div>
 
-                            <!-- Nút Mua ngay kích hoạt hàm chuyển trang hỏa tốc -->
-                            <button type="button" class="btn btn-buy-now-luxury d-inline-flex align-items-center gap-2" onclick="triggerInstantCheckout()">
-                                <i class="bi bi-lightning-charge-fill"></i> Mua ngay
-                            </button>
+                            <div class="d-flex gap-3 pt-4 mt-4 justify-content-start flex-wrap">
+                                <button type="button" id="btnAddToCartAjax" class="btn btn-cart-luxury d-inline-flex align-items-center gap-2 text-uppercase">
+                                    <i class="bi bi-bag-plus-fill"></i> Thêm vào giỏ
+                                </button>
+
+                                <button type="button" class="btn btn-buy-now-luxury d-inline-flex align-items-center gap-2 text-uppercase" onclick="triggerInstantCheckout()">
+                                    <i class="bi bi-lightning-charge-fill"></i> Mua ngay
+                                </button>
+                            </div>
                         </div>
                     </form>
-
                 </div>
+
             </div>
         </div>
     </div>
@@ -263,7 +357,6 @@
 
 @section Scripts {
     <script>
-        // 1. Thay đổi ảnh xem trước trong bộ sưu tập album
         function changePreviewImage(element) {
             document.querySelectorAll('.sub-image-item').forEach(item => item.classList.remove('active'));
             element.classList.add('active');
@@ -276,7 +369,6 @@
             }, 150);
         }
 
-        // 2. Tăng giảm số lượng đơn hoa
         function adjustQty(amount) {
             const qtyInput = document.getElementById('quantityDisplay');
             let currentVal = parseInt(qtyInput.value) || 1;
@@ -285,40 +377,45 @@
             qtyInput.value = currentVal;
         }
 
-        // 🟢 3. XỬ LÝ AJAX THUẦN: THÊM VÀO GIỎ KHÔNG CHUYỂN TRANG
+        function toggleCardSection() {
+            const checkbox = document.getElementById('enableGreetingCard');
+            const zone = document.getElementById('cardSelectionZone');
+
+            if (checkbox.checked) {
+                zone.classList.remove('d-none');
+            } else {
+                zone.classList.add('d-none');
+                document.getElementById('cardContentInput').value = "";
+            }
+        }
+
         document.getElementById('btnAddToCartAjax').addEventListener('click', function (e) {
             e.preventDefault();
-
             const form = document.getElementById('orderForm');
             const formData = new FormData(form);
 
             fetch('@Url.Action("AddToCart", "Cart")', {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => {
+                if (response.status === 401) {
+                    alert("Vui lòng đăng nhập tài khoản để đặt hoa! 🌸");
+                    window.location.href = '/Account/Login?ReturnUrl=' + encodeURIComponent(window.location.pathname);
+                    return;
+                }
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert("Có lỗi xảy ra, vui lòng thử lại.");
                 }
             })
-                .then(response => {
-                    // 🌟 CHỐT CHẶN TRIỆT ĐỂ: Nếu Server trả về lỗi 401 (Chưa đăng nhập)
-                    if (response.status === 401) {
-                        alert("Vui lòng đăng nhập tài khoản để thực hiện đặt hoa! 🌸");
-                        window.location.href = '/Account/Login?ReturnUrl=' + encodeURIComponent(window.location.pathname);
-                        return;
-                    }
-
-                    if (response.redirected) {
-                        window.location.href = response.url;
-                    } else if (response.ok) {
-                        window.location.reload();
-                    } else {
-                        alert("Có lỗi xảy ra, vui lòng thử lại.");
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+            .catch(error => console.error('Error:', error));
         });
 
-        // 🟢 4. XỬ LÝ MUA NGAY: THÊM VÀO GIỎ XONG BAY THẲNG VÀO TRANG GIỎ HÀNG
         function triggerInstantCheckout() {
             const form = document.getElementById('orderForm');
             const formData = new FormData(form);
@@ -326,26 +423,21 @@
             fetch('@Url.Action("AddToCart", "Cart")', {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => {
+                if (response.status === 401) {
+                    alert("Vui lòng đăng nhập tài khoản để mua hoa hỏa tốc! 🌸");
+                    window.location.href = '/Account/Login?ReturnUrl=' + encodeURIComponent(window.location.pathname);
+                    return;
+                }
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    window.location.href = '@Url.Action("Index", "Cart")';
                 }
             })
-                .then(response => {
-                    // 🌟 CHỐT CHẶN TRIỆT ĐỂ: Nếu bấm "Mua ngay" mà chưa đăng nhập
-                    if (response.status === 401) {
-                        alert("Vui lòng đăng nhập tài khoản để thực hiện mua hoa! 🌸");
-                        // Đá về trang Login, sau khi đăng nhập xong tự quay lại đúng trang hoa này
-                        window.location.href = '/Account/Login?ReturnUrl=' + encodeURIComponent(window.location.pathname);
-                        return;
-                    }
-
-                    if (response.redirected) {
-                        window.location.href = response.url;
-                    } else if (response.ok) {
-                        window.location.href = '@Url.Action("Index", "Cart")';
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+            .catch(error => console.error('Error:', error));
         }
     </script>
 }

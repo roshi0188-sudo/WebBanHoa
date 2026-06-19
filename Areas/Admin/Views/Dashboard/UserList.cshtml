@@ -92,7 +92,7 @@
                             <td class="text-end pe-4">
                                 @if (isLocked)
                                 {
-                                    <form asp-area="Admin" asp-controller="User" asp-action="UnlockAccount" method="post" class="d-inline">
+                                    <form asp-area="Admin" asp-controller="Dashboard" asp-action="UnlockAccount" method="post" class="d-inline">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="userId" value="@user.Id" />
                                         <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold shadow-sm"
@@ -103,7 +103,7 @@
                                 }
                                 else
                                 {
-                                    <form asp-area="Admin" asp-controller="User" asp-action="LockAccount" method="post" class="d-inline">
+                                    <form asp-area="Admin" asp-controller="Dashboard" asp-action="LockAccount" method="post" class="d-inline">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="userId" value="@user.Id" />
                                         <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold shadow-sm"

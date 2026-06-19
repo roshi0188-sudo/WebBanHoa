@@ -1,23 +1,33 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using WebBanHoa.Models;
 using WebBanHoa.Repositories;
-using Microsoft.AspNetCore.Authorization;
 
 namespace WebBanHoa.Controllers
 {
     public class HomeController : Controller
     {
         private readonly IProductRepository _productRepository;
-        public HomeController(IProductRepository productRepository)
+        private readonly ApplicationDbContext _context;
+        public HomeController(IProductRepository productRepository, ApplicationDbContext context)
         {
             _productRepository = productRepository;
+            _context = context;
         }
 
         public async Task<IActionResult> Index()
         {
             var products = await _productRepository.GetAllAsync();
+            var log = new VisitorLog
+            {
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                UrlVisited = HttpContext.Request.Path
+            };
+            _context.VisitorLogs.Add(log);
+            await _context.SaveChangesAsync();
             return View(products);
         }
 

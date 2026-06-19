@@ -3,15 +3,15 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Chi tiết hóa đơn mua hoa - Floral LAM";
 
-    // 🟢 QUY QUYẾT LUỒNG PHÁT SÁNG TIMELINE 4 MỐC DỰA TRÊN TRẠNG THÁI REALTIME CỦA SQL SERVER
+  
     int activeStepIndex = Model.OrderStatus switch
     {
+        "Chờ xử lý" => 1,
         "Đã xác nhận" => 1,
-        "Đang giao" => 2,    
+        "Đang giao" => 2,
         "Đã gửi hàng" => 2,
-        "Đang vận chuyển" => 3,
         "Đã giao" => 4,
-        "Đã hoàn thành" => 4, 
+        "Đã hoàn thành" => 4,
         _ => 1
     };
 }
@@ -19,15 +19,20 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 <style>
+    /* Đồng bộ font chữ cao cấp Plus Jakarta Sans cho toàn trang */
+    *, h5, h6, th, td, .timeline-node-label, strong, span, p {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
     body {
         background-color: #FCF9FA;
     }
 
     .luxury-detail-card {
         background: white;
-        border-radius: 20px;
+        border-radius: 24px;
         border: 1px solid #F5E6EC;
-        box-shadow: 0 10px 30px rgba(163, 72, 99, 0.02);
+        box-shadow: 0 15px 35px rgba(163, 72, 99, 0.02);
     }
 
     /* 🌟 BỘ KHUNG TIMELINE TRẠNG THÁI GIAO HÀNG TRỰC QUAN THEO YÊU CẦU BẮT BUỘC */
@@ -60,7 +65,7 @@
         background: linear-gradient(90deg, #DE8F9F, #A34863);
         z-index: 2;
         transition: width 0.4s ease;
-        width: @((activeStepIndex - 1) * 29.3)%; /* Tính toán tự động tỷ lệ co giãn */
+        width: @((activeStepIndex - 1) * 29.3) %; /* Tính toán tự động tỷ lệ co giãn */
     }
 
     .timeline-node {
@@ -107,16 +112,23 @@
         color: #A34863;
         font-weight: 700;
     }
+
+    /* Khung hiển thị thiệp Premium chúc mừng */
+    .gift-card-preview-box {
+        background-color: #FFF5F7;
+        border: 1px dashed #DE8F9F;
+        border-radius: 16px;
+    }
 </style>
 
 <div class="container mt-5 py-4" style="max-width: 850px;">
     <div class="card luxury-detail-card shadow-sm p-4">
 
         <div class="d-flex justify-content-between align-items-center mb-4 pb-3" style="border-bottom: 1px solid #FAF4F6;">
-            <h5 class="fw-bold m-0" style="font-family: 'Playfair Display', serif; color: #2D141A;">
+            <h5 class="fw-bold m-0" style="color: #2D141A;">
                 <i class="bi bi-receipt-cutoff me-2" style="color:#A34863;"></i> Chi tiết đơn đặt hoa #LAM-@Model.Id
             </h5>
-            <a asp-action="OrderHistory" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+            <a asp-action="OrderHistory" class="btn btn-sm btn-outline-secondary rounded-pill px-3 text-decoration-none">
                 <i class="bi bi-arrow-left"></i> Quay lại lịch sử
             </a>
         </div>
@@ -131,15 +143,11 @@
 
             <div class="timeline-node @(activeStepIndex >= 2 ? (activeStepIndex == 2 ? "active" : "completed") : "")">
                 <div class="timeline-node-circle"><i class="bi bi-box-seam"></i></div>
-                <div class="timeline-node-label">Đã gửi hàng</div>
-            </div>
-
-            <div class="timeline-node @(activeStepIndex >= 3 ? (activeStepIndex == 3 ? "active" : "completed") : "")">
-                <div class="timeline-node-circle"><i class="bi bi-truck"></i></div>
                 <div class="timeline-node-label">Đang vận chuyển</div>
             </div>
+   
 
-            <div class="timeline-node @(activeStepIndex == 4 ? "active" : "")">
+            <div class="timeline-node @(activeStepIndex == 3 ? "active" : "")">
                 <div class="timeline-node-circle"><i class="bi bi-house-heart"></i></div>
                 <div class="timeline-node-label">Đã giao</div>
             </div>
@@ -147,16 +155,40 @@
 
         <div class="row g-3 rounded-4 p-3 mb-4 mt-2 small text-secondary" style="background-color: #FFF8F9; border: 1px solid #FCECEF;">
             <div class="col-sm-6">
-                <span class="d-block mb-1.5"><strong class="text-dark"><i class="bi bi-person-fill text-muted me-1"></i> Người nhận hoa:</strong> <span class="text-dark fw-bold text-uppercase">@Model.User.FullName</span></span>
-                <span class="d-block mb-1.5"><strong class="text-dark">Thời gian đặt mua:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
-                <span><strong class="text-dark">Số điện thoại nhận hoa:</strong> @Model.PhoneNumber</span>
+                <span class="d-block mb-2">
+                    <strong class="text-dark"><i class="bi bi-person-fill text-muted me-1"></i> Người nhận hoa:</strong>
+                    <span class="text-dark fw-bold text-uppercase">@Model.ReceiverName</span>
+                </span>
+                <span class="d-block mb-2"><strong class="text-dark"><i class="bi bi-calendar-event text-muted me-1"></i> Thời gian đặt mua:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                <span><strong class="text-dark"><i class="bi bi-telephone text-muted me-1"></i> Số điện thoại nhận:</strong> @Model.PhoneNumber</span>
             </div>
             <div class="col-sm-6">
-                <span><strong class="text-dark">Địa chỉ bàn giao chi tiết:</strong> @Model.ShippingAddress</span>
+                <span><strong class="text-dark"><i class="bi bi-geo-alt text-muted me-1"></i> Địa chỉ bàn giao chi tiết:</strong> @Model.ShippingAddress</span>
             </div>
         </div>
 
-        <h6 class="fw-bold text-dark mb-3" style="font-family: 'Playfair Display', serif;">Danh sách mẫu hoa nghệ thuật</h6>
+        @if (!string.IsNullOrEmpty(Model.CardContent))
+        {
+            <div class="gift-card-preview-box p-4 mb-4">
+                <h6 class="fw-bold mb-3" style="color: #A34863;"><i class="bi bi-envelope-heart-fill me-1"></i> Quà tặng kèm: Thiệp chúc mừng nghệ thuật</h6>
+                <div class="row g-3 align-items-center">
+                    <div class="col-sm-3 text-center text-sm-start">
+                        <span class="fw-bold text-secondary d-block mb-2" style="font-size: 11px; letter-spacing: 0.5px;">PHÔI THIỆP ĐÃ CHỌN:</span>
+                        <img src="@Model.CardImage" class="rounded-3 border shadow-sm object-fit-cover" style="width: 110px; height: 110px;" onerror="this.src='https://placehold.co/110x110?text=Mau+Thiep'">
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="bg-white p-3 rounded-3 border" style="border-color: #F3EAEF !important; min-height: 90px;">
+                            <span class="fw-bold text-uppercase d-block mb-1 text-muted" style="font-size: 10px; letter-spacing: 0.5px;">Thông điệp chữ viết tay:</span>
+                            <p class="m-0 fw-semibold text-dark lh-base" style="font-size: 14px; font-style: italic; color: #2D141A !important;">
+                                "@Model.CardContent"
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <h6 class="fw-bold text-dark mb-3">Danh sách mẫu hoa nghệ thuật</h6>
         <div class="table-responsive">
             <table class="table align-middle">
                 <thead>
@@ -173,7 +205,7 @@
                         foreach (var item in Model.OrderDetails)
                         {
                             <tr style="border-bottom: 1px solid #F3EAEF;">
-                                <td class="fw-bold text-dark">🌸 @(item.Product?.Name ?? "Mẫu hoa hệ thống")</td>
+                                <td class="fw-bold text-dark">🌸 @(item.Product?.Name ?? "Mẫu hoa tươi nghệ thuật")</td>
                                 <td class="text-center fw-semibold text-secondary">x@(item.Quantity)</td>
                                 <td class="text-end text-muted">@item.Price.ToString("#,##0") đ</td>
                                 <td class="text-end fw-bold text-dark">@((item.Price * item.Quantity).ToString("#,##0")) đ</td>

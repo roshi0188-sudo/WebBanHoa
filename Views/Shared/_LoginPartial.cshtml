@@ -11,14 +11,15 @@
         @if (User.IsInRole("Admin"))
         {
             <li class="nav-item">
-                <div class="d-flex align-items-center gap-2">
-                    <a asp-area="" asp-controller="Account" asp-action="Profile" class="position-relative p-0" title="Hồ sơ Admin">
+                <div class="admin-profile-badge d-flex align-items-center gap-2">
+                    <a asp-area="" asp-controller="Account" asp-action="Profile" class="position-relative d-flex p-0" title="Hồ sơ cá nhân Admin">
                         <img src="@(string.IsNullOrEmpty(currentUser?.Avatar) ? "/images/avatar-admin.jpg" : currentUser.Avatar)"
                              class="rounded-circle object-fit-cover border border-2 border-danger shadow-sm"
-                             style="width: 38px; height: 38px; transition: all 0.3s ease;" alt="Admin">
-                        <span class="position-absolute bottom-0 end-0 bg-danger border border-light rounded-circle" style="width: 10px; height: 10px;"></span>
+                             style="width: 36px; height: 36px; transition: all 0.3s ease;"
+                             alt="Admin Avatar">
+                        <span class="position-absolute bottom-0 end-0 bg-danger border border-light rounded-circle animate-pulse" style="width: 10px; height: 10px;"></span>
                     </a>
-                    <a class="nav-link text-danger fw-bold p-0" asp-area="Admin" asp-controller="Dashboard" asp-action="Index" style="font-size: 13px;">
+                    <a class="nav-link admin-text-link fw-bold p-0" asp-area="Admin" asp-controller="Dashboard" asp-action="Index" title="Vào trang quản trị">
                         Admin: @(currentUser?.FullName ?? User.Identity?.Name?.Split('@')[0])
                     </a>
                 </div>
@@ -27,43 +28,141 @@
         else
         {
             <li class="nav-item">
-                <a class="nav-link p-0 profile-avatar-wrapper" asp-area="" asp-controller="Account" asp-action="Profile" title="Hồ sơ cá nhân">
+                <a class="nav-link p-0 profile-avatar-wrapper" asp-area="" asp-controller="Account" asp-action="Profile" title="Xem hồ sơ cá nhân">
                     <img src="@(string.IsNullOrEmpty(currentUser?.Avatar) ? "/images/avartar-user1.jpg" : currentUser.Avatar)"
                          class="rounded-circle object-fit-cover border border-2 shadow-sm"
-                         style="width: 40px; height: 40px; border-color: #DE8F9F !important; transition: all 0.3s ease;"
-                         alt="User"
+                         style="width: 38px; height: 38px; border-color: var(--secondary-pastel) !important; transition: all 0.3s ease;"
+                         alt="User Avatar"
                          onerror="this.src='https://api.dicebear.com/7.x/adventurer/svg?seed=@(User.Identity?.Name)'">
                 </a>
             </li>
         }
 
         <li class="nav-item">
-            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+            <form class="d-inline" asp-area="" asp-controller="Account" asp-action="Logout" method="post">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1" style="font-size: 12px; font-weight:600;">
-                    <i class="bi bi-box-arrow-right me-1"></i> Đăng xuất
+                <button type="submit" class="btn btn-logout-premium d-flex align-items-center gap-1">
+                    <i class="bi bi-box-arrow-right"></i> Đăng xuất
                 </button>
             </form>
         </li>
     }
     else
     {
-        <li class="nav-item"><a class="nav-link fw-semibold" asp-controller="Account" asp-action="Register">Đăng ký</a></li>
-        <li class="nav-item"><a class="nav-link btn btn-outline-primary rounded-pill px-3 py-1" asp-controller="Account" asp-action="Login" style="font-size: 13px;">Đăng nhập</a></li>
+        <li class="nav-item">
+            <a class="nav-link text-uppercase fw-semibold btn-register-link" asp-controller="Account" asp-action="Register">Đăng ký</a>
+        </li>
+        <li class="nav-item">
+            <a class="btn btn-login-premium text-uppercase" asp-controller="Account" asp-action="Login">Đăng nhập</a>
+        </li>
     }
 </ul>
 
 <style>
-    /* Hiệu ứng mượt mà */
-    .profile-avatar-wrapper:hover img {
-        transform: scale(1.1);
-        filter: brightness(0.9);
+    .public-nav-link {
+        font-weight: 600 !important;
+        color: var(--dark-slate) !important;
+        font-size: 14px !important;
+        position: relative;
     }
 
-    /* Đảm bảo nav-link không bị vỡ bố cục */
-    .navbar-nav .nav-link {
-        white-space: nowrap;
-        display: flex;
-        align-items: center;
+        /* Hiệu ứng gạch chân mượt mà khi di chuột qua mục Sản phẩm */
+        .public-nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--primary-luxury);
+            transition: width 0.25s ease;
+        }
+
+        .public-nav-link:hover::after {
+            width: 100%;
+        }
+
+    /* Badge Admin cao cấp */
+    .admin-profile-badge {
+        background-color: #FFF5F6;
+        padding: 4px 12px 4px 4px;
+        border-radius: 30px;
+        border: 1px solid var(--border-soft);
     }
+
+    .admin-text-link {
+        color: var(--primary-luxury) !important;
+        font-size: 13px !important;
+    }
+
+    /* Hiệu ứng chấm xanh/đỏ nhấp nháy trực tuyến */
+    .animate-pulse {
+        animation: pulse-border 2s infinite;
+    }
+
+    @@keyframes pulse-border {
+        0% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+        }
+
+        70% {
+            box-shadow: 0 0 0 6px rgba(220, 53, 69, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+        }
+    }
+
+    /* Hover Avatar User mượt mà */
+    .profile-avatar-wrapper:hover img {
+        transform: scale(1.08);
+        box-shadow: 0 4px 15px rgba(163, 72, 99, 0.15) !important;
+    }
+
+    /* Button Đăng ký / Đăng nhập / Đăng xuất kiểu mới */
+    .btn-register-link {
+        color: #718096 !important;
+        font-size: 13px !important;
+        letter-spacing: 0.5px;
+    }
+
+        .btn-register-link:hover {
+            color: var(--primary-luxury) !important;
+        }
+
+    .btn-login-premium {
+        background-color: var(--primary-luxury);
+        color: white !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.5px;
+        padding: 8px 22px !important;
+        border-radius: 20px !important;
+        box-shadow: 0 4px 12px rgba(163, 72, 99, 0.15);
+        transition: all 0.25s ease;
+    }
+
+        .btn-login-premium:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(163, 72, 99, 0.25);
+        }
+
+    .btn-logout-premium {
+        background: transparent;
+        border: 1px solid var(--border-soft);
+        color: #718096;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 6px 16px;
+        border-radius: 20px;
+        transition: all 0.2s ease;
+    }
+
+        .btn-logout-premium:hover {
+            background-color: #FFF5F5;
+            color: #E53E3E;
+            border-color: #FED7D7;
+        }
 </style>

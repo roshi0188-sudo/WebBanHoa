@@ -63,31 +63,42 @@ namespace WebBanHoa.Areas.Admin.Controllers
             }
 
             var fileBytes = Encoding.UTF8.GetBytes(csv.ToString());
-            // Thêm ký tự BOM để khi mở bằng Excel không bị lỗi font Tiếng Việt
+            
             var resultBytes = Encoding.UTF8.GetPreamble().Concat(fileBytes).ToArray();
 
             return File(resultBytes, "text/csv", $"Bao_Cao_Don_Hang_Floral_LAM_{DateTime.Now:yyyyMMdd}.csv");
         }
 
-        //  MÀN HÌNH DASHBOARD DOANH THU 
         public async Task<IActionResult> RevenueDashboard()
         {
-            var orders = await _context.Orders.Include(o => o.OrderDetails).ToListAsync();
+            var ordersQuery = _context.Orders.AsQueryable();
 
-            // Tính toán 4 chỉ số hiệu suất kinh doanh chính (KPI)
-            decimal totalRevenue = orders.Where(o => o.OrderStatus != "Đã hủy").Sum(o => o.TotalAmount);
-            int totalOrders = orders.Count;
+            // 1. Tính doanh thu thực tế (Chỉ lấy đơn thành công)
+            decimal totalRevenue = await ordersQuery
+                .Where(o => o.OrderStatus == "Đã hoàn thành" || o.OrderStatus == "Đã giao")
+                .SumAsync(o => o.TotalAmount);
+
+            // 2. Tổng số đơn hàng thành công thực tế trong hệ thống
+            int totalOrders = await ordersQuery
+                .Where(o => o.OrderStatus == "Đã hoàn thành" || o.OrderStatus == "Đã giao")
+                .CountAsync();
+
+            // 3. Giá trị trung bình trên một đơn hàng (AOV)
             decimal aov = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
-            // Giả lập Tỷ lệ chuyển đổi hệ thống dựa trên lưu lượng truy cập thực tế (Ví dụ mẫu: 4000 traffic)
-            double conversionRate = totalOrders > 0 ? Math.Round(((double)totalOrders / 4000) * 100, 2) : 0;
+            int totalTraffic = await _context.VisitorLogs.CountAsync();
+
+            // Công thức tính thực tế: (Tổng đơn hàng / Tổng lượt truy cập) * 100
+            double conversionRate = totalTraffic > 0
+                ? Math.Round(((double)totalOrders / totalTraffic) * 100, 2)
+                : 0;
 
             ViewBag.TotalRevenue = totalRevenue;
             ViewBag.TotalOrders = totalOrders;
             ViewBag.AOV = aov;
             ViewBag.ConversionRate = conversionRate;
+            ViewBag.TotalTraffic = totalTraffic; 
 
-            // Xử lý bảng xếp hạng sản phẩm bán chạy nhất (Top-selling products)
             var topProducts = await _context.OrderDetails
                 .Include(d => d.Product)
                 .GroupBy(d => d.ProductId)
@@ -99,14 +110,15 @@ namespace WebBanHoa.Areas.Admin.Controllers
                     TotalSales = g.Sum(d => d.Price * d.Quantity)
                 })
                 .OrderByDescending(p => p.TotalQuantity)
-                .Take(5) // Lấy ra Top 5 sản phẩm cao nhất
+                .Take(5)
                 .ToListAsync();
 
             ViewBag.TopProducts = topProducts;
 
-            // Phân nhóm dữ liệu tổng doanh thu theo tháng phục vụ thư viện biểu đồ Chart.js
-            var monthlyData = orders
-                .Where(o => o.OrderStatus != "Đã hủy")
+            var ordersList = await ordersQuery.ToListAsync();
+
+            var monthlyData = ordersList
+                .Where(o => o.OrderStatus == "Đã hoàn thành" || o.OrderStatus == "Đã giao")
                 .GroupBy(o => o.OrderDate.Month)
                 .Select(g => new { Month = g.Key, Amount = g.Sum(o => o.TotalAmount) })
                 .OrderBy(g => g.Month)
@@ -116,20 +128,21 @@ namespace WebBanHoa.Areas.Admin.Controllers
             ViewBag.ChartData = monthlyData.Select(m => m.Amount).ToArray();
 
             var last7Days = Enumerable.Range(0, 7)
-            .Select(i => DateTime.Today.AddDays(-i))
-            .Reverse()
-            .ToList();
+                .Select(i => DateTime.Today.AddDays(-i))
+                .Reverse()
+                .ToList();
 
             var weeklyData = last7Days.Select(date => new
             {
                 Date = date.ToString("dd/MM"),
-                Amount = orders
-                    .Where(o => o.OrderStatus != "Đã hủy" && o.OrderDate.Date == date.Date)
+                Amount = ordersList
+                    .Where(o => (o.OrderStatus == "Đã hoàn thành" || o.OrderStatus == "Đã giao") && o.OrderDate.Date == date.Date)
                     .Sum(o => o.TotalAmount)
             }).ToList();
 
             ViewBag.WeekLabels = weeklyData.Select(d => d.Date).ToArray();
             ViewBag.WeekData = weeklyData.Select(d => d.Amount).ToArray();
+
             return View();
         }
 
@@ -155,39 +168,18 @@ namespace WebBanHoa.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CompleteOrder(int orderId)
         {
-            // Nạp đơn hàng kèm thông tin User liên kết
-            var order = await _context.Orders
-                .Include(o => o.User)
-                .FirstOrDefaultAsync(o => o.Id == orderId);
-
+            var order = await _context.Orders.FindAsync(orderId);
             if (order == null) return NotFound();
 
             order.OrderStatus = "Đã hoàn thành";
             _context.Orders.Update(order);
-
-            // TÍNH XU TÍCH LŨY
-            if (order.User != null)
-            {
-                // Công thức mẫu: Cứ 10,000 đ tổng hóa đơn sẽ quy đổi được 1 điểm thưởng
-                int pointsEarned = (int)(order.TotalAmount / 10000);
-
-                // Cộng dồn vào quỹ điểm hiện tại của User
-                order.User.RewardPoints += pointsEarned;
-
-                _context.Users.Update(order.User);
-
-                TempData["SuccessMessage"] = $"Đơn hàng #LAM-{orderId} đã hoàn thành! Khách hàng được tích lũy thêm +{pointsEarned} Pts.";
-            }
-            else
-            {
-                TempData["SuccessMessage"] = $"Đơn hàng #LAM-{orderId} đã hoàn thành!";
-            }
-
             await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Đơn hàng #LAM-{orderId} đã hoàn thành xuất sắc! ✅";
+
             return RedirectToAction("Index");
         }
 
-        // HỦY ĐƠN HÀNG
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CancelOrder(int orderId)
@@ -199,7 +191,8 @@ namespace WebBanHoa.Areas.Admin.Controllers
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
 
-            TempData["DangerMessage"] = $"Đã hủy đơn hàng #LAM-{orderId}.";
+            TempData["DangerMessage"] = $"Đã hủy đơn hàng #LAM-{orderId}! ❌";
+
             return RedirectToAction("Index");
         }
     }

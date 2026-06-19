@@ -7,129 +7,30 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 <style>
-    body {
-        background-color: #FCF9FA;
-    }
+   
 
-    .page-title {
-        font-family: 'Montserrat', Georgia, serif;
-        color: #2D141A;
-        letter-spacing: 0.5px;
-    }
-
-    /* Card tổng thể bao bọc danh sách */
-    .admin-order-card {
-        background: white;
-        border-radius: 20px;
-        border: 1px solid #F5E6EC;
-        box-shadow: 0 10px 30px rgba(163, 72, 99, 0.02);
-        padding: 30px;
-    }
-
-    /* Định dạng thanh tiêu đề bảng */
-    .table-admin-order th {
-        background-color: #FAF4F6;
-        color: #4A5568;
-        font-size: 13px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 16px;
-        border: none;
-    }
-
-    /* Các ô nội dung */
-    .table-admin-order td {
-        padding: 18px 16px;
-        vertical-align: middle;
-        font-size: 14px;
-        border-bottom: 1px solid #F3EAEF;
-    }
-
-    /* Hiệu ứng hover dòng */
-    .table-admin-order tbody tr {
-        transition: background-color 0.2s ease;
-    }
-
-        .table-admin-order tbody tr:hover {
-            background-color: #FFFBFD;
-        }
-
-    /* Trạng thái viên thuốc đổ bóng mờ */
-    .status-pill {
-        padding: 6px 14px;
-        border-radius: 30px;
-        font-size: 12px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-
-    .pill-pending {
-        background-color: #FFFDF0;
-        color: #B7791F;
-        border: 1px solid #FCEFC2;
-    }
-
-    .pill-shipping {
-        background-color: #F0F7FF;
-        color: #2B6CB0;
-        border: 1px solid #CCE3F8;
-    }
-
-    .pill-completed {
-        background-color: #EBFDF9;
-        color: #234E52;
-        border: 1px solid #C6F6D5;
-    }
-
-    .pill-canceled {
-        background-color: #FFF5F5;
-        color: #C53030;
-        border: 1px solid #FED7D7;
-    }
-
-    /* Định dạng mini tag cho từng bó hoa */
-    .mini-product-tag {
-        background-color: #FFF8F9;
-        border: 1px solid #FCECEF;
-        padding: 6px 12px;
+    /* 🌟 BỘ KHUNG HIỂN THỊ THIỆP  */
+    .admin-inline-card-box {
+        background-color: #FFF5F7;
+        border: 1px dashed #DE8F9F;
         border-radius: 10px;
-        font-size: 13px;
-        margin-bottom: 6px;
-        display: inline-flex;
+        padding: 8px 12px;
+        margin-top: 2px;
+        max-width: 280px;
+        display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 10px;
+        box-shadow: 0 2px 6px rgba(163, 72, 99, 0.03);
     }
 
-    /* Khung tròn số lượng nổi bật */
-    .quantity-badge {
-        background-color: #E8CAD4;
-        color: #A34863;
-        font-size: 11px;
-        font-weight: 700;
-        padding: 2px 6px;
-        border-radius: 20px;
-    }
-
-    /* Các nút hành động bo tròn đồng bộ */
-    .btn-admin-action {
-        border-radius: 30px;
-        padding: 6px 16px;
-        font-size: 13px;
-        font-weight: 600;
-        transition: all 0.2s ease;
-    }
-
-    /* Khung điều hướng bộ lọc thông minh lọc nhanh */
-    .filter-btn-group .btn-filter {
-        font-size: 13px;
-        font-weight: 600;
-        border-radius: 20px;
-        padding: 6px 16px;
-        transition: all 0.2s ease;
+    /* Hiệu ứng bo góc nhẹ cho ảnh phôi thiệp đính kèm */
+    .admin-card-thumbnail {
+        width: 48px;
+        height: 48px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid #E2E8F0;
+        background-color: white;
     }
 </style>
 
@@ -137,7 +38,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
-            <h3 class="fw-bold m-0 page-title">Quản Lý Đơn Đặt Hoa</h3>
+            <h3 class="fw-bold m-0 page-title" style="color: #2D141A;">Quản Lý Đơn Đặt Hoa</h3>
             <small class="text-muted">Phê duyệt, theo dõi luồng vận chuyển và hoàn thành các đơn hàng hoa tươi nghệ thuật</small>
         </div>
         <div class="d-flex gap-2">
@@ -170,13 +71,9 @@
             <span class="text-secondary small fw-bold me-2"><i class="bi bi-funnel-fill"></i> Bộ lọc trạng thái:</span>
 
             <a asp-action="Index" asp-route-statusFilter="" class="btn btn-sm btn-filter @(string.IsNullOrEmpty(ViewBag.CurrentFilter) ? "btn-dark text-white" : "btn-light border text-secondary")">Tất cả</a>
-
             <a asp-action="Index" asp-route-statusFilter="Chờ xử lý" class="btn btn-sm btn-filter @(ViewBag.CurrentFilter == "Chờ xử lý" ? "btn-warning text-white" : "btn-light border text-secondary")">⏳ Chờ xử lý</a>
-
             <a asp-action="Index" asp-route-statusFilter="Đang giao" class="btn btn-sm btn-filter @(ViewBag.CurrentFilter == "Đang giao" ? "btn-info text-white" : "btn-light border text-secondary")">🚚 Đang giao</a>
-
             <a asp-action="Index" asp-route-statusFilter="Đã hoàn thành" class="btn btn-sm btn-filter @(ViewBag.CurrentFilter == "Đã hoàn thành" ? "btn-success text-white" : "btn-light border text-secondary")">✅ Đã hoàn thành</a>
-
             <a asp-action="Index" asp-route-statusFilter="Đã hủy" class="btn btn-sm btn-filter @(ViewBag.CurrentFilter == "Đã hủy" ? "btn-danger text-white" : "btn-light border text-secondary")">❌ Đã hủy</a>
         </form>
     </div>
@@ -185,16 +82,17 @@
         @if (Model != null && Model.Any())
         {
             <div class="table-responsive">
-                <table class="table table-admin-order w-100 m-0">
+                <table class="table table-admin-order align-middle w-100 m-0">
                     <thead>
                         <tr>
                             <th style="width: 10%;">Mã Đơn</th>
-                            <th style="width: 14%;">Ngày Đặt</th>
-                            <th style="width: 28%;">Thông Tin Khách Hàng</th>
-                            <th style="width: 25%;">Sản Phẩm</th>
-                            <th style="width: 13%;">Tổng Tiền</th>
+                            <th style="width: 12%;">Ngày Đặt</th>
+                            <th style="width: 24%;">Thông Tin Khách Hàng</th>
+                            <th style="width: 20%;">Sản Phẩm</th>
+                            <th style="width: 25%;">Dịch vụ kèm</th>
+                            <th style="width: 11%;">Tổng Tiền</th>
                             <th style="width: 10%;">Trạng Thái</th>
-                            <th class="text-end" style="width: 20%;">Hành Động Duyệt</th>
+                            <th class="text-end" style="width: 13%;">Hành Động Duyệt</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -224,17 +122,18 @@
                                 <td class="text-muted small">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
                                 <td>
                                     <div class="fw-bold text-dark mb-1">
-                                        <i class="bi bi-person-fill text-muted me-1"></i> @(order.User?.FullName ?? "Khách hàng vãng lai")
+                                        <i class="bi bi-person-fill text-muted me-1"></i> Tặng: @order.ReceiverName
                                     </div>
+                                    <small class="text-muted d-block" style="font-size: 11px;">(Người mua: @(order.User?.FullName ?? "Ẩn danh"))</small>
                                     <div class="text-secondary small fw-semibold">
                                         <i class="bi bi-telephone text-muted me-1"></i> @order.PhoneNumber
                                     </div>
-                                    <small class="text-muted d-block text-truncate mt-1" style="max-width: 240px;" title="@order.ShippingAddress">
+                                    <small class="text-muted d-block text-truncate mt-1" style="max-width: 200px;" title="@order.ShippingAddress">
                                         <i class="bi bi-geo-alt text-muted"></i> @order.ShippingAddress
                                     </small>
                                 </td>
                                 <td>
-                                    <div class="d-flex flex-column align-items-start">
+                                    <div class="d-flex flex-column align-items-start gap-1">
                                         @foreach (var detail in order.OrderDetails)
                                         {
                                             <span class="mini-product-tag">
@@ -244,6 +143,28 @@
                                         }
                                     </div>
                                 </td>
+
+                                <td>
+                                    @if (!string.IsNullOrEmpty(order.CardContent))
+                                    {
+                                        <div class="admin-inline-card-box">
+                                            <img src="@order.CardImage" class="admin-card-thumbnail" onerror="this.src='https://placehold.co/50x50?text=Card'">
+                                            <div style="flex: 1; min-width: 0;">
+                                                <small class="d-block fw-bold text-uppercase" style="font-size: 9px; color: #A34863; letter-spacing: 0.3px;">
+                                                    <i class="bi bi-envelope-heart-fill"></i> Lời chúc viết thiệp:
+                                                </small>
+                                                <p class="m-0 text-dark small fw-semibold lh-sm mt-0.5" style="font-style: italic; font-size: 12px; white-space: normal; word-break: break-word;">
+                                                    "@order.CardContent"
+                                                </p>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small fs-7" style="font-style: italic;">Không kèm thiệp</span>
+                                    }
+                                </td>
+
                                 <td class="fw-bold" style="color: #A34863; font-size: 15px;">@order.TotalAmount.ToString("#,##0") đ</td>
                                 <td>
                                     <span class="status-pill @pillClass">
@@ -257,14 +178,14 @@
                                             <form asp-area="Admin" asp-controller="OrderManager" asp-action="ApproveOrder" asp-route-orderId="@order.Id" method="post" class="d-inline">
                                                 @Html.AntiForgeryToken()
                                                 <button type="submit" class="btn btn-sm btn-admin-action shadow-sm text-white" style="background-color: #A34863; border-color: #A34863;">
-                                                    Duyệt đơn
+                                                    Duyệt
                                                 </button>
                                             </form>
 
                                             <form asp-area="Admin" asp-controller="OrderManager" asp-action="CancelOrder" asp-route-orderId="@order.Id" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn đặt hoa này không?');" class="d-inline">
                                                 @Html.AntiForgeryToken()
                                                 <button type="submit" class="btn btn-sm btn-outline-danger btn-admin-action">
-                                                    Hủy đơn
+                                                    Hủy
                                                 </button>
                                             </form>
                                         }
@@ -273,13 +194,13 @@
                                             <form asp-area="Admin" asp-controller="OrderManager" asp-action="CompleteOrder" asp-route-orderId="@order.Id" method="post" class="d-inline">
                                                 @Html.AntiForgeryToken()
                                                 <button type="submit" class="btn btn-sm btn-primary btn-admin-action shadow-sm text-white" style="background-color: #A34863; border-color: #A34863;">
-                                                    <i class="bi bi-patch-check-fill me-1"></i> Hoàn thành
+                                                    <i class="bi bi-patch-check-fill me-1"></i> Xong
                                                 </button>
                                             </form>
                                         }
                                         else
                                         {
-                                            <span class="text-muted small italic">Không có thao tác</span>
+                                            <span class="text-muted small style-card-text" style="font-style: italic;">Đã xử lý</span>
                                         }
                                     </div>
                                 </td>
